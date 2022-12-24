@@ -1,0 +1,31 @@
+.keyboardTileWrapper {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  flex: 1;
+}
+
+.keyboardTileBottom,
+.keyboardTileTop {
+  height: 44px;
+  line-height: 44px;
+  width: 100%;
+  background: aliceblue;
+  display: grid;
+  place-content: center;
+}
+
+.keyboardTileTop {
+  position: absolute;
+  top: 0px;
+  cursor: pointer;
+}
+
+.keyboardTileWrapper [data-dragging="true"] {
+  background: goldenrod;
+  z-index: 99;
+}
+.keyboardTileWrapper [data-dragging="false"] {
+  transition: 0.2s ease-in-out;
+}

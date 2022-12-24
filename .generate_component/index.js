@@ -25,4 +25,4 @@ fs.writeFile(`${dir}/${name}.module.css`, "", writeFileErrorHandler);
 // test.tsx
 fs.writeFile(`${dir}/${name}.test.tsx`, test(name), writeFileErrorHandler);
 //index.js
-fs.writeFile(`index.js`, index(name), writeFileErrorHandler);
+fs.writeFile(`${dir}/index.js`, index(name), writeFileErrorHandler);

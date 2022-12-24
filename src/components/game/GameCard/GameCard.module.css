@@ -1,0 +1,53 @@
+.gameCardWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px 10px;
+  background: aliceblue;
+}
+
+.playerOne {
+  grid-column: 1/2;
+  grid-row: 1/2;
+}
+
+.playerTwo {
+  grid-column: 1/2;
+  grid-row: 2/3;
+}
+
+.playerOne,
+.playerTwo {
+  display: grid;
+  grid-template-columns: 8px 34px auto;
+  grid-template-rows: auto auto;
+  gap: 5px 10px;
+  align-items: center;
+}
+.currentWord {
+  grid-column: 2/3;
+  grid-row: 1/3;
+  display: grid;
+  align-items: center;
+  justify-content: end;
+}
+
+.image {
+  grid-column: 2/3;
+  grid-row: 1/3;
+  border-radius: 25px;
+  align-items: center;
+}
+
+.indicator {
+  border-radius: 10px;
+  grid-column: 1/2;
+  grid-row: 1/3;
+  display: grid;
+  align-items: center;
+  opacity: 0;
+}
+
+.gameCardWrapper [data-current-player="true"] {
+  opacity: 1;
+}

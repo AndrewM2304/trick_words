@@ -8,7 +8,7 @@
 // export default AvatarWidget;
 import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Database } from "../../../types/supabase";
+import { Database } from "../../../../types/supabase";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function AvatarWidget({
@@ -31,6 +31,7 @@ export default function AvatarWidget({
   }, [url]);
 
   async function downloadImage(path: string) {
+    console.log("opoo " + path);
     try {
       const { data, error } = await supabase.storage
         .from("avatars")
@@ -39,6 +40,7 @@ export default function AvatarWidget({
         throw error;
       }
       const url = URL.createObjectURL(data);
+      console.log(url);
       setAvatarUrl(url);
     } catch (error) {
       console.log("Error downloading image: ", error);
@@ -80,12 +82,15 @@ export default function AvatarWidget({
   return (
     <div data-testid="AvatarWidget-wrapper">
       {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt="Avatar"
-          className="avatar image"
-          style={{ height: size, width: size }}
-        />
+        <>
+          {avatarUrl}
+          <img
+            src={avatarUrl}
+            alt="Avatar"
+            className="avatar image"
+            style={{ height: size, width: size }}
+          />
+        </>
       ) : (
         <div
           className="avatar no-image"

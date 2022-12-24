@@ -6,7 +6,7 @@ import {
 } from "@supabase/auth-helpers-react";
 import styles from "./AccountSettings.module.css";
 import { Database } from "@utilities/supabase";
-import AvatarWidget from "@components/AvatarWidget/AvatarWidget";
+import AvatarWidget from "@components/account/AvatarWidget/AvatarWidget";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export type AccountSettingsProps = {
@@ -32,7 +32,7 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
       if (!user) throw new Error("No user");
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`username, website, avatar_url, id`)
+        .select("*")
         .eq("id", user.id)
         .single();
 
@@ -41,7 +41,6 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
       }
 
       if (data) {
-        console.log(data);
         setUsername(data.username);
         setWebsite(data.website);
         setAvatarUrl(data.avatar_url);

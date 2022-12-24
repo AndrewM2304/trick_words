@@ -2,7 +2,8 @@ import React from "react";
 import styles from "./Authentication.module.css";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { AccountSettings } from "@components/AccountSettings";
+import { AccountSettings } from "@components/account/AccountSettings";
+import { Keyboard } from "@components/keyboard/Keyboard";
 
 const Authentication = () => {
   const session = useSession();

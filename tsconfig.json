@@ -19,14 +19,15 @@
       "@components/*": ["src/components/*"],
       "@utilities/*": ["types/*"],
       "@game/*": ["game-logic/*"],
-      "@testing/*": ["testing-utilities/*"]
+      "@testing/*": ["testing-utilities/*"],
+      "@public/*": ["public/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/components/AccountSettings/index.js"
+    "src/components/account/AccountSettings/index.js"
   ],
   "exclude": ["node_modules"]
 }

@@ -14,6 +14,7 @@ const customJestConfig = {
     "^@utilities/(.*)$": ["<rootDir>/types/$1"],
     "^@game/(.*)$": ["<rootDir>/game-logic/$1"],
     "^@testing/(.*)$": ["<rootDir>/testing-utilities/$1"],
+    "^@public/(.*)$": ["<rootDir>/public/$1"],
   },
 };
 
