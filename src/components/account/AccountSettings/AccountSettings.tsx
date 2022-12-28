@@ -55,7 +55,6 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
 
   async function updateProfile({
     username,
-    website,
     avatar_url,
   }: {
     username: Profiles["username"];
@@ -69,7 +68,6 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
       const updates = {
         id: user.id,
         username,
-        website,
         avatar_url,
         updated_at: new Date().toISOString(),
       };
@@ -92,31 +90,12 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
           <h1>{username}</h1>
           <div className="form-widget" data-testid="AccountSettings-wrapper">
             <div>
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="text"
-                value={session.user.email}
-                disabled
-              />
-            </div>
-
-            <div>
               <label htmlFor="username">Username</label>
               <input
                 id="username"
                 type="text"
                 value={username || ""}
                 onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="website">Website</label>
-              <input
-                id="website"
-                type="website"
-                value={website || ""}
-                onChange={(e) => setWebsite(e.target.value)}
               />
             </div>
             <AvatarWidget

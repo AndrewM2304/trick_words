@@ -11,6 +11,8 @@ type Game = Database["public"]["Tables"]["games"]["Row"];
 import { useRouter } from "next/router";
 import { PostgrestError } from "@supabase/supabase-js";
 import Link from "next/link";
+import { Layout } from "@components/Layout";
+import { playerTurn } from "@game/game-functions";
 
 export default function Game() {
   const [isDragging, setIsDragging] = useState(false);
@@ -27,10 +29,38 @@ export default function Game() {
 
   function handleDragEnd(e: DragEndEvent) {
     console.log(e);
-    if (e.over === null) return;
-    window.alert(e.over.id + " " + e.active.id);
+    if (e.over === null || !game) return;
+    if (e.over.id === "left") {
+      const playerWord = `${e.active.id}${game?.current_word}`;
+      updateGame(playerWord, game);
+    }
+    if (e.over.id === "right") {
+      const playerWord = `${game?.current_word}${e.active.id}`;
+      updateGame(playerWord, game);
+    }
+    // window.alert(e.over.id + " " + e.active.id);
     setIsDragging(false);
   }
+
+  const updateGame = (playerWord: string, game: Game) => {
+    playerTurn(playerWord, game).then(async (val) => {
+      if (val.update) {
+        const { data, error } = await supabase
+          .from("games")
+          .update(val.value)
+          .eq("id", game.id)
+          .select();
+
+        if (data) {
+          setGame(data[0]);
+        }
+        if (error) {
+          console.log(error);
+        }
+      }
+      console.log(val.message);
+    });
+  };
 
   useEffect(() => {
     const getGame = async () => {
@@ -58,43 +88,48 @@ export default function Game() {
   }, [router.query]);
 
   return (
-    <div data-testid="Game-wrapper">
-      {loading && (
-        <div className={styles.loading} data-testid="loading">
-          {" "}
-          loading game
-        </div>
-      )}
-      {error && status !== 406 && (
-        <div className={styles.error} data-testid="error">
-          Something has gone wrong
-          <br />
-          <b>Error Code: </b> {error.code} <br />
-          <b>Error Details: </b>
-          {error.details}
-        </div>
-      )}
-      {status === 406 && (
-        <div className={styles.noRows} data-testid="noRows">
-          no game found, <br />
-          <Link href={"/"}> return home</Link>
-        </div>
-      )}
-      {!loading && game && (
-        <>
-          <pre>{JSON.stringify(game, null, 2)}</pre>
-          <DndContext
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            modifiers={[restrictToWindowEdges]}
-          >
-            <DroppableArea area={"left"} />
-            <DroppableArea area={"right"} />
-            <Keyboard />
-          </DndContext>
-          <Link href={"/"}> return home</Link>
-        </>
-      )}
-    </div>
+    <Layout>
+      <div data-testid="Game-wrapper">
+        {loading && (
+          <div className={styles.loading} data-testid="loading">
+            {" "}
+            loading game
+          </div>
+        )}
+        {error && status !== 406 && (
+          <div className={styles.error} data-testid="error">
+            Something has gone wrong
+            <br />
+            <b>Error Code: </b> {error.code} <br />
+            <b>Error Details: </b>
+            {error.details}
+          </div>
+        )}
+        {status === 406 && (
+          <div className={styles.noRows} data-testid="noRows">
+            no game found, <br />
+            <Link href={"/"}> return home</Link>
+          </div>
+        )}
+        {!loading && game && (
+          <>
+            <pre>{JSON.stringify(game, null, 2)}</pre>
+
+            <DndContext
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              modifiers={[restrictToWindowEdges]}
+            >
+              <DroppableArea area={"left"} />
+
+              <h1>{game.current_word}</h1>
+              <DroppableArea area={"right"} />
+              <Keyboard />
+            </DndContext>
+            <Link href={"/"}> return home</Link>
+          </>
+        )}
+      </div>
+    </Layout>
   );
 }

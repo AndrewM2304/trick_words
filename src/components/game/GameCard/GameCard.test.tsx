@@ -1,14 +1,15 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { GameCard } from "./index";
+import { mockGameCard } from "@testing/mockData";
 describe("GameCard Component", () => {
   test("it should exist", () => {
-    render(<GameCard />);
+    render(<GameCard {...mockGameCard} />);
     expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument();
   });
 
   test("it displays a card with two players names, avatars, scores and the current word", () => {
-    render(<GameCard />);
+    render(<GameCard {...mockGameCard} />);
     expect(screen.getByTestId("player-one-name")).toHaveTextContent(
       "mock player one"
     );

@@ -1,3 +1,4 @@
+import { GameCardProps } from "@components/game/GameCard/GameCard";
 import { Session, User } from "@supabase/supabase-js";
 import { GamePlayer } from "../types/game";
 
@@ -73,4 +74,25 @@ export const mockUserRow = {
   website: null,
   avatar_url: "d5bcd50f-4595-4d20-b940-1ac6f800dc13.png",
   id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
+};
+
+const mockGameUser: User = {
+  id: mockUser.id,
+  app_metadata: mockUser.app_metadata,
+  user_metadata: mockUser.user_metadata,
+  aud: mockUser.aud,
+  created_at: mockUser.created_at,
+};
+export const mockGameCard: GameCardProps = {
+  user: mockGameUser,
+  playerOneId: "1",
+  playerOneName: "mock player one",
+  playerOneAvatar: "a",
+  playerOneScore: 0,
+  playerTwoId: "2",
+  playerTwoName: "mock player two",
+  playerTwoAvatar: "b",
+  playerTwoScore: 1,
+  currentPlayerIndex: 0,
+  currentWord: "a",
 };

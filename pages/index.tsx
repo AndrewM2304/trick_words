@@ -1,130 +1,10 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
 import { Authentication } from "@components/Authentication";
-import Link from "next/link";
-import React, { useState, useEffect } from "react";
-import {
-  useUser,
-  useSupabaseClient,
-  Session,
-  useSession,
-} from "@supabase/auth-helpers-react";
-import { Database } from "@utilities/supabase";
-import { GameCard } from "@components/game/GameCard";
-
-type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
-type Games = Database["public"]["Tables"]["games"]["Row"];
-
-// type UpdatedGameWithProfile = {
-//   id: number;
-//   created_at: string | null;
-//   current_word: string | null;
-//   current_letter_index: number | null;
-//   computer: boolean;
-//   secret_key: string | null;
-//   current_player_index: number | null;
-//   updated_at: string | null;
-//   player_one_score: number | null;
-//   player_two_score: number | null;
-//   player_one_id: Profile | null;
-//   player_two_id: Profile | null;
-// };
+import React from "react";
+import { Layout } from "@components/Layout";
 
 export default function Home() {
-  const user = useUser();
-
-  const [loading, setLoading] = useState(false);
-  const [gameData, setGameData] = useState<Games[]>([]);
-  const supabase = useSupabaseClient<Games>();
-  const session = useSession();
-  const [username, setUsername] = useState<Profiles["username"]>(
-    session?.user.user_metadata.name ?? null
-  );
-  const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
-
-  async function getProfile() {
-    try {
-      if (!user) throw new Error("No user");
-      let { data, error, status } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setUsername(data.username);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch (error) {
-      console.log("Error loading user data!");
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const retrieveAllGames = async () => {
-    if (!user) return;
-    console.log(user);
-    let { data, error, status } = await supabase
-      .from("games")
-      .select("*")
-      .or(`player_one_id.eq.${user.id},player_two_id.eq.${user.id}`);
-    if (data) {
-      console.log(data);
-      setGameData(data);
-    }
-    if (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const setup = async () => {
-      setLoading(true);
-      await getProfile();
-      retrieveAllGames().then(() => setLoading(false));
-    };
-    setup();
-  }, [user]);
-
-  const createGame = async () => {
-    console.log(user);
-    if (!user) throw new Error("No user");
-    const newGame: Partial<Games> = {
-      current_word: "a",
-      current_letter_index: 0,
-      player_one_id: user.id,
-      player_one_name: user.user_metadata.full_name,
-      player_one_avatar: avatar_url ?? user.user_metadata.avatar_url,
-      player_two_id: "e8f55cdf-d86c-4934-bb23-236b1c453e2b",
-      computer: true,
-      current_player_index: 0,
-    };
-
-    try {
-      const { data, error } = await supabase
-        .from("games")
-        .upsert(newGame)
-        .select();
-      if (data) {
-        console.log(data);
-      }
-      if (error) throw new Error(error.message);
-    } catch (error) {
-      console.log("Error loading user data!");
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <>
       <Head>
@@ -133,42 +13,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        {loading && "loading"}
-        <ul>
-          {gameData &&
-            user &&
-            !loading &&
-            gameData.map((game: Games) => {
-              return (
-                <Link
-                  href={`/game/${game.id}`}
-                  key={game.id}
-                  className={styles.gameLink}
-                >
-                  <GameCard
-                    user={user}
-                    playerOneName={game.player_one_name}
-                    playerOneAvatar={game.player_one_avatar}
-                    playerOneId={game.player_one_id ?? ""}
-                    playerOneScore={game.player_one_score ?? 0}
-                    playerTwoName={game.player_two_name}
-                    playerTwoAvatar={game.player_two_avatar}
-                    playerTwoId={game.player_two_id ?? ""}
-                    playerTwoScore={game.player_two_score ?? 0}
-                    currentPlayerIndex={game.current_letter_index ?? 0}
-                    currentWord={game.current_word ?? "a"}
-                  />
-                </Link>
-              );
-            })}
-        </ul>
-        <button onClick={() => createGame()}>
-          {" "}
-          {loading ? "loading" : "New Game"}
-        </button>
+      <Layout>
         <Authentication />
-      </main>
+      </Layout>
     </>
   );
 }

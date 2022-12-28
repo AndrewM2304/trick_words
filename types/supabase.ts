@@ -26,6 +26,7 @@ export interface Database {
           player_two_name: string
           player_one_avatar: string
           player_two_avatar: string
+          winner: string | null
         }
         Insert: {
           id?: number
@@ -43,6 +44,7 @@ export interface Database {
           player_two_name?: string
           player_one_avatar?: string
           player_two_avatar?: string
+          winner?: string | null
         }
         Update: {
           id?: number
@@ -60,6 +62,7 @@ export interface Database {
           player_two_name?: string
           player_one_avatar?: string
           player_two_avatar?: string
+          winner?: string | null
         }
       }
       profiles: {

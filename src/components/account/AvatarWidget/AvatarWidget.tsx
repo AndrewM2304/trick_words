@@ -1,11 +1,3 @@
-// import React from 'react';
-// import styles from './AvatarWidget.module.css'
-
-// export type AvatarWidgetProps = {}
-// const AvatarWidget = ({}: AvatarWidgetProps) => {
-//   return <div data-testid="AvatarWidget-wrapper">Hello 👋, I am a AvatarWidget component.</div>;
-// };
-// export default AvatarWidget;
 import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Database } from "../../../../types/supabase";
