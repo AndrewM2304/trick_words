@@ -1,7 +1,14 @@
 import { Keyboard } from "@components/keyboard/Keyboard";
 import React, { useState, useEffect } from "react";
 import styles from "../../styles/Game.module.css";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import {
+  KeyboardSensor,
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  useSensors,
+  useSensor,
+} from "@dnd-kit/core";
 import { DroppableArea } from "@components/game/DroppableArea";
 import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
@@ -13,9 +20,11 @@ import { PostgrestError } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Layout } from "@components/Layout";
 import { playerTurn } from "@game/game-functions";
+import Image from "next/image";
 
 export default function Game() {
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedLetter, setSelectedLetter] = useState("");
   const [game, setGame] = useState<Game | null>(null);
   const [status, setStatus] = useState<number>();
   const [error, setError] = useState<PostgrestError | null>(null);
@@ -23,12 +32,34 @@ export default function Game() {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
   const router = useRouter();
-  function handleDragStart() {
+  const [playerOneAvatarUrl, setPlayerOneAvatarUrl] = useState("");
+  const [playerTwoAvatarUrl, setPlayerTwoAvatarUrl] = useState("");
+
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      delay: 50,
+      tolerance: 5,
+    },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 50,
+      tolerance: 5,
+    },
+  });
+
+  const keyboardSensor = useSensor(KeyboardSensor, {});
+
+  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+  function handleDragStart(e: DragEndEvent) {
+    setSelectedLetter(e.active.id.toString());
     setIsDragging(true);
   }
 
   function handleDragEnd(e: DragEndEvent) {
     console.log(e);
+    setSelectedLetter("");
+
     if (e.over === null || !game) return;
     if (e.over.id === "left") {
       const playerWord = `${e.active.id}${game?.current_word}`;
@@ -42,8 +73,12 @@ export default function Game() {
     setIsDragging(false);
   }
 
-  const updateGame = (playerWord: string, game: Game) => {
-    playerTurn(playerWord, game).then(async (val) => {
+  const updateGame = (
+    playerWord: string,
+    game: Game,
+    forfeit: boolean = false
+  ) => {
+    playerTurn(playerWord, game, forfeit).then(async (val) => {
       if (val.update) {
         const { data, error } = await supabase
           .from("games")
@@ -61,6 +96,36 @@ export default function Game() {
       console.log(val.message);
     });
   };
+
+  const forfeitGame = () => {
+    updateGame(game?.current_word!, game!, true);
+  };
+
+  const getImage = async (url: string, player: "one" | "two") => {
+    const value = await downloadImage(url);
+    if (player === "one") setPlayerOneAvatarUrl(value || "");
+    if (player === "two") setPlayerTwoAvatarUrl(value || "");
+  };
+
+  async function downloadImage(path: string) {
+    try {
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .download(path);
+      if (error) {
+        throw error;
+      }
+      const url = URL.createObjectURL(data);
+      return url;
+    } catch (error) {
+      console.log("Error downloading image: ", error);
+    }
+  }
+
+  useEffect(() => {
+    getImage(game?.player_one_avatar ?? "default_user_avatar.svg", "one");
+    getImage(game?.player_two_avatar ?? "default_user_avatar.svg", "two");
+  }, [game]);
 
   useEffect(() => {
     const getGame = async () => {
@@ -113,23 +178,73 @@ export default function Game() {
         )}
         {!loading && game && (
           <>
-            <pre>{JSON.stringify(game, null, 2)}</pre>
+            <nav className={styles.nav}>
+              <Link href={"/"}> return home</Link>
+            </nav>
+            <ScoreSection
+              playerAvatar={playerOneAvatarUrl}
+              playerName={game.player_one_name}
+              playerScore={game.player_one_score}
+            />
+            <ScoreSection
+              playerAvatar={playerTwoAvatarUrl}
+              playerName={game.player_two_name}
+              playerScore={game.player_two_score}
+            />
+            <button onClick={() => forfeitGame()}>forfeit</button>
 
             <DndContext
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               modifiers={[restrictToWindowEdges]}
+              sensors={sensors}
             >
-              <DroppableArea area={"left"} />
+              <div className={styles.dropArea}>
+                <DroppableArea
+                  area={"left"}
+                  word={`${selectedLetter}${game.current_word}`}
+                />
 
-              <h1>{game.current_word}</h1>
-              <DroppableArea area={"right"} />
+                <DroppableArea
+                  area={"right"}
+                  word={`${game.current_word}${selectedLetter}`}
+                />
+              </div>
+
               <Keyboard />
             </DndContext>
-            <Link href={"/"}> return home</Link>
+            <h1>{game.current_word}</h1>
           </>
         )}
       </div>
     </Layout>
   );
 }
+
+type Score = {
+  playerAvatar: string;
+  playerName: string;
+  playerScore: number;
+};
+const ScoreSection = ({ playerAvatar, playerName, playerScore }: Score) => {
+  return (
+    <div
+      className={styles.playerScoreWrapper}
+      data-testid="player-score-wrapper"
+    >
+      <div className={styles.playerOne}>
+        {playerAvatar !== "" && (
+          <Image
+            src={playerAvatar}
+            height={24}
+            width={24}
+            alt={`${playerName} avatar`}
+          />
+        )}
+
+        <div className={styles.playerName}>{playerName}</div>
+        <div className={styles.playerScore}>{playerScore}</div>
+      </div>
+    </div>
+  );
+};

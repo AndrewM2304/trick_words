@@ -1,5 +1,5 @@
 import { game_functions_url } from "@utilities/constants";
-import { Game, GamePlayer, GameReturnValue } from "@utilities/game";
+import { GamePlayer, GameReturnValue } from "@utilities/game";
 import { wordlist } from "./wordArray";
 import { Database } from "@utilities/supabase";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -10,7 +10,6 @@ export const identifyIfWordInList = (word: string): GameReturnValue => {
   let value: GameReturnValue = { inList: false, exactMatch: false };
   for (let i: number = 0; i < wordlist.length; i++) {
     if (wordlist[i].includes(word)) {
-      console.log(wordlist[i]);
       value.inList = true;
     }
     if (wordlist[i].includes(word) && wordlist[i] === word) {
@@ -23,34 +22,10 @@ export const identifyIfWordInList = (word: string): GameReturnValue => {
   return value;
 };
 
-export const createNewGame = (
-  playerOne: GamePlayer,
-  playerTwo: GamePlayer | "computer" | null
-): Game => {
-  const setupPlayerTwo = (): GamePlayer | null => {
-    switch (playerTwo) {
-      case null:
-        return null;
-      case "computer":
-        return { id: "computer", score: 0 };
-      default:
-        return playerTwo;
-    }
-  };
-
-  const game: Game = {
-    players: [playerOne, setupPlayerTwo()],
-    currentLetterIndex: 0,
-    currentPlayerIndex: 0,
-    currentWord: "",
-  };
-
-  return game;
-};
-
 export const playerTurn = async (
   word: string,
-  currentGame: GameType
+  currentGame: GameType,
+  forfeit: boolean = false
 ): Promise<{ update: boolean; value: GameType; message: string }> => {
   const tempGame = { ...currentGame };
 
@@ -60,7 +35,10 @@ export const playerTurn = async (
 
   const returnedData: GameReturnValue = await result.json();
   // set winner
-  if (returnedData.exactMatch && currentGame.current_letter_index === 25) {
+  if (
+    (returnedData.exactMatch || forfeit) &&
+    currentGame.current_letter_index === 25
+  ) {
     tempGame.current_player_index === 0
       ? tempGame.player_two_score++
       : tempGame.player_one_score++;
@@ -77,13 +55,16 @@ export const playerTurn = async (
     return { update: true, value: tempGame, message: returnMessage };
   }
   // set new word, increment letter index and increment score
-  if (returnedData.exactMatch && currentGame.current_letter_index < 25) {
+  if (
+    (returnedData.exactMatch || forfeit) &&
+    currentGame.current_letter_index < 25
+  ) {
     tempGame.current_letter_index = tempGame.current_letter_index + 1;
     tempGame.current_player_index === 0
       ? tempGame.player_two_score++
       : tempGame.player_one_score++;
     tempGame.current_word = letters[tempGame.current_letter_index];
-    returnMessage = `${word} is a match, you lose this round!`;
+    returnMessage = forfeit ? "" : `${word} is a match, you lose this round!`;
     return { update: true, value: tempGame, message: returnMessage };
   }
   // update word, set next player

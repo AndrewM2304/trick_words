@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect } from "react";
 import styles from "./KeyboardTile.module.css";
 import { useDraggable } from "@dnd-kit/core";
 
@@ -6,7 +6,7 @@ export type KeyboardTileProps = {
   letter: string;
 };
 const KeyboardTile = ({ letter }: KeyboardTileProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
+  const { attributes, listeners, setNodeRef, transform, isDragging, active } =
     useDraggable({
       id: letter,
     });
@@ -22,7 +22,12 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
       data-testid="KeyboardTile-wrapper"
       className={styles.keyboardTileWrapper}
     >
-      <div className={styles.keyboardTileBottom}>{letter}</div>
+      <div
+        className={styles.keyboardTileBottom}
+        data-not-dragging={active && active.id !== letter}
+      >
+        {letter}
+      </div>
       <div
         data-testid="top-tile"
         className={styles.keyboardTileTop}
@@ -31,6 +36,7 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
         {...listeners}
         {...attributes}
         data-dragging={isDragging}
+        data-not-dragging={active && active.id !== letter}
       >
         {letter}
       </div>

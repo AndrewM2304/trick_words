@@ -1,0 +1,21 @@
+.droppable {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.droppable:has([data-is-highlight="true"]) {
+  background: yellow;
+  transition: 0.1s ease-in-out;
+}
+.droppable:has([data-active-dragging="false"]) {
+  opacity: 0;
+  transition: 0.1s ease-in-out;
+}
+
+.droppable:has([data-active-dragging="true"]) {
+  opacity: 1;
+  transition: 0.1s ease-in-out;
+}

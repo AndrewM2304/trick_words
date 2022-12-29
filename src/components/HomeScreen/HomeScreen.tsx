@@ -3,7 +3,7 @@ import { useGamesStore, useUserProfileStore } from "@components/store";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./HomeScreen.module.css";
 import { Database } from "@utilities/supabase";
 
@@ -11,6 +11,7 @@ type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
 const HomeScreen = ({}: HomeScreenProps) => {
+  const [localGames, setLocalGames] = useState<Games[]>([]);
   const user = useUser();
   const { games } = useGamesStore();
   const { userProfile } = useUserProfileStore();
@@ -19,7 +20,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
   const supabase = useSupabaseClient<Games>();
   const router = useRouter();
 
-  const createGame = async () => {
+  const createGame = async (gameType: "computer" | "online") => {
     if (!user) throw new Error("No user");
     const newGame: Partial<Games> = {
       current_word: "a",
@@ -32,29 +33,62 @@ const HomeScreen = ({}: HomeScreenProps) => {
       computer: true,
       current_player_index: 0,
     };
+    if (gameType === "computer") {
+      const savedItems = window.localStorage.getItem("local-word-games");
 
-    try {
-      const { data, error } = await supabase
-        .from("games")
-        .insert(newGame)
-        .select();
-      if (data) {
-        router.push(`/game/${data[0].id}`);
-        console.log(data);
+      const arrayOfGames: Games[] = [];
+      if (savedItems) {
+        arrayOfGames.push(...JSON.parse(savedItems));
       }
-      if (error) throw new Error(error.message);
-    } catch (error) {
-      console.log("Error loading user data!");
-      console.log(error);
-    } finally {
-      setLoading(false);
+      newGame.id = arrayOfGames.length + 1;
+      console.log(newGame.id);
+      window.localStorage.setItem(
+        "local-word-games",
+        JSON.stringify([...arrayOfGames, newGame])
+      );
+    }
+
+    if (gameType === "online") {
+      try {
+        const { data, error } = await supabase
+          .from("games")
+          .insert(newGame)
+          .select();
+        if (data) {
+          router.push(`/game/${data[0].id}`);
+          console.log(data);
+        }
+        if (error) throw new Error(error.message);
+      } catch (error) {
+        console.log("Error loading user data!");
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+  useEffect(() => {
+    const gamesFromLocalStorage =
+      window.localStorage.getItem("local-word-games");
+
+    if (gamesFromLocalStorage) {
+      console.log(gamesFromLocalStorage);
+      const game: Games[] = JSON.parse(gamesFromLocalStorage);
+      setLocalGames(game);
+    }
+  }, []);
 
   return (
     <div data-testid="HomeScreen-wrapper">
       {loading && "loading"}
       <ul>
+        {localGames &&
+          localGames.map((localGame: Games) => {
+            return (
+              <pre key={localGame.id}>{JSON.stringify(localGame, null, 2)}</pre>
+            );
+          })}
         {games &&
           user &&
           !loading &&
@@ -82,7 +116,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
             );
           })}
       </ul>
-      <button onClick={() => createGame()}>
+      <button onClick={() => createGame("computer")}>
         {" "}
         {loading ? "loading" : "New Game"}
       </button>

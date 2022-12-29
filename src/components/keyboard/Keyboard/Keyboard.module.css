@@ -1,4 +1,6 @@
 .row {
   display: flex;
-  gap: 5px;
+  gap: 8px;
+  margin: 8px 0px;
+  padding: 0px;
 }
