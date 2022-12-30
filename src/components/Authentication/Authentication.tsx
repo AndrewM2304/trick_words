@@ -15,11 +15,7 @@ const Authentication = () => {
   const { userAvatarUrl } = useUserProfileStore();
 
   return (
-    <div
-      className="container"
-      style={{ padding: "50px 0 100px 0" }}
-      data-testid="Authentication-wrapper"
-    >
+    <div className={styles.container} data-testid="Authentication-wrapper">
       {!session && (
         <Auth
           supabaseClient={supabase}

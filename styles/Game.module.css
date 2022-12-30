@@ -19,11 +19,13 @@
   grid-column: 1/2;
 }
 
-.currentWord {
+.gameInfo {
   grid-row: 3/4;
   grid-column: 1/2;
   display: grid;
-  place-items: center;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .buttonRow {

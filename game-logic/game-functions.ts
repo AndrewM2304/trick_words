@@ -46,11 +46,10 @@ export const playerTurn = async (
       tempGame.player_one_score > tempGame.player_two_score
         ? tempGame.player_one_id
         : tempGame.player_two_id;
-    returnMessage = `winner is ${
-      tempGame.winner === tempGame.player_one_id
+    returnMessage = `winner is ${(tempGame.winner =
+      tempGame.player_one_score > tempGame.player_two_score
         ? tempGame.player_one_name
-        : tempGame.player_two_name
-    }`;
+        : tempGame.player_two_name)}`;
 
     return { update: true, value: tempGame, message: returnMessage };
   }
@@ -64,13 +63,21 @@ export const playerTurn = async (
       ? tempGame.player_two_score++
       : tempGame.player_one_score++;
     tempGame.current_word = letters[tempGame.current_letter_index];
-    returnMessage = forfeit ? "" : `${word} is a match, you lose this round!`;
+    if (forfeit) {
+      tempGame.current_player_index =
+        tempGame.current_player_index === 0 ? 1 : 0;
+    }
+
+    returnMessage = forfeit
+      ? "You forfeit this round, next player"
+      : `${word} is a match, you lose this round!`;
     return { update: true, value: tempGame, message: returnMessage };
   }
   // update word, set next player
   if (!returnedData.exactMatch && returnedData.inList) {
     tempGame.current_word = word;
     tempGame.current_player_index = tempGame.current_player_index === 0 ? 1 : 0;
+    returnMessage = `next player`;
     return { update: true, value: tempGame, message: returnMessage };
   }
 

@@ -1,6 +1,6 @@
 import { GameCardProps } from "@components/game/GameCard/GameCard";
 import { Session, User } from "@supabase/supabase-js";
-import { GamePlayer } from "../types/game";
+import { GamePlayer, GameType } from "../types/game";
 
 export const mockPlayerOne: GamePlayer = { id: "mock-player-one", score: 0 };
 export const mockPlayerTwo: GamePlayer = { id: "mock-player-two", score: 0 };
@@ -95,4 +95,9 @@ export const mockGameCard: GameCardProps = {
   playerTwoScore: 1,
   currentPlayerIndex: 0,
   currentWord: "a",
+  gameType: GameType.COMPUTER,
 };
+
+export const wordPass = "ath";
+export const wordfail = "artsz";
+export const exactWord = "arm";

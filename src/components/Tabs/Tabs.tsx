@@ -11,12 +11,11 @@ const Tabs = ({ HomeScreen, GameScreen, SettingsScreen }: TabsProps) => {
   const [activeTab, setActiveTab] = useState<activeTabType>("home");
 
   return (
-    <div data-testid="Tabs-wrapper">
-      <div className={styles.component}>
-        {activeTab === "home" && HomeScreen}
-        {activeTab === "game" && GameScreen}
-        {activeTab === "settings" && SettingsScreen}
-      </div>
+    <div className={styles.tabsWrapper} data-testid="Tabs-wrapper">
+      {activeTab === "home" && HomeScreen}
+      {activeTab === "game" && GameScreen}
+      {activeTab === "settings" && SettingsScreen}
+
       <nav className={styles.tabs}>
         <button
           data-active-tab={activeTab === "home"}

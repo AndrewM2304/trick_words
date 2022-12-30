@@ -4,7 +4,7 @@ import styles from './${name}.module.css'
 
 export type ${name}Props = {}
 const ${name} = ({}: ${name}Props) => {
-  return <div data-testid="${name}-wrapper">Hello 👋, I am a ${name} component.</div>;
+  return <div data-testid="${name}-wrapper" classname={styles.${name}}>Hello 👋, I am a ${name} component.</div>;
 };
 export default ${name};
 `;

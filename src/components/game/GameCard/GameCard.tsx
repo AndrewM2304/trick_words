@@ -82,7 +82,6 @@ const GameCard = ({
                 alt={"player Indicator"}
               />
             </div>
-            {gameType}
             {playerOneAvatarUrl !== "" && (
               <Image
                 className={styles.image}
@@ -133,6 +132,7 @@ const GameCard = ({
           </div>
           <div className={styles.currentWord} data-testid="current-word">
             Current Word: {currentWord}
+            <div className={styles.gameType}>{gameType}</div>
           </div>
         </>
       )}

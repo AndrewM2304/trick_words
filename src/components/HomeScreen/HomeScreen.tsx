@@ -79,7 +79,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
   };
 
   return (
-    <div data-testid="HomeScreen-wrapper">
+    <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
       <button onClick={() => openDialog()}>
         {loading ? "loading" : "New Game"}
       </button>

@@ -35,7 +35,7 @@ const GameScreen = ({}: GameScreenProps) => {
             return (
               <Link
                 href={`/game/${localGame.id}?gametype=local`}
-                key={localGame.id}
+                key={`${localGame.id}-local`}
                 className={styles.gameLink}
               >
                 <GameCard
