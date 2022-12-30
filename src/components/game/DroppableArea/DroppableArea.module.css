@@ -6,6 +6,10 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
+.droppable:has([data-is-highlight="false"]) {
+  transition: 0.1s ease-in-out;
+}
+
 .droppable:has([data-is-highlight="true"]) {
   background: yellow;
   transition: 0.1s ease-in-out;

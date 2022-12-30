@@ -6,6 +6,8 @@ import { AccountSettings } from "@components/account/AccountSettings";
 import { Keyboard } from "@components/keyboard/Keyboard";
 import { useUserProfileStore } from "@components/store";
 import { HomeScreen } from "@components/HomeScreen";
+import { Tabs } from "@components/Tabs";
+import { GameScreen } from "@components/GameScreen";
 
 const Authentication = () => {
   const session = useSession();
@@ -26,7 +28,13 @@ const Authentication = () => {
           providers={["google", "facebook", "twitter"]}
         />
       )}
-      {session && userAvatarUrl !== "" && <HomeScreen />}
+      {session && userAvatarUrl !== "" && (
+        <Tabs
+          HomeScreen={<HomeScreen />}
+          SettingsScreen={<HomeScreen />}
+          GameScreen={<GameScreen />}
+        />
+      )}
       {session && userAvatarUrl === "" && <AccountSettings session={session} />}
     </div>
   );

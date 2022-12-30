@@ -1,2 +1,4 @@
-export const host = "localhost:3000";
+export const default_avatar = "default_user_avatar.svg";
 export const game_functions_url = `/api/game-functions/`;
+
+export const local_game = "local-word-games";

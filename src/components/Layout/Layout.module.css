@@ -2,4 +2,16 @@
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 60px auto;
+  height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+}
+.layout nav {
+  background: purple;
+}
+.layout nav img {
+  border-radius: 20px;
 }

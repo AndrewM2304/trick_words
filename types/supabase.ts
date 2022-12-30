@@ -15,7 +15,7 @@ export interface Database {
           created_at: string
           current_word: string
           current_letter_index: number
-          computer: boolean
+          game_type: string
           secret_key: string
           current_player_index: number
           player_one_score: number
@@ -33,7 +33,7 @@ export interface Database {
           created_at?: string
           current_word?: string
           current_letter_index?: number
-          computer?: boolean
+          game_type?: string
           secret_key?: string
           current_player_index?: number
           player_one_score?: number
@@ -51,7 +51,7 @@ export interface Database {
           created_at?: string
           current_word?: string
           current_letter_index?: number
-          computer?: boolean
+          game_type?: string
           secret_key?: string
           current_player_index?: number
           player_one_score?: number

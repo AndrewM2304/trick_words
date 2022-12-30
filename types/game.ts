@@ -8,3 +8,9 @@ export type Game = {
   currentPlayerIndex: 0 | 1;
   currentWord: string;
 };
+
+export enum GameType {
+  COMPUTER = "computer",
+  ONLINE_MULTIPLAYER = "online_multiplayer",
+  LOCAL_MULTIPLAYER = "local_multiplayer",
+}

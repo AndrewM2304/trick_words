@@ -3,6 +3,8 @@ import styles from "./GameCard.module.css";
 import Image from "next/image";
 import { Database } from "@utilities/supabase";
 import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { default_avatar } from "@utilities/constants";
+import { GameType } from "@utilities/game";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export type GameCardProps = {
@@ -17,6 +19,7 @@ export type GameCardProps = {
   playerTwoScore: number;
   currentPlayerIndex: number;
   currentWord: string;
+  gameType: GameType;
 };
 const GameCard = ({
   user,
@@ -30,6 +33,7 @@ const GameCard = ({
   playerTwoName,
   currentPlayerIndex,
   currentWord,
+  gameType,
 }: GameCardProps) => {
   const supabase = useSupabaseClient<Database>();
   const [playerOneAvatarUrl, setPlayerOneAvatarUrl] = useState("");
@@ -57,8 +61,8 @@ const GameCard = ({
   }
 
   useEffect(() => {
-    getImage(playerOneAvatar ?? "default_user_avatar.svg", "one");
-    getImage(playerTwoAvatar ?? "default_user_avatar.svg", "two");
+    getImage(playerOneAvatar ?? default_avatar, "one");
+    getImage(playerTwoAvatar ?? default_avatar, "two");
   }, []);
 
   return (
@@ -78,6 +82,7 @@ const GameCard = ({
                 alt={"player Indicator"}
               />
             </div>
+            {gameType}
             {playerOneAvatarUrl !== "" && (
               <Image
                 className={styles.image}

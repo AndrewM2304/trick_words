@@ -1,0 +1,27 @@
+.dialogBox {
+  width: min(80%, 500px);
+}
+.dialogBox::backdrop {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background: rgba(0, 0, 0, 0.7);
+}
+.radioWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radioWrapper label {
+  border: 2px solid lightblue;
+}
+.radioWrapper input {
+  visibility: hidden;
+}
+
+.radioWrapper label:has(input:checked) {
+  border: 2px solid blue;
+}

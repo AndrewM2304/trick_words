@@ -4,6 +4,7 @@ import { useGamesStore, useUserProfileStore } from "@components/store";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 import Image from "next/image";
+import { default_avatar } from "@utilities/constants";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -49,8 +50,8 @@ const Layout = ({ children }: LayoutProps) => {
         console.log(profile);
         if (profile) {
           setUserProfile(profile);
-          downloadImage(profile.avatar_url ?? "default_user_avatar.svg").then(
-            (avatar) => setUserAvatarUrl(avatar ?? "")
+          downloadImage(profile.avatar_url ?? default_avatar).then((avatar) =>
+            setUserAvatarUrl(avatar ?? "")
           );
         }
       });
@@ -151,19 +152,21 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      <nav> this is the nav</nav>
-      {userProfile && (
-        <>
-          <span>{userProfile.full_name}</span>{" "}
-          <Image
-            alt="user profile"
-            src={userAvatarUrl}
-            height={32}
-            width={32}
-          />
-        </>
-      )}
-      <main>{children}</main>
+      <nav>
+        {userProfile && userAvatarUrl && (
+          <>
+            <span>{userProfile.full_name}</span>
+
+            <Image
+              alt="user profile"
+              src={userAvatarUrl}
+              height={32}
+              width={32}
+            />
+          </>
+        )}
+      </nav>
+      <main className={styles.main}>{children}</main>
     </div>
   );
 };

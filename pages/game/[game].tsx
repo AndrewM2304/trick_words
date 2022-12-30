@@ -21,6 +21,8 @@ import Link from "next/link";
 import { Layout } from "@components/Layout";
 import { playerTurn } from "@game/game-functions";
 import Image from "next/image";
+import { default_avatar, local_game } from "@utilities/constants";
+import { GameType } from "@utilities/game";
 
 export default function Game() {
   const [isDragging, setIsDragging] = useState(false);
@@ -69,7 +71,6 @@ export default function Game() {
       const playerWord = `${game?.current_word}${e.active.id}`;
       updateGame(playerWord, game);
     }
-    // window.alert(e.over.id + " " + e.active.id);
     setIsDragging(false);
   }
 
@@ -80,17 +81,41 @@ export default function Game() {
   ) => {
     playerTurn(playerWord, game, forfeit).then(async (val) => {
       if (val.update) {
-        const { data, error } = await supabase
-          .from("games")
-          .update(val.value)
-          .eq("id", game.id)
-          .select();
+        console.log(game.game_type);
+        if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
+          const { data, error } = await supabase
+            .from("games")
+            .update(val.value)
+            .eq("id", game.id)
+            .select();
 
-        if (data) {
-          setGame(data[0]);
+          if (data) {
+            setGame(data[0]);
+          }
+          if (error) {
+            console.log(error);
+          }
         }
-        if (error) {
-          console.log(error);
+        if (
+          game.game_type === GameType.COMPUTER ||
+          game.game_type === GameType.LOCAL_MULTIPLAYER
+        ) {
+          setGame(val.value);
+          const gamesFromLocalStorage = window.localStorage.getItem(local_game);
+          if (gamesFromLocalStorage) {
+            const games: Game[] = JSON.parse(gamesFromLocalStorage);
+            const updatedGames = games.map((g: Game) => {
+              if (g.id === val.value.id) {
+                return val.value;
+              }
+              return g;
+            });
+            window.localStorage.setItem(
+              local_game,
+              JSON.stringify(updatedGames)
+            );
+            setLoading(false);
+          }
         }
       }
       console.log(val.message);
@@ -101,10 +126,11 @@ export default function Game() {
     updateGame(game?.current_word!, game!, true);
   };
 
-  const getImage = async (url: string, player: "one" | "two") => {
-    const value = await downloadImage(url);
-    if (player === "one") setPlayerOneAvatarUrl(value || "");
-    if (player === "two") setPlayerTwoAvatarUrl(value || "");
+  const getImage = async (playerOneUrl: string, playerTwoUrl: string) => {
+    const p1 = await downloadImage(playerOneUrl);
+    const p2 = await downloadImage(playerTwoUrl);
+    setPlayerOneAvatarUrl(p1 || "");
+    setPlayerTwoAvatarUrl(p2 || "");
   };
 
   async function downloadImage(path: string) {
@@ -123,38 +149,50 @@ export default function Game() {
   }
 
   useEffect(() => {
-    getImage(game?.player_one_avatar ?? "default_user_avatar.svg", "one");
-    getImage(game?.player_two_avatar ?? "default_user_avatar.svg", "two");
+    getImage(
+      game?.player_one_avatar ?? default_avatar,
+      game?.player_two_avatar ?? default_avatar
+    );
   }, [game]);
 
   useEffect(() => {
     const getGame = async () => {
       setLoading(true);
 
-      const { game } = router.query;
+      const { game, gametype } = router.query;
 
       if (!user) return;
-      let { data, error, status } = await supabase
-        .from("games")
-        .select()
-        .eq("id", game)
-        .single();
-      setStatus(status);
-      if (data) {
-        setGame(data);
-        console.log(status);
+      if (gametype === "local") {
+        const gamesFromLocalStorage = window.localStorage.getItem(local_game);
+        if (gamesFromLocalStorage) {
+          const games: Game[] = JSON.parse(gamesFromLocalStorage);
+          const selectedGame = games.filter((g) => g.id === Number(game))[0];
+          setGame(selectedGame);
+          setLoading(false);
+        }
+      } else {
+        let { data, error, status } = await supabase
+          .from("games")
+          .select()
+          .eq("id", game)
+          .single();
+        setStatus(status);
+        if (data) {
+          setGame(data);
+          console.log(status);
+        }
+        if (error) {
+          setError(error);
+        }
+        setLoading(false);
       }
-      if (error) {
-        setError(error);
-      }
-      setLoading(false);
     };
     getGame();
   }, [router.query]);
 
   return (
     <Layout>
-      <div data-testid="Game-wrapper">
+      <div className={styles.gameWrapper} data-testid="Game-wrapper">
         {loading && (
           <div className={styles.loading} data-testid="loading">
             {" "}
@@ -181,39 +219,38 @@ export default function Game() {
             <nav className={styles.nav}>
               <Link href={"/"}> return home</Link>
             </nav>
-            <ScoreSection
-              playerAvatar={playerOneAvatarUrl}
-              playerName={game.player_one_name}
-              playerScore={game.player_one_score}
-            />
-            <ScoreSection
-              playerAvatar={playerTwoAvatarUrl}
-              playerName={game.player_two_name}
-              playerScore={game.player_two_score}
-            />
-            <button onClick={() => forfeitGame()}>forfeit</button>
-
-            <DndContext
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              modifiers={[restrictToWindowEdges]}
-              sensors={sensors}
-            >
-              <div className={styles.dropArea}>
-                <DroppableArea
-                  area={"left"}
-                  word={`${selectedLetter}${game.current_word}`}
-                />
-
-                <DroppableArea
-                  area={"right"}
-                  word={`${game.current_word}${selectedLetter}`}
-                />
+            <div className={styles.gameBody}>
+              <ScoreSection
+                playerOneAvatar={playerOneAvatarUrl}
+                playerTwoAvatar={playerTwoAvatarUrl}
+                game={game}
+              />
+              <div className={styles.buttonRow}>
+                <button onClick={() => forfeitGame()}>forfeit</button>
               </div>
 
-              <Keyboard />
-            </DndContext>
-            <h1>{game.current_word}</h1>
+              <DndContext
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToWindowEdges]}
+                sensors={sensors}
+              >
+                <div className={styles.dropArea}>
+                  <DroppableArea
+                    area={"left"}
+                    word={`${selectedLetter}${game.current_word}`}
+                  />
+
+                  <DroppableArea
+                    area={"right"}
+                    word={`${game.current_word}${selectedLetter}`}
+                  />
+                </div>
+
+                <Keyboard />
+              </DndContext>
+              <div className={styles.currentWord}>{game.current_word}</div>
+            </div>
           </>
         )}
       </div>
@@ -222,29 +259,40 @@ export default function Game() {
 }
 
 type Score = {
-  playerAvatar: string;
-  playerName: string;
-  playerScore: number;
+  playerOneAvatar: string;
+  playerTwoAvatar: string;
+  game: Game;
 };
-const ScoreSection = ({ playerAvatar, playerName, playerScore }: Score) => {
+const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
   return (
     <div
       className={styles.playerScoreWrapper}
       data-testid="player-score-wrapper"
     >
-      <div className={styles.playerOne}>
-        {playerAvatar !== "" && (
-          <Image
-            src={playerAvatar}
-            height={24}
-            width={24}
-            alt={`${playerName} avatar`}
-          />
-        )}
+      {playerOneAvatar !== "" && (
+        <Image
+          className={styles.playerOneImage}
+          src={playerOneAvatar}
+          height={28}
+          width={28}
+          alt={`${game.player_one_name} avatar`}
+        />
+      )}
 
-        <div className={styles.playerName}>{playerName}</div>
-        <div className={styles.playerScore}>{playerScore}</div>
-      </div>
+      <div className={styles.playerOneName}>{game.player_one_name}</div>
+      <div className={styles.playerOneScore}>{game.player_one_score}</div>
+      {playerTwoAvatar !== "" && (
+        <Image
+          className={styles.playerTwoImage}
+          src={playerTwoAvatar}
+          height={28}
+          width={28}
+          alt={`${game.player_two_name} avatar`}
+        />
+      )}
+
+      <div className={styles.playerTwoName}>{game.player_two_name}</div>
+      <div className={styles.playerTwoScore}>{game.player_two_score}</div>
     </div>
   );
 };
