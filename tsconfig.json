@@ -20,7 +20,8 @@
       "@utilities/*": ["types/*"],
       "@game/*": ["game-logic/*"],
       "@testing/*": ["testing-utilities/*"],
-      "@public/*": ["public/*"]
+      "@public/*": ["public/*"],
+      "@hooks/*": ["src/hooks/*"]
     }
   },
   "include": [

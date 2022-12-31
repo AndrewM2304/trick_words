@@ -33,6 +33,16 @@ export const handlers = [
     );
   }),
 
-  // Handles a GET /user request
-  // rest.get('/user', null),
+  // supabase mocks
+  // rest.get(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/avatars/default_user_avatar.svg`, (_req, res, ctx) => {
+
+  //   const mockBlob:Blob = {size: 588, type: 'image/svg+xml', arrayBuffer:Buffer.from('abc')}
+  //   return res(
+  //     ctx.status(200),
+  //     ctx.json({
+  //       inList: true,
+  //       exactMatch: true,
+  //     })
+  //   );
+  // }),
 ];

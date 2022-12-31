@@ -7,6 +7,8 @@ import { Database } from "@utilities/supabase";
 import { default_avatar, local_game } from "@utilities/constants";
 import { useEffect } from "react";
 import { GameType } from "@utilities/game";
+import { useDownloadImages } from "src/hooks/useDownloadImages";
+import Image from "next/image";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};

@@ -1,6 +1,9 @@
 import { GameCardProps } from "@components/game/GameCard/GameCard";
 import { Session, User } from "@supabase/supabase-js";
 import { GamePlayer, GameType } from "../types/game";
+import { Database } from "@utilities/supabase";
+
+type Game = Database["public"]["Tables"]["games"]["Row"];
 
 export const mockPlayerOne: GamePlayer = { id: "mock-player-one", score: 0 };
 export const mockPlayerTwo: GamePlayer = { id: "mock-player-two", score: 0 };
@@ -84,7 +87,6 @@ const mockGameUser: User = {
   created_at: mockUser.created_at,
 };
 export const mockGameCard: GameCardProps = {
-  user: mockGameUser,
   playerOneId: "1",
   playerOneName: "mock player one",
   playerOneAvatar: "a",
@@ -96,6 +98,25 @@ export const mockGameCard: GameCardProps = {
   currentPlayerIndex: 0,
   currentWord: "a",
   gameType: GameType.COMPUTER,
+};
+
+export const mockGame: Game = {
+  id: 1,
+  created_at: "",
+  current_word: "a",
+  current_letter_index: 0,
+  game_type: GameType.COMPUTER,
+  secret_key: "",
+  current_player_index: 0,
+  player_one_score: 0,
+  player_two_score: 0,
+  player_one_id: null,
+  player_two_id: null,
+  player_one_name: "p1",
+  player_two_name: "p2",
+  player_one_avatar: "",
+  player_two_avatar: "",
+  winner: null,
 };
 
 export const wordPass = "ath";

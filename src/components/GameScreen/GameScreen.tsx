@@ -39,7 +39,6 @@ const GameScreen = ({}: GameScreenProps) => {
                 className={styles.gameLink}
               >
                 <GameCard
-                  user={user}
                   playerOneName={localGame.player_one_name}
                   playerOneAvatar={localGame.player_one_avatar}
                   playerOneId={localGame.player_one_id ?? ""}
@@ -66,7 +65,6 @@ const GameScreen = ({}: GameScreenProps) => {
                 className={styles.gameLink}
               >
                 <GameCard
-                  user={user}
                   playerOneName={game.player_one_name}
                   playerOneAvatar={game.player_one_avatar}
                   playerOneId={game.player_one_id ?? ""}

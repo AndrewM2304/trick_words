@@ -47,7 +47,6 @@ const Layout = ({ children }: LayoutProps) => {
     if (!user) return;
     if (!userProfile) {
       getProfile().then((profile) => {
-        console.log(profile);
         if (profile) {
           setUserProfile(profile);
           downloadImage(profile.avatar_url ?? default_avatar).then((avatar) =>

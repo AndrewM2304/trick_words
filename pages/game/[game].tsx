@@ -12,32 +12,27 @@ import {
 import { DroppableArea } from "@components/game/DroppableArea";
 import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 type Game = Database["public"]["Tables"]["games"]["Row"];
-import { useRouter } from "next/router";
-import { PostgrestError } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Layout } from "@components/Layout";
 import { playerTurn } from "@game/game-functions";
 import Image from "next/image";
-import { default_avatar, local_game } from "@utilities/constants";
+import { local_game } from "@utilities/constants";
 import { GameType } from "@utilities/game";
+import { useGetGameData } from "@hooks/useGetGameData";
+import { useDownloadImages } from "@hooks/useDownloadImages";
 
 export default function Game() {
-  const [isDragging, setIsDragging] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("");
   const [dialogMessage, setDialogMessage] = useState("Checking word...");
   const [game, setGame] = useState<Game | null>(null);
-  const [status, setStatus] = useState<number>();
-  const [error, setError] = useState<PostgrestError | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const supabase = useSupabaseClient<Database>();
-  const user = useUser();
-  const router = useRouter();
-  const [playerOneAvatarUrl, setPlayerOneAvatarUrl] = useState("");
-  const [playerTwoAvatarUrl, setPlayerTwoAvatarUrl] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
+    useDownloadImages();
+  const { gameData, status, error } = useGetGameData();
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -57,7 +52,6 @@ export default function Game() {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
   function handleDragStart(e: DragEndEvent) {
     setSelectedLetter(e.active.id.toString());
-    setIsDragging(true);
   }
 
   function handleDragEnd(e: DragEndEvent) {
@@ -72,7 +66,6 @@ export default function Game() {
       const playerWord = `${game?.current_word}${e.active.id}`;
       updateGame(playerWord, game);
     }
-    setIsDragging(false);
   }
 
   const updateGame = (
@@ -88,10 +81,7 @@ export default function Game() {
       if (val.update) {
         successfulResult(val.value);
       }
-      if (!val.update) {
-        closeModal();
-      }
-      if (forfeit) {
+      if (!val.update || forfeit) {
         closeModal();
       }
     });
@@ -145,74 +135,19 @@ export default function Game() {
     updateGame(game?.current_word!, game!, true);
   };
 
-  const getImage = async (playerOneUrl: string, playerTwoUrl: string) => {
-    const p1 = await downloadImage(playerOneUrl);
-    const p2 = await downloadImage(playerTwoUrl);
-    setPlayerOneAvatarUrl(p1 || "");
-    setPlayerTwoAvatarUrl(p2 || "");
-  };
-
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabase.storage
-        .from("avatars")
-        .download(path);
-      if (error) {
-        throw error;
-      }
-      const url = URL.createObjectURL(data);
-      return url;
-    } catch (error) {
-      console.log("Error downloading image: ", error);
-    }
-  }
-
   useEffect(() => {
-    getImage(
-      game?.player_one_avatar ?? default_avatar,
-      game?.player_two_avatar ?? default_avatar
-    );
-  }, [game]);
-
-  useEffect(() => {
-    const getGame = async () => {
-      setLoading(true);
-
-      const { game, gametype } = router.query;
-
-      if (!user) return;
-      if (gametype === "local") {
-        const gamesFromLocalStorage = window.localStorage.getItem(local_game);
-        if (gamesFromLocalStorage) {
-          const games: Game[] = JSON.parse(gamesFromLocalStorage);
-          const selectedGame = games.filter((g) => g.id === Number(game))[0];
-          setGame(selectedGame);
-          setLoading(false);
-        }
-      } else {
-        let { data, error, status } = await supabase
-          .from("games")
-          .select()
-          .eq("id", game)
-          .single();
-        setStatus(status);
-        if (data) {
-          setGame(data);
-          console.log(status);
-        }
-        if (error) {
-          setError(error);
-        }
-        setLoading(false);
-      }
-    };
-    getGame();
-  }, [router.query]);
+    if (!gameData) return;
+    setGame(gameData);
+    downloadImagesFromUrls([
+      gameData.player_one_avatar,
+      gameData.player_two_avatar,
+    ]);
+  }, [gameData]);
 
   return (
     <Layout>
       <div className={styles.gameWrapper} data-testid="Game-wrapper">
-        {loading && (
+        {!gameData && (
           <div className={styles.loading} data-testid="loading">
             {" "}
             loading game
@@ -233,7 +168,7 @@ export default function Game() {
             <Link href={"/"}> return home</Link>
           </div>
         )}
-        {!loading && game && (
+        {game && (
           <>
             <nav className={styles.nav}>
               <Link href={"/"}> return home</Link>
@@ -242,8 +177,8 @@ export default function Game() {
               <>
                 <div className={styles.gameBody}>
                   <ScoreSection
-                    playerOneAvatar={playerOneAvatarUrl}
-                    playerTwoAvatar={playerTwoAvatarUrl}
+                    playerOneAvatar={playerOneImage}
+                    playerTwoAvatar={playerTwoImage}
                     game={game}
                   />
                   <div className={styles.buttonRow}>
@@ -304,27 +239,27 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       className={styles.playerScoreWrapper}
       data-testid="player-score-wrapper"
     >
-      {playerOneAvatar !== "" && (
-        <Image
-          className={styles.playerOneImage}
-          src={playerOneAvatar}
-          height={28}
-          width={28}
-          alt={`${game.player_one_name} avatar`}
-        />
-      )}
+      <Image
+        className={styles.playerOneImage}
+        src={playerOneAvatar}
+        height={28}
+        width={28}
+        alt={`${game.player_one_name} avatar`}
+      />
 
-      <div className={styles.playerOneName}>{game.player_one_name}</div>
-      <div className={styles.playerOneScore}>{game.player_one_score}</div>
-      {playerTwoAvatar !== "" && (
-        <Image
-          className={styles.playerTwoImage}
-          src={playerTwoAvatar}
-          height={28}
-          width={28}
-          alt={`${game.player_two_name} avatar`}
-        />
-      )}
+      <div className={styles.playerOneName} data-testid="player-one-name">
+        {game.player_one_name}
+      </div>
+      <div className={styles.playerOneScore} data-testid="player-one-score">
+        {game.player_one_score}
+      </div>
+      <Image
+        className={styles.playerTwoImage}
+        src={playerTwoAvatar}
+        height={28}
+        width={28}
+        alt={`${game.player_two_name} avatar`}
+      />
 
       <div className={styles.playerTwoName}>{game.player_two_name}</div>
       <div className={styles.playerTwoScore}>{game.player_two_score}</div>

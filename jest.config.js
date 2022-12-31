@@ -15,6 +15,7 @@ const customJestConfig = {
     "^@game/(.*)$": ["<rootDir>/game-logic/$1"],
     "^@testing/(.*)$": ["<rootDir>/testing-utilities/$1"],
     "^@public/(.*)$": ["<rootDir>/public/$1"],
+    "^@hooks/(.*)$": ["<rootDir>/src/hooks/$1"],
   },
 };
 

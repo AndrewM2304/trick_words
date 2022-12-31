@@ -23,7 +23,6 @@ export default function AvatarWidget({
   }, [url]);
 
   async function downloadImage(path: string) {
-    console.log("opoo " + path);
     try {
       const { data, error } = await supabase.storage
         .from("avatars")
@@ -32,7 +31,6 @@ export default function AvatarWidget({
         throw error;
       }
       const url = URL.createObjectURL(data);
-      console.log(url);
       setAvatarUrl(url);
     } catch (error) {
       console.log("Error downloading image: ", error);

@@ -2,6 +2,20 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { GameCard } from "./index";
 import { mockGameCard } from "@testing/mockData";
+import userAvatar from "../../../../public/user.svg";
+
+const mock = {
+  playerOneImage: userAvatar,
+  playerTwoImage: userAvatar,
+  downloadImagesFromUrls: jest.fn(),
+};
+
+jest.mock("@hooks/useDownloadImages", () => ({
+  useDownloadImages: () => {
+    return mock;
+  },
+}));
+
 describe("GameCard Component", () => {
   test("it should exist", () => {
     render(<GameCard {...mockGameCard} />);
