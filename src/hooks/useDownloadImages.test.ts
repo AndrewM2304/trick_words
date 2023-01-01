@@ -1,8 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { GameType } from "@utilities/game";
 import { useDownloadImages } from "./useDownloadImages";
 import userAvatar from "../../public/user.svg";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const mock = {
   storage: {
@@ -23,7 +21,7 @@ jest.mock("@supabase/auth-helpers-react", () => ({
 
 describe("usedownloadimages", () => {
   it("returns an image for each user", async () => {
-    const { result } = renderHook(() => useDownloadImages(GameType.COMPUTER));
+    const { result } = renderHook(() => useDownloadImages());
 
     act(() =>
       result.current.downloadImagesFromUrls([

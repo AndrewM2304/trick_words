@@ -45,6 +45,7 @@ const GameCard = ({
         <>
           <div className={styles.playerOne}>
             <div
+              data-testid={`${gameType}-game`}
               className={styles.indicator}
               data-current-player={currentPlayerIndex === 0}
             >

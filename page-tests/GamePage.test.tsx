@@ -4,51 +4,80 @@ import { local_game } from "@utilities/constants";
 import mockRouter from "next-router-mock";
 import Game from "../pages/game/[game]";
 import userAvatar from "../../public/user.svg";
-
-// mock localstorage
-// mock supabase
+import { mockSession, mockUser, mockUserRow } from "@testing/mockData";
+import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect, useState } from "react";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { Layout } from "@components/Layout";
+import { useUserProfileStore } from "@components/store";
 
 const setLocalStorage = (id: string, data: any) => {
   window.localStorage.setItem(id, JSON.stringify(data));
 };
+
 jest.mock("next/router", () => require("next-router-mock"));
-// jest.mock("@supabase/auth-helpers-react", () => ({
-//   useSupabaseClient: jest.fn(),
-//   useUser: jest.fn(),
-// }));
-const mockDownload = {
+
+jest.mock("@supabase/auth-helpers-react", () => ({
+  useSession: jest.fn(() => mockSession),
+  useUser: jest.fn(() => mockUser),
+  useSupabaseClient: jest.fn(() => mockSB),
+}));
+
+jest.mock("@hooks/useDownloadImages", () => ({
+  useDownloadImages: () => {
+    return mockImage;
+  },
+}));
+const mockImage = {
   playerOneImage: userAvatar,
   playerTwoImage: userAvatar,
   downloadImagesFromUrls: jest.fn(),
 };
 
-const mockGameReturn = {
-  gameData: mockGame,
-  status: 200,
-  error: null,
+const mockSB = {
+  from: jest.fn(() => ({
+    select: jest.fn(() => ({
+      eq: jest.fn(() => ({
+        single: jest.fn(() => ({ data: mockGame, status: 200, error: null })),
+      })),
+      or: jest.fn(() => ({
+        data: [mockGame],
+        status: 200,
+        error: null,
+      })),
+    })),
+  })),
+  channel: jest.fn(() => ({
+    on: jest.fn(() => ({
+      on: jest.fn(() => ({
+        subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
+      })),
+    })),
+  })),
 };
 
-jest.mock("@hooks/useDownloadImages", () => ({
-  useDownloadImages: () => {
-    return mockDownload;
-  },
-}));
+const MockWrapper = () => {
+  const { setUserAvatarUrl } = useUserProfileStore();
 
-jest.mock("@hooks/useGetGameData", () => ({
-  useGetGameData: () => {
-    return mockGameReturn;
-  },
-}));
+  useEffect(() => {
+    setUserAvatarUrl("hello");
+  }, []);
+  return (
+    <Layout>
+      <Game />
+    </Layout>
+  );
+};
 
 describe("game", () => {
   beforeEach(() => {
     window.localStorage.clear();
-    mockRouter.setCurrentUrl("game/1?gametype=local");
+    mockRouter.setCurrentUrl("game/1");
   });
 
   it("loads a game from local storage if the url has ?gametype=local", async () => {
     setLocalStorage(local_game, mockGame);
-    render(<Game />);
+    render(<MockWrapper />);
     await waitFor(() =>
       expect(screen.getByTestId("player-one-name")).toHaveTextContent("p1")
     );

@@ -1,35 +1,49 @@
+import { useGamesStore } from "@components/store";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { PostgrestError } from "@supabase/supabase-js";
 import { local_game } from "@utilities/constants";
 import { Database } from "@utilities/supabase";
 
-type Game = Database["public"]["Tables"]["games"]["Row"];
+type GameDB = Database["public"]["Tables"]["games"]["Row"];
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 
 export const useGetGameData = () => {
   const router = useRouter();
-  const { game, gametype } = router.query;
+  const { game, gametype, gameroom } = router.query;
 
-  const [gameData, setGameData] = useState<Game | null>(null);
+  const [gameData, setGameData] = useState<GameDB | null>(null);
   const [status, setStatus] = useState<number>();
   const [error, setError] = useState<PostgrestError | null>();
-  const supabase = useSupabaseClient<Database>();
+  const supabase = useSupabaseClient<GameDB>();
   const user = useUser();
+  const { games } = useGamesStore();
 
   useEffect(() => {
     if (gameData) return;
     getGame().then((d) => {
       if (d === undefined) return;
       setGameData(d ?? null);
+      addSecondPlayer(d).then((d) => {
+        if (d === undefined) return;
+        setGameData(d ?? null);
+      });
     });
   }, [router.query, gameData]);
 
-  const getGame = async (): Promise<Game | undefined> => {
+  useEffect(() => {
+    const currentGame = games.filter((g) => g.id === gameData?.id)[0];
+    if (currentGame) {
+      setGameData(currentGame);
+    }
+  }, [games]);
+
+  const getGame = async (): Promise<GameDB | undefined> => {
     if (!user) return;
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
+
     if (gametype === "local" && gamesFromLocalStorage) {
-      const games: Game[] = JSON.parse(gamesFromLocalStorage);
+      const games: GameDB[] = JSON.parse(gamesFromLocalStorage);
       const selectedGame = games.filter((g) => g.id === Number(game))[0];
       return selectedGame;
     }
@@ -41,12 +55,33 @@ export const useGetGameData = () => {
         .single();
       setStatus(status);
       if (data) {
-        console.log(data);
         return data;
       }
       if (error) {
         console.log(error);
         setError(error);
+      }
+    }
+  };
+
+  const addSecondPlayer = async (game: GameDB): Promise<GameDB | undefined> => {
+    if (!user) return;
+    if (
+      gametype === undefined &&
+      game.player_two_id === null &&
+      gameroom === game.secret_key &&
+      user.id !== game.player_one_id
+    ) {
+      const { data, error } = await supabase
+        .from("games")
+        .update({ player_two_id: user.id })
+        .eq("id", game.id)
+        .select();
+      if (data) {
+        return data[0];
+      }
+      if (error) {
+        console.log(error);
       }
     }
   };

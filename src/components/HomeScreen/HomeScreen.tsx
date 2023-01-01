@@ -82,8 +82,11 @@ const HomeScreen = ({}: HomeScreenProps) => {
 
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
-      <button onClick={() => openDialog()}>
+      <button onClick={() => openDialog()} className={"primary-button"}>
         {loading ? "loading" : "New Game"}
+      </button>
+      <button onClick={() => openDialog()} className={"secondary-button"}>
+        How to Play
       </button>
       <dialog
         ref={dialogRef}

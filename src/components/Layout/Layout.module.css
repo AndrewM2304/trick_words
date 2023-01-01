@@ -10,9 +10,14 @@
   flex-direction: column;
 }
 
-.layout nav {
-  background: purple;
+.backLink {
+  color: black;
+  text-decoration: none;
+  line-height: 18px;
+  display: flex;
+  gap: 5px;
 }
-.layout nav img {
-  border-radius: 20px;
+
+.backLink svg {
+  height: 18px;
 }

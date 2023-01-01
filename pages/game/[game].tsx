@@ -12,7 +12,7 @@ import {
 import { DroppableArea } from "@components/game/DroppableArea";
 import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 type Game = Database["public"]["Tables"]["games"]["Row"];
 import Link from "next/link";
@@ -33,6 +33,7 @@ export default function Game() {
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const { gameData, status, error } = useGetGameData();
+  const user = useUser();
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -136,8 +137,10 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (!gameData) return;
+    console.log(gameData);
     setGame(gameData);
+    if (!gameData) return;
+
     downloadImagesFromUrls([
       gameData.player_one_avatar,
       gameData.player_two_avatar,
@@ -171,7 +174,7 @@ export default function Game() {
         {game && (
           <>
             <nav className={styles.nav}>
-              <Link href={"/"}> return home</Link>
+              <Link href={"/"}> </Link>
             </nav>
             {!game.winner && (
               <>
@@ -202,8 +205,14 @@ export default function Game() {
                         word={`${game.current_word}${selectedLetter}`}
                       />
                     </div>
-
-                    <Keyboard />
+                    {(game.player_one_id === user?.id &&
+                      game.current_player_index === 0) ||
+                    (game.player_two_id === user?.id &&
+                      game.current_player_index === 1) ? (
+                      <Keyboard />
+                    ) : (
+                      "not yours"
+                    )}
                   </DndContext>
                   <div className={styles.gameInfo}>
                     <div className={styles.currentPlayer}>

@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Layout.module.css";
 import { useGamesStore, useUserProfileStore } from "@components/store";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import {
+  useUser,
+  useSupabaseClient,
+  useSession,
+} from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
-import Image from "next/image";
 import { default_avatar } from "@utilities/constants";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
+import { AccountSettings } from "@components/account/AccountSettings";
+import { useDownloadImages } from "@hooks/useDownloadImages";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -19,7 +27,10 @@ const Layout = ({ children }: LayoutProps) => {
   const user = useUser();
   const supabaseProfiles = useSupabaseClient<Profiles>();
   const supabaseGames = useSupabaseClient<Games>();
-  const supabaseDatabase = useSupabaseClient<Database>();
+  const router = useRouter();
+  const session = useSession();
+  const supabase = useSupabaseClient();
+  const { downloadImagesFromUrls, playerOneImage } = useDownloadImages();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -49,9 +60,8 @@ const Layout = ({ children }: LayoutProps) => {
       getProfile().then((profile) => {
         if (profile) {
           setUserProfile(profile);
-          downloadImage(profile.avatar_url ?? default_avatar).then((avatar) =>
-            setUserAvatarUrl(avatar ?? "")
-          );
+          downloadImagesFromUrls([profile.avatar_url ?? default_avatar, ""]);
+          setUserAvatarUrl(playerOneImage);
         }
       });
     }
@@ -134,38 +144,47 @@ const Layout = ({ children }: LayoutProps) => {
     retrieveAllGames();
   }, [user]);
 
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabaseDatabase.storage
-        .from("avatars")
-        .download(path);
-      if (error) {
-        throw error;
-      }
-      const url = URL.createObjectURL(data);
-      return url;
-    } catch (error) {
-      console.log("Error downloading image: ", error);
-    }
-  }
-
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      <nav>
-        {userProfile && userAvatarUrl && (
-          <>
-            <span>{userProfile.full_name}</span>
+      {!session && (
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa }}
+          theme="dark"
+          providers={["google", "facebook", "twitter"]}
+        />
+      )}
+      {session && (
+        <>
+          <nav className={styles.header}>
+            {router.pathname === "/game/[game]" && (
+              <>
+                <Link href="/games" className={styles.backLink}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Games
+                </Link>
+              </>
+            )}
+          </nav>
 
-            <Image
-              alt="user profile"
-              src={userAvatarUrl}
-              height={32}
-              width={32}
-            />
-          </>
-        )}
-      </nav>
-      <main className={styles.main}>{children}</main>
+          <main className={styles.main}>
+            <>
+              {userAvatarUrl !== "" && <>{children}</>}
+              {userAvatarUrl === "" && <AccountSettings session={session} />}
+            </>
+          </main>
+        </>
+      )}
     </div>
   );
 };

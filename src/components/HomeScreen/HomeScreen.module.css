@@ -25,3 +25,10 @@
 .radioWrapper label:has(input:checked) {
   border: 2px solid blue;
 }
+
+.homeScreenWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px;
+}

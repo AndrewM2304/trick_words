@@ -4,18 +4,14 @@ import React, { useState, useEffect } from "react";
 import styles from "./GameScreen.module.css";
 import { Database } from "@utilities/supabase";
 import { useGamesStore } from "@components/store";
-import { useUser } from "@supabase/auth-helpers-react";
 import { local_game } from "@utilities/constants";
 import { GameType } from "@utilities/game";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
-export type GameScreenProps = {};
-const GameScreen = ({}: GameScreenProps) => {
+const GameScreen = () => {
   const { games } = useGamesStore();
-  const user = useUser();
 
   const [localGames, setLocalGames] = useState<Games[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
@@ -30,7 +26,6 @@ const GameScreen = ({}: GameScreenProps) => {
     <div data-testid="GameScreen-wrapper">
       <ul>
         {localGames &&
-          user &&
           localGames.map((localGame: Games) => {
             return (
               <Link
@@ -55,8 +50,6 @@ const GameScreen = ({}: GameScreenProps) => {
             );
           })}
         {games &&
-          user &&
-          !loading &&
           games.map((game: Games) => {
             return (
               <Link
