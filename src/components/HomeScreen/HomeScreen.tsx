@@ -1,14 +1,16 @@
 import { useUserProfileStore } from "@components/store";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import React, { useState, useRef, FormEvent } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./HomeScreen.module.css";
 import { Database } from "@utilities/supabase";
-import { default_avatar, local_game } from "@utilities/constants";
-import { useEffect } from "react";
+import {
+  default_avatar,
+  default_computer,
+  local_game,
+} from "@utilities/constants";
 import { GameType } from "@utilities/game";
-import { useDownloadImages } from "src/hooks/useDownloadImages";
-import Image from "next/image";
+import { ProfileImage } from "@components/ProfileImage";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
@@ -44,7 +46,8 @@ const HomeScreen = ({}: HomeScreenProps) => {
       newGame.player_two_id = crypto.randomUUID();
       newGame.player_two_name =
         gameType === "computer" ? "Computer" : secondPlayer;
-      newGame.player_two_avatar = default_avatar;
+      newGame.player_two_avatar =
+        gameType === "computer" ? default_computer : default_avatar;
       newGame.player_one_score = 0;
       newGame.player_two_score = 0;
       const arrayOfGames: Games[] = [];

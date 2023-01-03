@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Database } from "../../../../types/supabase";
+import { useDownloadImages } from "@hooks/useDownloadImages";
+import { useUserProfileStore } from "@components/store";
+import Image from "next/image";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function AvatarWidget({
@@ -17,9 +20,11 @@ export default function AvatarWidget({
   const supabase = useSupabaseClient<Database>();
   const [avatarUrl, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
   const [uploading, setUploading] = useState(false);
+  const { playerOneImage, downloadImagesFromUrls } = useDownloadImages();
+  const { userProfile } = useUserProfileStore();
 
   useEffect(() => {
-    if (url) downloadImage(url);
+    if (url) downloadImagesFromUrls([url, ""]);
   }, [url]);
 
   async function downloadImage(path: string) {
@@ -36,6 +41,10 @@ export default function AvatarWidget({
       console.log("Error downloading image: ", error);
     }
   }
+
+  const uploadAvatar2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.files);
+  };
 
   const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = async (
     event
@@ -71,14 +80,13 @@ export default function AvatarWidget({
 
   return (
     <div data-testid="AvatarWidget-wrapper">
-      {avatarUrl ? (
+      {playerOneImage ? (
         <>
-          {avatarUrl}
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="avatar image"
-            style={{ height: size, width: size }}
+          <Image
+            alt={`${userProfile?.full_name} avatar`}
+            height={50}
+            width={50}
+            src={playerOneImage}
           />
         </>
       ) : (
@@ -99,7 +107,7 @@ export default function AvatarWidget({
           type="file"
           id="single"
           accept="image/*"
-          onChange={uploadAvatar}
+          onChange={uploadAvatar2}
           disabled={uploading}
         />
       </div>

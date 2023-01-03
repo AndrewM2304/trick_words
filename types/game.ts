@@ -1,4 +1,9 @@
-export type GameReturnValue = { inList: boolean; exactMatch: boolean };
+export type GameReturnValue = {
+  inList: boolean;
+  exactMatch: boolean;
+  countOfPotentialWords: number;
+  computerWord: string;
+};
 
 export type GamePlayer = { id: string; score: number };
 

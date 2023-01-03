@@ -26,10 +26,9 @@
   position: absolute;
   right: 4px;
   top: -8px;
-  background: red;
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
+}
+
+.notification svg {
+  height: 30px;
+  width: 30px;
 }

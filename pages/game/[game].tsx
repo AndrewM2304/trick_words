@@ -23,6 +23,7 @@ import { local_game } from "@utilities/constants";
 import { GameType } from "@utilities/game";
 import { useGetGameData } from "@hooks/useGetGameData";
 import { useDownloadImages } from "@hooks/useDownloadImages";
+import { useUserProfileStore } from "@components/store";
 
 export default function Game() {
   const [selectedLetter, setSelectedLetter] = useState("");
@@ -34,6 +35,7 @@ export default function Game() {
     useDownloadImages();
   const { gameData, status, error } = useGetGameData();
   const user = useUser();
+  const { userProfile } = useUserProfileStore();
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -74,13 +76,17 @@ export default function Game() {
     game: Game,
     forfeit: boolean = false
   ) => {
-    dialogRef.current?.showModal();
+    if (!dialogRef.current?.open) {
+      dialogRef.current?.showModal();
+    }
+
     playerTurn(playerWord, game, forfeit).then(async (val) => {
+      console.log(val);
       setTimeout(() => {
         setDialogMessage(val.message);
       }, 1000);
       if (val.update) {
-        successfulResult(val.value);
+        successfulResult(val.value, val.computerWord);
       }
       if (!val.update || forfeit) {
         closeModal();
@@ -95,8 +101,9 @@ export default function Game() {
     }, 2000);
   };
 
-  const successfulResult = async (resultValue: Game) => {
+  const successfulResult = async (resultValue: Game, computerWord: string) => {
     if (!game) return;
+
     if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
       const { data, error } = await supabase
         .from("games")
@@ -128,7 +135,23 @@ export default function Game() {
         window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
       }
     }
+    if (
+      resultValue.game_type === GameType.COMPUTER &&
+      resultValue.current_player_index === 1
+    ) {
+      const computerEnty = computerTurn(resultValue.current_word, computerWord);
+      console.log(computerEnty);
+      updateGame(computerEnty, resultValue, false);
+    }
     closeModal();
+  };
+
+  const computerTurn = (currentWord: string, computerWord: string): string => {
+    console.log(currentWord);
+    const indexOfWord = computerWord.indexOf(currentWord);
+    return indexOfWord >= 1
+      ? computerWord.charAt(indexOfWord - 1) + currentWord
+      : currentWord + computerWord.charAt(indexOfWord + 1);
   };
 
   const forfeitGame = () => {
@@ -136,8 +159,22 @@ export default function Game() {
     updateGame(game?.current_word!, game!, true);
   };
 
+  const inviteGame = async () => {
+    const shareData = {
+      title: `${game?.player_one_name} invites you to a game`,
+      text: "Follow the link to join the game",
+      url: `https://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key}`,
+    };
+    try {
+      console.log(shareData);
+      await navigator.share(shareData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    console.log(gameData);
+    if (!userProfile) return;
     setGame(gameData);
     if (!gameData) return;
 
@@ -145,11 +182,38 @@ export default function Game() {
       gameData.player_one_avatar,
       gameData.player_two_avatar,
     ]);
-  }, [gameData]);
+  }, [gameData, userProfile]);
+
+  const displayKeyboard = (): boolean => {
+    if (!game) return false;
+    if (game.game_type === GameType.LOCAL_MULTIPLAYER) return true;
+
+    if (game.player_one_id === user?.id && game.current_player_index === 0) {
+      return true;
+    }
+    if (game.player_two_id === user?.id && game.current_player_index === 1) {
+      return true;
+    }
+    return false;
+  };
 
   return (
     <Layout>
       <div className={styles.gameWrapper} data-testid="Game-wrapper">
+        <Link href="/games" className={styles.backLink}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Games
+        </Link>
         {!gameData && (
           <div className={styles.loading} data-testid="loading">
             {" "}
@@ -171,11 +235,12 @@ export default function Game() {
             <Link href={"/"}> return home</Link>
           </div>
         )}
-        {game && (
+        {game && userProfile && (
           <>
             <nav className={styles.nav}>
               <Link href={"/"}> </Link>
             </nav>
+            <pre>{JSON.stringify(userProfile, null, 2)}</pre>
             {!game.winner && (
               <>
                 <div className={styles.gameBody}>
@@ -186,6 +251,27 @@ export default function Game() {
                   />
                   <div className={styles.buttonRow}>
                     <button onClick={() => forfeitGame()}>forfeit</button>
+                    {game.game_type === GameType.ONLINE_MULTIPLAYER &&
+                      game.player_two_id === null && (
+                        <>
+                          {navigator.canShare! && (
+                            <button onClick={() => inviteGame()}>
+                              invite player
+                            </button>
+                          )}
+                          {!navigator.canShare && (
+                            <button
+                              onClick={() =>
+                                navigator.clipboard.writeText(
+                                  "http://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key"
+                                )
+                              }
+                            >
+                              copy url
+                            </button>
+                          )}
+                        </>
+                      )}
                   </div>
 
                   <DndContext
@@ -205,14 +291,7 @@ export default function Game() {
                         word={`${game.current_word}${selectedLetter}`}
                       />
                     </div>
-                    {(game.player_one_id === user?.id &&
-                      game.current_player_index === 0) ||
-                    (game.player_two_id === user?.id &&
-                      game.current_player_index === 1) ? (
-                      <Keyboard />
-                    ) : (
-                      "not yours"
-                    )}
+                    {displayKeyboard() ? <Keyboard /> : "not yours"}
                   </DndContext>
                   <div className={styles.gameInfo}>
                     <div className={styles.currentPlayer}>

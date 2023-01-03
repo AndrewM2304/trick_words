@@ -1,4 +1,4 @@
-import { useGamesStore } from "@components/store";
+import { useGamesStore, useUserProfileStore } from "@components/store";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { PostgrestError } from "@supabase/supabase-js";
 import { local_game } from "@utilities/constants";
@@ -16,11 +16,11 @@ export const useGetGameData = () => {
   const [status, setStatus] = useState<number>();
   const [error, setError] = useState<PostgrestError | null>();
   const supabase = useSupabaseClient<GameDB>();
-  const user = useUser();
   const { games } = useGamesStore();
+  const { userProfile } = useUserProfileStore();
 
   useEffect(() => {
-    if (gameData) return;
+    if (gameData || !userProfile) return;
     getGame().then((d) => {
       if (d === undefined) return;
       setGameData(d ?? null);
@@ -29,7 +29,7 @@ export const useGetGameData = () => {
         setGameData(d ?? null);
       });
     });
-  }, [router.query, gameData]);
+  }, [router.query, gameData, userProfile]);
 
   useEffect(() => {
     const currentGame = games.filter((g) => g.id === gameData?.id)[0];
@@ -39,7 +39,7 @@ export const useGetGameData = () => {
   }, [games]);
 
   const getGame = async (): Promise<GameDB | undefined> => {
-    if (!user) return;
+    if (!userProfile) return;
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
 
     if (gametype === "local" && gamesFromLocalStorage) {
@@ -65,16 +65,26 @@ export const useGetGameData = () => {
   };
 
   const addSecondPlayer = async (game: GameDB): Promise<GameDB | undefined> => {
-    if (!user) return;
+    if (!userProfile) return;
     if (
       gametype === undefined &&
       game.player_two_id === null &&
       gameroom === game.secret_key &&
-      user.id !== game.player_one_id
+      userProfile.id !== game.player_one_id
     ) {
+      console.log({
+        player_two_id: userProfile.id,
+        playerer_two_name: userProfile?.full_name,
+        player_two_avatar: userProfile?.avatar_url,
+      });
+
       const { data, error } = await supabase
         .from("games")
-        .update({ player_two_id: user.id })
+        .update({
+          player_two_id: userProfile.id,
+          player_two_name: userProfile?.full_name,
+          player_two_avatar: userProfile?.avatar_url,
+        })
         .eq("id", game.id)
         .select();
       if (data) {

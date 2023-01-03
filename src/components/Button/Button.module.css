@@ -1,0 +1,35 @@
+.Button {
+  padding: 8px 15px;
+  border: 1px solid black;
+  box-shadow: 0 0 0 2px #48dbb8, 0 0 0 4px black;
+  border-radius: 5px;
+  background: #7dd8c2;
+  margin: 4px;
+  position: relative;
+}
+
+.Button:after {
+  content: " ";
+  inset: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%, 95% 84%, 99% 0);
+  background: rgba(0, 0, 0, 0.2);
+  background-blend-mode: soft-light;
+  position: absolute;
+  border-radius: 3px;
+}
+.Button:before {
+  content: " ";
+  inset: 0;
+  clip-path: polygon(59% 0, 6% 8%, 0 50%, 0 0);
+  background: rgba(255, 255, 255, 0.2);
+  background-blend-mode: soft-light;
+  position: absolute;
+  z-index: 6;
+  border-radius: 3px;
+}
+
+.Button:is([data-button-type="secondary"]) {
+  box-shadow: 0 0 0 2px #a0362b, 0 0 0 4px black;
+  border-radius: 5px;
+  background: #be6054;
+}

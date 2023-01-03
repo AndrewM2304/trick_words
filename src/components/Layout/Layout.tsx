@@ -4,7 +4,7 @@ import { useGamesStore, useUserProfileStore } from "@components/store";
 import {
   useUser,
   useSupabaseClient,
-  useSession,
+  useSessionContext,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 import { default_avatar } from "@utilities/constants";
@@ -28,9 +28,10 @@ const Layout = ({ children }: LayoutProps) => {
   const supabaseProfiles = useSupabaseClient<Profiles>();
   const supabaseGames = useSupabaseClient<Games>();
   const router = useRouter();
-  const session = useSession();
   const supabase = useSupabaseClient();
   const { downloadImagesFromUrls, playerOneImage } = useDownloadImages();
+
+  const { error, isLoading, session } = useSessionContext();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -146,7 +147,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      {!session && (
+      {(!session || isLoading) && (
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
@@ -154,36 +155,13 @@ const Layout = ({ children }: LayoutProps) => {
           providers={["google", "facebook", "twitter"]}
         />
       )}
-      {session && (
-        <>
-          <nav className={styles.header}>
-            {router.pathname === "/game/[game]" && (
-              <>
-                <Link href="/games" className={styles.backLink}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Games
-                </Link>
-              </>
-            )}
-          </nav>
-
-          <main className={styles.main}>
-            <>
-              {userAvatarUrl !== "" && <>{children}</>}
-              {userAvatarUrl === "" && <AccountSettings session={session} />}
-            </>
-          </main>
-        </>
+      {(session || !isLoading) && (
+        <main className={styles.main}>
+          <>
+            {userAvatarUrl !== "" && <>{children}</>}
+            {userAvatarUrl === "" && <AccountSettings />}
+          </>
+        </main>
       )}
     </div>
   );

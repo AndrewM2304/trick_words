@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Database } from "@utilities/supabase";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { GameType } from "@utilities/game";
-import userAvatar from "../../public/user.svg";
+import userAvatar from "../../public/default_user_avatar.svg";
 
 export const useDownloadImages = () => {
   const supabase = useSupabaseClient<Database>();
@@ -15,12 +14,14 @@ export const useDownloadImages = () => {
 
   useEffect(() => {
     if (!urlsToDownload) return;
-    downloadImage(urlsToDownload[0]).then((image: string) =>
-      setPlayerOneAvatar(image)
-    );
-    downloadImage(urlsToDownload[1]).then((image: string) =>
-      setPlayerTwoAvatar(image)
-    );
+    downloadImage(urlsToDownload[0]).then((image: string) => {
+      setPlayerOneAvatar(image);
+    });
+    if (urlsToDownload[1].length > 0) {
+      downloadImage(urlsToDownload[1]).then((image: string) => {
+        setPlayerTwoAvatar(image);
+      });
+    }
   }, [urlsToDownload]);
 
   async function downloadImage(path: string): Promise<string> {

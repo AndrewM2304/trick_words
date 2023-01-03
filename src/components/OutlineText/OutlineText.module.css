@@ -1,0 +1,36 @@
+.OutlineText {
+  grid-row: 1/1;
+  grid-column: 1/1;
+  z-index: 2;
+  font-family: "Lilita One";
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+.OutlineText:is([data-left="true"]) {
+  place-items: start;
+}
+
+.OutlineText [data-uppercase="true"] {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.innerText {
+  color: black;
+  grid-row: 1/1;
+  grid-column: 1/1;
+  letter-spacing: 1.5px;
+  filter: url(#stroke-text-svg-filter);
+}
+.whiteText {
+  letter-spacing: 1.5px;
+  color: white;
+  grid-row: 1/1;
+  grid-column: 1/1;
+}
+
+.hide {
+  display: none;
+}

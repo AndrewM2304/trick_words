@@ -1,0 +1,12 @@
+.photoSelect {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #333;
+}
+
+.buttonRow {
+  position: relative;
+  display: flex;
+  gap: 10px;
+}

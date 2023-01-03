@@ -1,9 +1,23 @@
-/* @import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900); */
-@import url(https://fonts.googleapis.com/css?family=Lalezar:regular);
+@import url(https://fonts.googleapis.com/css?family=Londrina+Solid:100,300,regular,900);
+@import url(https://fonts.googleapis.com/css?family=Lilita+One:regular);
+
 body,
 html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Lalezar";
+}
+
+.shadow {
+  transform: translateX(2px);
+  fill: pink;
+}
+
+a:visited {
+  color: black;
+}
+
+a {
+  text-decoration: none;
 }

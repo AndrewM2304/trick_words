@@ -1,80 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   useUser,
   useSupabaseClient,
-  Session,
+  useSessionContext,
 } from "@supabase/auth-helpers-react";
 import styles from "./AccountSettings.module.css";
 import { Database } from "@utilities/supabase";
 import AvatarWidget from "@components/account/AvatarWidget/AvatarWidget";
+import { useUserProfileStore } from "@components/store";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
+import Cropper from "react-easy-crop";
+import getCroppedImg from "./helper";
+import Image from "next/image";
+import { useDownloadImages } from "@hooks/useDownloadImages";
+import { default_avatar } from "@utilities/constants";
 
-export type AccountSettingsProps = {
-  session: Session;
-};
-const AccountSettings = ({ session }: AccountSettingsProps) => {
+const AccountSettings = () => {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
-  const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<Profiles["username"]>(
-    session.user.user_metadata.name ?? null
-  );
-  const [website, setWebsite] = useState<Profiles["website"]>(null);
+  const [loading, setLoading] = useState(false);
+  const { session, isLoading } = useSessionContext();
+  const { userProfile } = useUserProfileStore();
+  const [fullName, setFullName] = useState<Profiles["full_name"]>("");
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
+  const { playerOneImage, downloadImagesFromUrls } = useDownloadImages();
+
+  const [showCropper, setShowCropper] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>();
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
 
   useEffect(() => {
-    getProfile();
-  }, [session]);
+    if (!userProfile) return;
+    console.log(userProfile);
+    setFullName(userProfile.full_name);
+    downloadImagesFromUrls([userProfile.avatar_url ?? default_avatar, ""]);
+  }, [userProfile]);
 
-  async function getProfile() {
-    try {
-      setLoading(true);
-      if (!user) throw new Error("No user");
-      let { data, error, status } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch (error) {
-      console.log("Error loading user data!");
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateProfile({
-    username,
-    avatar_url,
-  }: {
-    username: Profiles["username"];
-    website: Profiles["website"];
-    avatar_url: Profiles["avatar_url"];
-  }) {
+  async function updateProfile(name: string) {
     try {
       setLoading(true);
       if (!user) throw new Error("No user");
 
       const updates = {
         id: user.id,
-        username,
-        avatar_url,
         updated_at: new Date().toISOString(),
+        full_name: name,
+        avatar_url: playerOneImage,
       };
 
-      let { error } = await supabase.from("profiles").upsert(updates);
+      console.log(updates);
+      let { error, data } = await supabase.from("profiles").upsert(updates);
+      if (data) {
+        console.log(data);
+      }
       if (error) throw error;
-      alert("Profile updated!");
     } catch (error) {
       alert("Error updating the data!");
       console.log(error);
@@ -83,36 +66,118 @@ const AccountSettings = ({ session }: AccountSettingsProps) => {
     }
   }
 
+  const onCropComplete = useCallback(
+    (croppedArea: any, croppedAreaPixels: any) => {
+      console.log(croppedArea);
+      console.log(croppedAreaPixels);
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    []
+  );
+
+  const selectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
+    if (!e.target.files) return;
+    const photo = e.target.files[0];
+    console.log(photo);
+    const url = URL.createObjectURL(photo);
+    setAvatarUrl(url);
+    setPhotoFile(photo);
+    setShowCropper(true);
+  };
+
+  const closeCropper = async (save: boolean) => {
+    if (!save) {
+      setAvatarUrl(userProfile?.avatar_url ?? default_avatar);
+      setPhotoFile(null);
+    }
+    if (save) {
+      getCroppedImg(
+        avatar_url,
+        croppedAreaPixels,
+        rotation,
+        userProfile?.id,
+        photoFile?.type ?? "image/png"
+      ).then(async (cropped) => {
+        if (!cropped) {
+          setAvatarUrl(userProfile?.avatar_url ?? default_avatar);
+          setPhotoFile(null);
+        }
+        const fileExt = photoFile?.name.split(".").pop();
+        const fileName = `${userProfile?.id}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        let { data, error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, cropped, { upsert: true });
+        if (data) {
+          console.log(data);
+        }
+        if (uploadError) {
+          console.log(uploadError);
+        }
+      });
+    }
+    setShowCropper(false);
+  };
+
   return (
     <>
-      {user && (
+      {userProfile && session && (
         <>
-          <h1>{username}</h1>
           <div className="form-widget" data-testid="AccountSettings-wrapper">
             <div>
               <label htmlFor="username">Username</label>
               <input
                 id="username"
                 type="text"
-                value={username || ""}
-                onChange={(e) => setUsername(e.target.value)}
+                value={fullName || ""}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
-            <AvatarWidget
-              uid={user.id}
-              url={avatar_url}
-              size={150}
-              onUpload={(url) => {
-                setAvatarUrl(url);
-                updateProfile({ username, website, avatar_url: url });
-              }}
-            />
+            <label>
+              <Image
+                alt={`${userProfile?.full_name} avatar`}
+                height={50}
+                width={50}
+                src={playerOneImage}
+              />
+
+              <input
+                tabIndex={0}
+                type="file"
+                id="single"
+                accept="image/*"
+                onChange={selectPhoto}
+              />
+            </label>
+            {showCropper && avatar_url && (
+              <div className={styles.photoModal}>
+                <div className={styles.photoSelect}>
+                  <Cropper
+                    image={avatar_url}
+                    crop={crop}
+                    rotation={rotation}
+                    zoom={zoom}
+                    cropShape="round"
+                    aspect={1 / 1}
+                    onCropChange={setCrop}
+                    onRotationChange={setRotation}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                  />
+                </div>
+                <div className={styles.buttonRow}>
+                  <button onClick={() => closeCropper(false)}>cancel</button>
+                  <button onClick={() => closeCropper(true)}>select</button>
+                </div>
+              </div>
+            )}
 
             <div>
               <button
                 className="button primary block"
-                onClick={() => updateProfile({ username, website, avatar_url })}
-                disabled={loading}
+                onClick={() => updateProfile(fullName ?? "player")}
               >
                 {loading ? "Loading ..." : "Update"}
               </button>

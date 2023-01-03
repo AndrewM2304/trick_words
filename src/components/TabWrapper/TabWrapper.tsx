@@ -1,3 +1,4 @@
+import { NotificationBadge } from "@components/ProfileImage/ProfileImage";
 import { useGamesStore } from "@components/store";
 import { useUser } from "@supabase/auth-helpers-react";
 import Link from "next/link";
@@ -55,7 +56,9 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
           data-active-tab={currentRoute === "/games"}
         >
           {gameNotifications > 0 && (
-            <div className={styles.notification}>{gameNotifications}</div>
+            <div className={styles.notification}>
+              <NotificationBadge text={gameNotifications.toString()} count />
+            </div>
           )}
           <svg
             xmlns="http://www.w3.org/2000/svg"

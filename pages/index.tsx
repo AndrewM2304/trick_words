@@ -1,12 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import { Authentication } from "@components/Authentication";
 import React from "react";
 import { Layout } from "@components/Layout";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useUserProfileStore } from "@components/store";
-import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { AccountSettings } from "@components/account/AccountSettings";
 import { TabWrapper } from "@components/TabWrapper";
 import { HomeScreen } from "@components/HomeScreen";
 

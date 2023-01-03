@@ -22,8 +22,14 @@ const GameScreen = () => {
     }
   }, []);
 
+  const linkSetting = (e: any, gameType: string, playerID: string | null) => {
+    if (gameType === GameType.ONLINE_MULTIPLAYER && playerID === null) {
+      e.preventDefault();
+    }
+  };
+
   return (
-    <div data-testid="GameScreen-wrapper">
+    <div data-testid="GameScreen-wrapper" className={styles.GameScreenWrapper}>
       <ul>
         {localGames &&
           localGames.map((localGame: Games) => {
@@ -56,6 +62,9 @@ const GameScreen = () => {
                 href={`/game/${game.id}`}
                 key={game.id}
                 className={styles.gameLink}
+                onClick={(e) =>
+                  linkSetting(e, game.game_type, game.player_two_id)
+                }
               >
                 <GameCard
                   playerOneName={game.player_one_name}

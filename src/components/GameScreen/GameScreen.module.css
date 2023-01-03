@@ -1,0 +1,8 @@
+.GameScreenWrapper {
+  background: #101828;
+}
+
+.GameScreenWrapper ul {
+  margin: 15px;
+  padding: 0px;
+}
