@@ -39,14 +39,6 @@ const OutlineText = ({
           {text}
         </div>
       </div>
-      <svg version="1.1" xmlns="//www.w3.org/2000/svg" className={styles.hide}>
-        <defs>
-          <filter id="stroke-text-svg-filter">
-            <feMorphology operator="dilate" radius="1.5"></feMorphology>
-            <feComposite operator="xor" in="SourceGraphic" />
-          </filter>
-        </defs>
-      </svg>
     </>
   );
 };

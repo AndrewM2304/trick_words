@@ -9,7 +9,7 @@
   grid-template-rows: 1fr;
 }
 .OutlineText:is([data-left="true"]) {
-  place-items: start;
+  place-items: start !important;
 }
 
 .OutlineText [data-uppercase="true"] {
@@ -18,19 +18,16 @@
 }
 
 .innerText {
-  color: black;
-  grid-row: 1/1;
-  grid-column: 1/1;
-  letter-spacing: 1.5px;
-  filter: url(#stroke-text-svg-filter);
-}
-.whiteText {
-  letter-spacing: 1.5px;
   color: white;
   grid-row: 1/1;
   grid-column: 1/1;
+  letter-spacing: 2px;
 }
-
-.hide {
-  display: none;
+.whiteText {
+  -webkit-text-stroke: 3px black;
+  letter-spacing: 2px;
+  color: red;
+  grid-row: 1/1;
+  grid-column: 1/1;
+  text-shadow: 2px 2px 0px #000000;
 }

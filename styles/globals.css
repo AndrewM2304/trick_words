@@ -21,3 +21,21 @@ a:visited {
 a {
   text-decoration: none;
 }
+
+ul {
+  padding: 0px;
+  margin: 0px;
+}
+
+.central-width-container {
+  width: min(80vw, 700px);
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+}
+
+@media (max-width: 500px) {
+  .central-width-container {
+    width: 100%;
+  }
+}

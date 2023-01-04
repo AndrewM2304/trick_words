@@ -1,7 +1,7 @@
 .ProfileImage {
   position: relative;
-  height: 108px;
-  width: 108px;
+  height: 98px;
+  width: 98px;
 }
 .ProfileImage * {
   box-sizing: border-box;
@@ -22,7 +22,7 @@
 .gemWrapper {
   position: absolute;
   bottom: 5px;
-  left: 2px;
+  left: -3px;
   display: grid;
   place-items: center;
   grid-template-columns: 1fr;
@@ -36,7 +36,8 @@
 }
 
 .gemWrapper [data-testid="OutlineText-wrapper"] {
-  transform: translateY(-2px);
+  translate: 0px -3px;
+  rotate: -5deg;
 }
 
 .profilePicture {
@@ -57,11 +58,11 @@
   background: black;
   opacity: 0.4;
   border-radius: 90px;
-  height: 100px;
-  width: 100px;
+  height: 90px;
+  width: 90px;
   position: absolute;
-  left: 6px;
-  top: 6px;
+  left: 8px;
+  top: 8px;
 }
 
 .notificationWrapper {
@@ -72,42 +73,13 @@
   display: grid;
 }
 
-.notification,
-.notification .text {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-}
-
-.notification .text {
-  grid-row: 1/1;
-  grid-column: 1/1;
-  z-index: 2;
-  font-family: "Londrina-solid";
+.notification {
+  background: #e06f72;
+  height: 28px;
+  width: 28px;
   display: grid;
   place-items: center;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  transform: rotate(10deg);
-}
-
-.notification .innerText {
-  color: black;
-  grid-row: 1/1;
-  grid-column: 1/1;
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  filter: url(#stroke-text-svg-filter);
-}
-.notification .whiteText {
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  color: white;
-  grid-row: 1/1;
-  grid-column: 1/1;
-}
-
-.notification svg {
-  grid-row: 1/1;
-  grid-column: 1/1;
+  border-radius: 17px;
+  border: 2px solid black;
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.4);
 }

@@ -8,48 +8,24 @@ import { ProfileImage } from "@components/ProfileImage";
 import { default_avatar } from "@utilities/constants";
 import { OutlineText } from "@components/OutlineText";
 import { Button } from "@components/Button";
+import { Database } from "@utilities/supabase";
+
+type Games = Database["public"]["Tables"]["games"]["Row"];
 
 export type GameCardProps = {
-  playerOneId: string;
-  playerOneName: string;
-  playerOneAvatar: string;
-  playerOneScore: number;
-  playerTwoId: string;
-  playerTwoName: string;
-  playerTwoAvatar: string;
-  playerTwoScore: number;
-  currentPlayerIndex: number;
-  currentWord: string;
-  gameType: GameType;
-  gameId: number;
-  roomKey: string;
+  game: Games;
 };
-const GameCard = ({
-  playerOneId,
-  playerOneScore,
-  playerOneAvatar,
-  playerOneName,
-  playerTwoId,
-  playerTwoScore,
-  playerTwoAvatar,
-  playerTwoName,
-  currentPlayerIndex,
-  currentWord,
-  gameType,
-  gameId,
-  roomKey,
-}: GameCardProps) => {
+const GameCard = ({ game }: GameCardProps) => {
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const user = useUser();
 
   useEffect(() => {
-    console.log([playerOneAvatar, playerTwoAvatar]);
-    downloadImagesFromUrls([playerOneAvatar, playerTwoAvatar]);
+    downloadImagesFromUrls([game.player_one_avatar, game.player_two_avatar]);
   }, []);
 
   const setColor = () => {
-    switch (gameType) {
+    switch (game.game_type) {
       case GameType.COMPUTER:
         return "red";
       case GameType.LOCAL_MULTIPLAYER:
@@ -60,9 +36,13 @@ const GameCard = ({
   };
   const renderScore = () => {
     const currentPlayerScore =
-      playerOneId === user?.id ? playerOneScore : playerTwoScore;
+      game.player_one_id === user?.id
+        ? game.player_one_score
+        : game.player_one_score;
     const opponentScore =
-      playerOneId === user?.id ? playerTwoScore : playerOneScore;
+      game.player_one_id === user?.id
+        ? game.player_one_score
+        : game.player_one_score;
 
     return { currentPlayerScore, opponentScore };
   };
@@ -71,7 +51,7 @@ const GameCard = ({
     const shareData = {
       title: `Join the game`,
       text: "Follow the link to join the game",
-      url: `https://localhost:3000/game/${gameId}?gameroom=${roomKey}`,
+      url: `https://localhost:3000/game/${game.id}?gameroom=${game.secret_key}`,
     };
     try {
       console.log(shareData);
@@ -84,17 +64,20 @@ const GameCard = ({
   return (
     <>
       <li data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
-        <div className={styles.clippy}></div>
-        <ProfileImage
-          color={setColor()}
-          text={playerTwoName}
-          url={playerTwoImage ?? default_avatar}
-          notification={
-            gameType === GameType.ONLINE_MULTIPLAYER && currentPlayerIndex === 1
-              ? "!"
-              : null
-          }
-        />
+        <div className={styles.gradient}></div>
+        <div className={styles.profileWrapper}>
+          <ProfileImage
+            color={setColor() ?? "blue"}
+            text={game.player_two_name}
+            url={playerTwoImage ?? default_avatar}
+            notification={
+              game.game_type === GameType.ONLINE_MULTIPLAYER &&
+              game.current_player_index === 1
+                ? "!"
+                : null
+            }
+          />
+        </div>
 
         <div className={styles.cardContent}>
           <OutlineText
@@ -105,45 +88,51 @@ const GameCard = ({
             sizeInRem={1.2}
             upperCase
           />
-          <OutlineText left text={currentWord} sizeInRem={1.2} upperCase />
+          <OutlineText
+            left
+            text={game.current_word}
+            sizeInRem={1.2}
+            upperCase
+          />
         </div>
 
-        {!playerTwoId && gameType === GameType.ONLINE_MULTIPLAYER && (
-          <div className={styles.waitOverlay}>
-            <OutlineText
-              text="Waiting for player to accept"
-              sizeInRem={1.2}
-              upperCase
-            />
-            <div className={styles.buttonRow}>
-              {navigator.canShare! && (
-                <Button
-                  text="share game"
-                  action={() => inviteGame()}
-                  type={"primary"}
-                />
-              )}
-
-              {!navigator.canShare && (
-                <Button
-                  text="copy game link"
-                  action={() =>
-                    navigator.clipboard.writeText(
-                      `https://localhost:3000/game/${gameId}?gameroom=${roomKey}`
-                    )
-                  }
-                  type={"primary"}
-                />
-              )}
-
-              <Button
-                text="cancel game"
-                action={() => console.log("hello")}
-                type={"secondary"}
+        {!game.player_two_id &&
+          game.game_type === GameType.ONLINE_MULTIPLAYER && (
+            <div className={styles.waitOverlay}>
+              <OutlineText
+                text="Waiting for player to accept"
+                sizeInRem={1.2}
+                upperCase
               />
+              <div className={styles.buttonRow}>
+                {navigator.canShare! && (
+                  <Button
+                    text="share game"
+                    action={() => inviteGame()}
+                    type={"primary"}
+                  />
+                )}
+
+                {!navigator.canShare && (
+                  <Button
+                    text="copy game link"
+                    action={() =>
+                      navigator.clipboard.writeText(
+                        `https://localhost:3000/game/${game.id}?gameroom=${game.secret_key}`
+                      )
+                    }
+                    type={"primary"}
+                  />
+                )}
+
+                <Button
+                  text="cancel game"
+                  action={() => console.log("hello")}
+                  type={"delete"}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </li>
     </>
   );

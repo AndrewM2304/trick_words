@@ -11,6 +11,7 @@ import {
 } from "@utilities/constants";
 import { GameType } from "@utilities/game";
 import { ProfileImage } from "@components/ProfileImage";
+import { Button } from "@components/Button";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
@@ -85,12 +86,14 @@ const HomeScreen = ({}: HomeScreenProps) => {
 
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
-      <button onClick={() => openDialog()} className={"primary-button"}>
-        {loading ? "loading" : "New Game"}
-      </button>
-      <button onClick={() => openDialog()} className={"secondary-button"}>
-        How to Play
-      </button>
+      <div className={styles.central}>
+        <Button text="New Game" action={() => openDialog()} type="primary" />
+        <Button
+          text="how to play"
+          action={() => openDialog()}
+          type="secondary"
+        />
+      </div>
       <dialog
         ref={dialogRef}
         className={styles.dialogBox}

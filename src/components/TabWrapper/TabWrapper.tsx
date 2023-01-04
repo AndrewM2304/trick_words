@@ -57,7 +57,7 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
         >
           {gameNotifications > 0 && (
             <div className={styles.notification}>
-              <NotificationBadge text={gameNotifications.toString()} count />
+              <NotificationBadge text={gameNotifications.toString()} />
             </div>
           )}
           <svg

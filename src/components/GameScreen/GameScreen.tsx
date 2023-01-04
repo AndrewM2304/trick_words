@@ -28,9 +28,15 @@ const GameScreen = () => {
     }
   };
 
+  const disableLink = (game: Games): boolean => {
+    return (
+      !game.player_two_id && game.game_type === GameType.ONLINE_MULTIPLAYER
+    );
+  };
+
   return (
     <div data-testid="GameScreen-wrapper" className={styles.GameScreenWrapper}>
-      <ul>
+      <ul className="central-width-container">
         {localGames &&
           localGames.map((localGame: Games) => {
             return (
@@ -39,47 +45,34 @@ const GameScreen = () => {
                 key={`${localGame.id}-local`}
                 className={styles.gameLink}
               >
-                <GameCard
-                  playerOneName={localGame.player_one_name}
-                  playerOneAvatar={localGame.player_one_avatar}
-                  playerOneId={localGame.player_one_id ?? ""}
-                  playerOneScore={localGame.player_one_score ?? 0}
-                  playerTwoName={localGame.player_two_name}
-                  playerTwoAvatar={localGame.player_two_avatar}
-                  playerTwoId={localGame.player_two_id ?? ""}
-                  playerTwoScore={localGame.player_two_score ?? 0}
-                  currentPlayerIndex={localGame.current_letter_index ?? 0}
-                  currentWord={localGame.current_word ?? "a"}
-                  gameType={localGame.game_type as GameType}
-                />
+                <GameCard game={localGame} />
               </Link>
             );
           })}
         {games &&
           games.map((game: Games) => {
             return (
-              <Link
-                href={`/game/${game.id}`}
-                key={game.id}
-                className={styles.gameLink}
-                onClick={(e) =>
-                  linkSetting(e, game.game_type, game.player_two_id)
-                }
-              >
-                <GameCard
-                  playerOneName={game.player_one_name}
-                  playerOneAvatar={game.player_one_avatar}
-                  playerOneId={game.player_one_id ?? ""}
-                  playerOneScore={game.player_one_score ?? 0}
-                  playerTwoName={game.player_two_name}
-                  playerTwoAvatar={game.player_two_avatar}
-                  playerTwoId={game.player_two_id ?? ""}
-                  playerTwoScore={game.player_two_score ?? 0}
-                  currentPlayerIndex={game.current_letter_index ?? 0}
-                  currentWord={game.current_word ?? "a"}
-                  gameType={game.game_type as GameType}
-                />
-              </Link>
+              <>
+                {!disableLink(game) && (
+                  <Link
+                    href={`/game/${game.id}`}
+                    key={game.id}
+                    className={styles.gameLink}
+                    onClick={(e) =>
+                      linkSetting(e, game.game_type, game.player_two_id)
+                    }
+                    tabIndex={
+                      !game.player_two_id &&
+                      game.game_type === GameType.ONLINE_MULTIPLAYER
+                        ? -1
+                        : 0
+                    }
+                  >
+                    <GameCard game={game} />
+                  </Link>
+                )}
+                {disableLink(game) && <GameCard game={game} />}
+              </>
             );
           })}
       </ul>
