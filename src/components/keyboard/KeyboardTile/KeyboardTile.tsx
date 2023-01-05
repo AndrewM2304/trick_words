@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import styles from "./KeyboardTile.module.css";
 import { useDraggable } from "@dnd-kit/core";
+import { OutlineText } from "@components/OutlineText";
+import { Button } from "@components/Button";
 
 export type KeyboardTileProps = {
   letter: string;
@@ -26,7 +28,7 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
         className={styles.keyboardTileBottom}
         data-not-dragging={active && active.id !== letter}
       >
-        {letter}
+        <OutlineText text={letter} sizeInRem={1.2} upperCase={true} />
       </div>
       <div
         data-testid="top-tile"
@@ -38,7 +40,7 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
         data-dragging={isDragging}
         data-not-dragging={active && active.id !== letter}
       >
-        {letter}
+        <OutlineText text={letter} sizeInRem={1.2} upperCase={true} />
       </div>
     </li>
   );

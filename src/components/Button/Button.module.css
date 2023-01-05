@@ -1,12 +1,13 @@
 .Button {
   padding: 8px 15px;
   border: 1px solid black;
-  box-shadow: 0 0 0 2px #48dbb8, 0 0 0 4px black;
+  box-shadow: 0 0 0 2px var(--teal), 0 0 0 4px black;
   border-radius: 5px;
-  background: #7dd8c2;
+  background: var(--teal-bright);
   margin: 4px;
   position: relative;
   cursor: pointer;
+  min-height: 50px;
 }
 
 .Button:after {
@@ -30,15 +31,15 @@
 }
 
 .Button:is([data-button-type="secondary"]) {
-  box-shadow: 0 0 0 2px #7d5cdb, 0 0 0 4px black;
+  box-shadow: 0 0 0 2px var(--purple), 0 0 0 4px black;
   border-radius: 5px;
-  background: #957dd8;
+  background: var(--purple-bright);
 }
 
 .Button:is([data-button-type="delete"]) {
-  box-shadow: 0 0 0 2px #a0362b, 0 0 0 4px black;
+  box-shadow: 0 0 0 2px var(--red), 0 0 0 4px black;
   border-radius: 5px;
-  background: #be6054;
+  background: var(--red-bright);
 }
 
 .Button:is([data-pressed="true"]) {

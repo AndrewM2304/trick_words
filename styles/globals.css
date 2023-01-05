@@ -9,6 +9,20 @@ html {
   font-family: "Lalezar";
 }
 
+* {
+  box-sizing: border-box;
+}
+:root {
+  --background-blue: #101828;
+  --dark-background: #1e2d4a;
+  --teal: #48dbb8;
+  --teal-bright: #7dd8c2;
+  --purple: #7d5cdb;
+  --purple-bright: #957dd8;
+  --red: #a0362b;
+  --red-bright: #be6054;
+}
+
 .shadow {
   transform: translateX(2px);
   fill: pink;
@@ -32,6 +46,7 @@ ul {
   display: flex;
   flex-direction: column;
   margin-inline: auto;
+  flex: 1;
 }
 
 @media (max-width: 500px) {

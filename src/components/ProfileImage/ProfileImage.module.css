@@ -45,24 +45,25 @@
   border-radius: 45px;
   position: absolute;
   z-index: 3;
-  top: 7px;
+  top: 8px;
   left: 7px;
 }
 
 .background {
   position: absolute;
-  left: 0px;
+  left: -5px;
+  height: 95px;
 }
 
 .circleOffset {
   background: black;
   opacity: 0.4;
   border-radius: 90px;
-  height: 90px;
-  width: 90px;
+  height: 95px;
+  width: 95px;
   position: absolute;
-  left: 8px;
-  top: 8px;
+  left: 2px;
+  top: 2px;
 }
 
 .notificationWrapper {

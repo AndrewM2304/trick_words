@@ -1,7 +1,7 @@
 .gameCardWrapper {
   position: relative;
   border-radius: 10px;
-  background: #1e2d4a;
+  background: var(--dark-background);
   border: 2px solid black;
   box-shadow: 0 0 0 4px #2e4675, 0 0 0 6px black;
   margin-block: 5px;
@@ -16,7 +16,7 @@
 .gradient {
   background: linear-gradient(
     90deg,
-    #1e2d4a 22.54%,
+    var(--dark-background) 22.54%,
     rgba(30, 45, 74, 0.5) 55.8%,
     rgba(30, 45, 74, 0) 100%
   );

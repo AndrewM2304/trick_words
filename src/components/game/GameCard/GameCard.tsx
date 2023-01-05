@@ -81,7 +81,7 @@ const GameCard = ({ game }: GameCardProps) => {
 
         <div className={styles.cardContent}>
           <OutlineText
-            left
+            alignment="left"
             text={`${renderScore().currentPlayerScore} - ${
               renderScore().opponentScore
             }`}
@@ -89,7 +89,7 @@ const GameCard = ({ game }: GameCardProps) => {
             upperCase
           />
           <OutlineText
-            left
+            alignment="left"
             text={game.current_word}
             sizeInRem={1.2}
             upperCase

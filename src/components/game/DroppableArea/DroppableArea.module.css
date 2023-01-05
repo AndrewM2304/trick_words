@@ -4,6 +4,7 @@
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
 
 .droppable:has([data-is-highlight="false"]) {
@@ -11,9 +12,11 @@
 }
 
 .droppable:has([data-is-highlight="true"]) {
-  background: yellow;
+  background: rgba(216, 211, 125, 0.8);
+  backdrop-filter: blur(3px);
   transition: 0.1s ease-in-out;
 }
+
 .droppable:has([data-active-dragging="false"]) {
   opacity: 0;
   transition: 0.1s ease-in-out;
@@ -22,4 +25,12 @@
 .droppable:has([data-active-dragging="true"]) {
   opacity: 1;
   transition: 0.1s ease-in-out;
+}
+
+.droppable:has([data-direction="left"]) {
+  border-radius: 10px 0px 0px 10px;
+}
+
+.droppable:has([data-direction="right"]) {
+  border-radius: 0px 10px 10px 0px;
 }

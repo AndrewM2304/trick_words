@@ -32,16 +32,16 @@ const ProfileImage = ({
         <div className={styles.circleOffset}></div>
         <svg
           className={styles.background}
-          width="94"
-          height="94"
-          viewBox="0 0 94 94"
+          width="104"
+          height="104"
+          viewBox="0 0 104 104"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle
-            cx="47"
-            cy="47"
-            r="47"
+            cx="52"
+            cy="52"
+            r="51"
             fill="#D8B97D"
             stroke="black"
             strokeWidth="2"
@@ -58,9 +58,9 @@ const ProfileImage = ({
             height="104"
           >
             <circle
-              cx="47"
-              cy="47"
-              r="47"
+              cx="52"
+              cy="52"
+              r="51"
               fill="#D8B97D"
               stroke="black"
               strokeWidth="2"
@@ -74,6 +74,7 @@ const ProfileImage = ({
             />
           </g>
         </svg>
+
         <Gem text={text} color={color} />
       </div>
     </>
@@ -85,7 +86,7 @@ export type GemProps = {
   text: string;
   color: "red" | "blue" | "green";
 };
-const Gem = ({ text, color }: GemProps) => {
+export const Gem = ({ text, color }: GemProps) => {
   const setColor = () => {
     switch (color) {
       case "blue":

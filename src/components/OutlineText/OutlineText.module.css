@@ -8,8 +8,16 @@
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }
-.OutlineText:is([data-left="true"]) {
+.OutlineText:is([data-alignment="left"]) {
   place-items: start !important;
+}
+
+.OutlineText:is([data-alignment="right"]) {
+  place-items: end !important;
+}
+
+.OutlineText:is([data-alignment="center"]) {
+  place-items: center !important;
 }
 
 .OutlineText [data-uppercase="true"] {
@@ -26,7 +34,6 @@
 .whiteText {
   -webkit-text-stroke: 3px black;
   letter-spacing: 2px;
-  color: red;
   grid-row: 1/1;
   grid-column: 1/1;
   text-shadow: 2px 2px 0px #000000;

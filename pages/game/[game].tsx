@@ -24,6 +24,10 @@ import { GameType } from "@utilities/game";
 import { useGetGameData } from "@hooks/useGetGameData";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUserProfileStore } from "@components/store";
+import { Button } from "@components/Button";
+import { OutlineText } from "@components/OutlineText";
+import { KeyboardTile } from "@components/keyboard/KeyboardTile";
+import { Gem } from "@components/ProfileImage/ProfileImage";
 
 export default function Game() {
   const [selectedLetter, setSelectedLetter] = useState("");
@@ -200,117 +204,147 @@ export default function Game() {
   return (
     <Layout>
       <div className={styles.gameWrapper} data-testid="Game-wrapper">
-        <Link href="/games" className={styles.backLink}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Games
-        </Link>
-        {!gameData && (
-          <div className={styles.loading} data-testid="loading">
-            {" "}
-            loading game
-          </div>
-        )}
-        {error && status !== 406 && (
-          <div className={styles.error} data-testid="error">
-            Something has gone wrong
-            <br />
-            <b>Error Code: </b> {error.code} <br />
-            <b>Error Details: </b>
-            {error.details}
-          </div>
-        )}
-        {status === 406 && (
-          <div className={styles.noRows} data-testid="noRows">
-            no game found, <br />
-            <Link href={"/"}> return home</Link>
-          </div>
-        )}
-        {game && userProfile && (
-          <>
-            <nav className={styles.nav}>
-              <Link href={"/"}> </Link>
-            </nav>
-            <pre>{JSON.stringify(userProfile, null, 2)}</pre>
-            {!game.winner && (
-              <>
-                <div className={styles.gameBody}>
-                  <ScoreSection
-                    playerOneAvatar={playerOneImage}
-                    playerTwoAvatar={playerTwoImage}
-                    game={game}
-                  />
-                  <div className={styles.buttonRow}>
-                    <button onClick={() => forfeitGame()}>forfeit</button>
-                    {game.game_type === GameType.ONLINE_MULTIPLAYER &&
-                      game.player_two_id === null && (
-                        <>
-                          {navigator.canShare! && (
-                            <button onClick={() => inviteGame()}>
-                              invite player
-                            </button>
-                          )}
-                          {!navigator.canShare && (
-                            <button
-                              onClick={() =>
-                                navigator.clipboard.writeText(
-                                  "http://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key"
-                                )
-                              }
-                            >
-                              copy url
-                            </button>
-                          )}
-                        </>
+        <div className="central-width-container ">
+          <Link href="/games" className={styles.backLink}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Games
+          </Link>
+          {!gameData && (
+            <div className={styles.loading} data-testid="loading">
+              {" "}
+              loading game
+            </div>
+          )}
+          {error && status !== 406 && (
+            <div className={styles.error} data-testid="error">
+              Something has gone wrong
+              <br />
+              <b>Error Code: </b> {error.code} <br />
+              <b>Error Details: </b>
+              {error.details}
+            </div>
+          )}
+          {status === 406 && (
+            <div className={styles.noRows} data-testid="noRows">
+              no game found, <br />
+              <Link href={"/"}> return home</Link>
+            </div>
+          )}
+          {game && userProfile && (
+            <>
+              <nav className={styles.nav}>
+                <Link href={"/"}> </Link>
+              </nav>
+              {/* <pre>{JSON.stringify(userProfile, null, 2)}</pre> */}
+              {!game.winner && (
+                <>
+                  <div className={styles.gameBody}>
+                    <ScoreSection
+                      playerOneAvatar={playerOneImage}
+                      playerTwoAvatar={playerTwoImage}
+                      game={game}
+                    />
+                    <div className={styles.buttonRow}>
+                      {game.game_type === GameType.ONLINE_MULTIPLAYER &&
+                        game.player_two_id === null && (
+                          <>
+                            {navigator.canShare! && (
+                              <Button
+                                text="invite player"
+                                type={"primary"}
+                                action={() => inviteGame()}
+                              />
+                            )}
+                            {!navigator.canShare && (
+                              <Button
+                                text="copy game link"
+                                type={"primary"}
+                                action={() =>
+                                  navigator.clipboard.writeText(
+                                    "http://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key"
+                                  )
+                                }
+                              />
+                            )}
+                          </>
+                        )}
+
+                      {game.player_two_id && (
+                        <Button
+                          text="forfeit round"
+                          type={"secondary"}
+                          action={() => forfeitGame()}
+                        />
                       )}
-                  </div>
 
-                  <DndContext
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    modifiers={[restrictToWindowEdges]}
-                    sensors={sensors}
-                  >
-                    <div className={styles.dropArea}>
-                      <DroppableArea
-                        area={"left"}
-                        word={`${selectedLetter}${game.current_word}`}
-                      />
-
-                      <DroppableArea
-                        area={"right"}
-                        word={`${game.current_word}${selectedLetter}`}
+                      <Button
+                        text="End Game"
+                        type={"delete"}
+                        action={() => forfeitGame()}
                       />
                     </div>
-                    {displayKeyboard() ? <Keyboard /> : "not yours"}
-                  </DndContext>
-                  <div className={styles.gameInfo}>
-                    <div className={styles.currentPlayer}>
-                      {game.current_player_index === 0
-                        ? game.player_one_name
-                        : game.player_two_name}
-                      's turn
-                    </div>
-                    <div className={styles.currentWord}>
-                      {game.current_word}
+
+                    <DndContext
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      modifiers={[restrictToWindowEdges]}
+                      sensors={sensors}
+                    >
+                      <div className={styles.dropArea}>
+                        <DroppableArea
+                          area={"left"}
+                          word={`${selectedLetter}${game.current_word}`}
+                        />
+
+                        <DroppableArea
+                          area={"right"}
+                          word={`${game.current_word}${selectedLetter}`}
+                        />
+                      </div>
+                      {displayKeyboard() ? <Keyboard /> : "not yours"}
+                    </DndContext>
+                    <div className={styles.gameInfo}>
+                      <OutlineText
+                        sizeInRem={2}
+                        text={
+                          game.current_player_index === 0
+                            ? `${game.player_one_name}'s turn`
+                            : `${game.player_two_name}'s turn`
+                        }
+                        upperCase={false}
+                      />
+                      <ul className={styles.wordWrapper}>
+                        <li
+                          className={styles.emptyTile}
+                          style={{ marginRight: "10px" }}
+                        ></li>
+                        {game.current_word.split("").map((w, idx) => {
+                          return <KeyboardTile letter={w} key={idx} />;
+                        })}
+                        <li
+                          className={styles.emptyTile}
+                          style={{ marginLeft: "10px" }}
+                        ></li>
+                      </ul>
                     </div>
                   </div>
-                </div>
-              </>
-            )}
-            {game.winner && `winner is ${game.winner}`}
-            <dialog ref={dialogRef}>{dialogMessage}</dialog>
-          </>
-        )}
+                </>
+              )}
+              {game.winner && `winner is ${game.winner}`}
+              <dialog ref={dialogRef}>{dialogMessage}</dialog>
+            </>
+          )}
+        </div>
       </div>
     </Layout>
   );
@@ -336,10 +370,20 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       />
 
       <div className={styles.playerOneName} data-testid="player-one-name">
-        {game.player_one_name}
+        <OutlineText
+          text={game.player_one_name}
+          sizeInRem={1.4}
+          alignment="left"
+          upperCase={false}
+        />
       </div>
       <div className={styles.playerOneScore} data-testid="player-one-score">
-        {game.player_one_score}
+        <OutlineText
+          text={game.player_one_score.toString()}
+          sizeInRem={2}
+          upperCase
+          alignment="left"
+        />
       </div>
       <Image
         className={styles.playerTwoImage}
@@ -349,8 +393,22 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
         alt={`${game.player_two_name} avatar`}
       />
 
-      <div className={styles.playerTwoName}>{game.player_two_name}</div>
-      <div className={styles.playerTwoScore}>{game.player_two_score}</div>
+      <div className={styles.playerTwoName}>
+        <OutlineText
+          text={game.player_two_name}
+          sizeInRem={1.4}
+          alignment="right"
+          upperCase={false}
+        />
+      </div>
+      <div className={styles.playerTwoScore}>
+        <OutlineText
+          text={game.player_two_score.toString()}
+          sizeInRem={2}
+          upperCase
+          alignment="right"
+        />
+      </div>
     </div>
   );
 };
