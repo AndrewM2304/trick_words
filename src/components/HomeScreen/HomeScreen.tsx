@@ -12,6 +12,7 @@ import {
 import { GameType } from "@utilities/game";
 import { ProfileImage } from "@components/ProfileImage";
 import { Button } from "@components/Button";
+import { Dialog } from "@components/Dialog";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
@@ -24,10 +25,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
   const [gameType, setGameType] = useState<GameType>(GameType.COMPUTER);
   const supabase = useSupabaseClient<Games>();
   const router = useRouter();
-
-  const openDialog = () => {
-    dialogRef.current?.showModal();
-  };
+  const [showDialog, setShowDialog] = useState(false);
 
   const createGame = async () => {
     console.log(gameType);
@@ -82,74 +80,89 @@ const HomeScreen = ({}: HomeScreenProps) => {
         setLoading(false);
       }
     }
+    setShowDialog(false);
   };
 
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
       <div className={styles.central}>
-        <Button text="New Game" action={() => openDialog()} type="primary" />
+        <Button
+          text="New Game"
+          action={() => setShowDialog(true)}
+          type="primary"
+        />
         <Button
           text="how to play"
-          action={() => openDialog()}
+          action={() => setShowDialog(true)}
           type="secondary"
         />
       </div>
-      <dialog
+      {showDialog && (
+        <Dialog>
+          <fieldset className={styles.radioWrapper}>
+            <legend>Select Game Type</legend>
+            <label>
+              <input
+                type="radio"
+                name="game-type"
+                value="computer"
+                checked={gameType === "computer"}
+                onChange={(e) => setGameType(GameType.COMPUTER)}
+              />
+              <div className={styles.any}>Computer</div> Play against the
+              computer
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="game-type"
+                value="local_multiplayer"
+                checked={gameType === "local_multiplayer"}
+                onChange={(e) => setGameType(GameType.LOCAL_MULTIPLAYER)}
+              />
+              <div className={styles.any}>Pass and Play</div> Play with friends
+              on the same device
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="game-type"
+                value="online_multiplayer"
+                checked={gameType === "online_multiplayer"}
+                onChange={(e) => setGameType(GameType.ONLINE_MULTIPLAYER)}
+              />{" "}
+              <div className={styles.any}>Online Multiplayer</div> Play with
+              friends online
+            </label>
+          </fieldset>
+          {gameType === GameType.LOCAL_MULTIPLAYER && (
+            <>
+              <label htmlFor="player_name">Enter Second Player Name</label>
+              <input
+                type="text"
+                name="player_name"
+                id="player_name"
+                value={secondPlayer}
+                onChange={(e) => setSecondPlayer(e.target.value)}
+              />
+            </>
+          )}
+          <Button
+            action={() => createGame()}
+            text={"Create Game"}
+            type={"primary"}
+          ></Button>
+        </Dialog>
+      )}
+      {/* <dialog
         ref={dialogRef}
         className={styles.dialogBox}
         onClose={() => setSecondPlayer("")}
         onCancel={() => setSecondPlayer("")}
       >
-        <fieldset className={styles.radioWrapper}>
-          <legend>Select Game Type</legend>
-          <label>
-            <input
-              type="radio"
-              name="game-type"
-              value="computer"
-              checked={gameType === "computer"}
-              onChange={(e) => setGameType(GameType.COMPUTER)}
-            />
-            <div className={styles.any}>Computer</div> Play against the computer
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="game-type"
-              value="local_multiplayer"
-              checked={gameType === "local_multiplayer"}
-              onChange={(e) => setGameType(GameType.LOCAL_MULTIPLAYER)}
-            />
-            <div className={styles.any}>Pass and Play</div> Play with friends on
-            the same device
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="game-type"
-              value="online_multiplayer"
-              checked={gameType === "online_multiplayer"}
-              onChange={(e) => setGameType(GameType.ONLINE_MULTIPLAYER)}
-            />{" "}
-            <div className={styles.any}>Online Multiplayer</div> Play with
-            friends online
-          </label>
-        </fieldset>
-        {gameType === GameType.LOCAL_MULTIPLAYER && (
-          <>
-            <label htmlFor="player_name">Enter Second Player Name</label>
-            <input
-              type="text"
-              name="player_name"
-              id="player_name"
-              value={secondPlayer}
-              onChange={(e) => setSecondPlayer(e.target.value)}
-            />
-          </>
-        )}
-        <button onClick={() => createGame()}>create game</button>
-      </dialog>
+  
+      </dialog> */}
     </div>
   );
 };

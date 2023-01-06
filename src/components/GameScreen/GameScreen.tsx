@@ -44,6 +44,7 @@ const GameScreen = () => {
                 href={`/game/${localGame.id}?gametype=local`}
                 key={`${localGame.id}-local`}
                 className={styles.gameLink}
+                data-id={`${localGame.id}-local`}
               >
                 <GameCard game={localGame} />
               </Link>

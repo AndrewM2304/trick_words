@@ -20,7 +20,7 @@ const DroppableArea = ({ area, word }: DroppableAreaProps) => {
         data-active-dragging={active !== null ? true : false}
       >
         <OutlineText
-          text={`drag here to make ${word}`}
+          text={`${word}`}
           sizeInRem={1.4}
           alignment="center"
           upperCase={false}

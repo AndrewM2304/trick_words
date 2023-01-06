@@ -51,7 +51,9 @@
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.15);
   border: 2px solid black;
-  box-shadow: 0 0 0 3px #d8d37d, 0 0 0 5px black;
+  box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black, 2px 2px 0 5px rgb(0 0 0 / 70%),
+    inset 3px 3px 0px rgb(0 0 0 / 37%),
+    inset -3px -3px 0px rgb(255 255 255 / 5%);
 }
 
 .buttonRow {
@@ -63,13 +65,21 @@
 .wordWrapper {
   margin: 0px;
   display: flex;
-  gap: 2px;
+  gap: 10px;
   justify-content: center;
 }
 
 .wordWrapper li {
   flex: inherit;
   width: 35px;
+  box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black;
+  border-radius: 6px;
+  height: 54px;
+}
+
+.wordWrapper li > * {
+  height: 54px;
+  box-shadow: none;
 }
 
 .playerScoreWrapper {
@@ -116,11 +126,5 @@
   border-radius: 6px;
   background: var(--background-blue);
   border: 2px solid black;
-  box-shadow: 0 0 0 2px #212d48, 0 0 0 4px black;
-  margin-top: 3px;
-}
-
-.wordWrapper:nth-child(1) {
-  margin-right: 20px !important;
-  border: 1px solid red !important;
+  box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black;
 }

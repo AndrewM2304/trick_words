@@ -12,14 +12,13 @@
   display: grid;
   place-content: center;
   height: 60px;
-  border: 2px solid black;
-  box-shadow: inset 2px 2px 0px rgb(255 255 255 / 80%),
-    inset -2px -2px 0px rgb(0 0 0 / 35%);
+  box-shadow: inset 2px 2px 0px rgb(255 255 255 / 60%),
+    inset -2px -2px 0px rgb(0 0 0 / 20%);
   border-radius: 6px;
-  background: #e6eef2;
+  background: #e0eaee;
   position: relative;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
 }
 
 .keyboardTileTop {
@@ -42,6 +41,6 @@
 }
 
 .keyboardTileWrapper [data-black-background] {
-  -webkit-text-stroke: 5px black;
+  -webkit-text-stroke: 4px black;
   text-shadow: none;
 }

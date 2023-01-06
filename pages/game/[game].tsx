@@ -27,14 +27,14 @@ import { useUserProfileStore } from "@components/store";
 import { Button } from "@components/Button";
 import { OutlineText } from "@components/OutlineText";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
-import { Gem } from "@components/ProfileImage/ProfileImage";
-
+import { Dialog } from "@components/Dialog";
 export default function Game() {
   const [selectedLetter, setSelectedLetter] = useState("");
   const [dialogMessage, setDialogMessage] = useState("Checking word...");
+  const [showDialog, setShowDialog] = useState(false);
+
   const [game, setGame] = useState<Game | null>(null);
   const supabase = useSupabaseClient<Database>();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const { gameData, status, error } = useGetGameData();
@@ -80,8 +80,8 @@ export default function Game() {
     game: Game,
     forfeit: boolean = false
   ) => {
-    if (!dialogRef.current?.open) {
-      dialogRef.current?.showModal();
+    if (!showDialog) {
+      setShowDialog(true);
     }
 
     playerTurn(playerWord, game, forfeit).then(async (val) => {
@@ -100,7 +100,7 @@ export default function Game() {
 
   const closeModal = () => {
     setTimeout(() => {
-      dialogRef.current?.close();
+      setShowDialog(false);
       setDialogMessage("Checking word...");
     }, 2000);
   };
@@ -245,7 +245,6 @@ export default function Game() {
               <nav className={styles.nav}>
                 <Link href={"/"}> </Link>
               </nav>
-              {/* <pre>{JSON.stringify(userProfile, null, 2)}</pre> */}
               {!game.winner && (
                 <>
                   <div className={styles.gameBody}>
@@ -324,24 +323,27 @@ export default function Game() {
                         upperCase={false}
                       />
                       <ul className={styles.wordWrapper}>
-                        <li
-                          className={styles.emptyTile}
-                          style={{ marginRight: "10px" }}
-                        ></li>
+                        <li className={styles.emptyTile}></li>
                         {game.current_word.split("").map((w, idx) => {
                           return <KeyboardTile letter={w} key={idx} />;
                         })}
-                        <li
-                          className={styles.emptyTile}
-                          style={{ marginLeft: "10px" }}
-                        ></li>
+                        <li className={styles.emptyTile}></li>
                       </ul>
                     </div>
                   </div>
                 </>
               )}
               {game.winner && `winner is ${game.winner}`}
-              <dialog ref={dialogRef}>{dialogMessage}</dialog>
+              {showDialog && (
+                <Dialog>
+                  <OutlineText
+                    text={dialogMessage}
+                    sizeInRem={1.4}
+                    upperCase={false}
+                    alignment={"center"}
+                  />
+                </Dialog>
+              )}
             </>
           )}
         </div>

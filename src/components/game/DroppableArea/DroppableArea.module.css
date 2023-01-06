@@ -12,8 +12,8 @@
 }
 
 .droppable:has([data-is-highlight="true"]) {
-  background: rgba(216, 211, 125, 0.8);
-  backdrop-filter: blur(3px);
+  background: rgb(56 191 252 / 60%);
+  backdrop-filter: blur(1px);
   transition: 0.1s ease-in-out;
 }
 
