@@ -13,6 +13,7 @@ import { GameType } from "@utilities/game";
 import { ProfileImage } from "@components/ProfileImage";
 import { Button } from "@components/Button";
 import { Dialog } from "@components/Dialog";
+import { OutlineText } from "@components/OutlineText";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
@@ -86,6 +87,12 @@ const HomeScreen = ({}: HomeScreenProps) => {
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
       <div className={styles.central}>
+        <OutlineText
+          text={"Word Duel"}
+          sizeInRem={2}
+          upperCase={true}
+          alignment={"center"}
+        />
         <Button
           text="New Game"
           action={() => setShowDialog(true)}
@@ -97,21 +104,24 @@ const HomeScreen = ({}: HomeScreenProps) => {
           type="secondary"
         />
       </div>
-      {showDialog && (
-        <Dialog>
-          <fieldset className={styles.radioWrapper}>
-            <legend>Select Game Type</legend>
+
+      <Dialog display={showDialog} setDisplay={() => setShowDialog(false)}>
+        <fieldset className={styles.radioWrapper}>
+          <legend>Select Game Type</legend>
+          <div>
             <label>
-              <input
-                type="radio"
-                name="game-type"
-                value="computer"
-                checked={gameType === "computer"}
-                onChange={(e) => setGameType(GameType.COMPUTER)}
-              />
               <div className={styles.any}>Computer</div> Play against the
               computer
             </label>
+            <input
+              type="radio"
+              name="game-type"
+              value="computer"
+              checked={gameType === "computer"}
+              onChange={(e) => setGameType(GameType.COMPUTER)}
+            />
+          </div>
+          <div>
             <label>
               <input
                 type="radio"
@@ -123,38 +133,38 @@ const HomeScreen = ({}: HomeScreenProps) => {
               <div className={styles.any}>Pass and Play</div> Play with friends
               on the same device
             </label>
+          </div>
 
-            <label>
-              <input
-                type="radio"
-                name="game-type"
-                value="online_multiplayer"
-                checked={gameType === "online_multiplayer"}
-                onChange={(e) => setGameType(GameType.ONLINE_MULTIPLAYER)}
-              />{" "}
-              <div className={styles.any}>Online Multiplayer</div> Play with
-              friends online
-            </label>
-          </fieldset>
-          {gameType === GameType.LOCAL_MULTIPLAYER && (
-            <>
-              <label htmlFor="player_name">Enter Second Player Name</label>
-              <input
-                type="text"
-                name="player_name"
-                id="player_name"
-                value={secondPlayer}
-                onChange={(e) => setSecondPlayer(e.target.value)}
-              />
-            </>
-          )}
-          <Button
-            action={() => createGame()}
-            text={"Create Game"}
-            type={"primary"}
-          ></Button>
-        </Dialog>
-      )}
+          <label>
+            <input
+              type="radio"
+              name="game-type"
+              value="online_multiplayer"
+              checked={gameType === "online_multiplayer"}
+              onChange={(e) => setGameType(GameType.ONLINE_MULTIPLAYER)}
+            />{" "}
+            <div className={styles.any}>Online Multiplayer</div> Play with
+            friends online
+          </label>
+        </fieldset>
+        {gameType === GameType.LOCAL_MULTIPLAYER && (
+          <>
+            <label htmlFor="player_name">Enter Second Player Name</label>
+            <input
+              type="text"
+              name="player_name"
+              id="player_name"
+              value={secondPlayer}
+              onChange={(e) => setSecondPlayer(e.target.value)}
+            />
+          </>
+        )}
+        <Button
+          action={() => createGame()}
+          text={"Create Game"}
+          type={"primary"}
+        ></Button>
+      </Dialog>
       {/* <dialog
         ref={dialogRef}
         className={styles.dialogBox}

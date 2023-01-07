@@ -24,7 +24,6 @@
   grid-template-columns: 1fr;
   grid-template-rows: 80px auto 1fr auto;
   height: 100%;
-  margin-bottom: 15px;
 }
 
 .dropArea {

@@ -2,15 +2,19 @@ import React, { useEffect } from "react";
 import styles from "./KeyboardTile.module.css";
 import { useDraggable } from "@dnd-kit/core";
 import { OutlineText } from "@components/OutlineText";
-import { Button } from "@components/Button";
 
 export type KeyboardTileProps = {
   letter: string;
+  disabled?: boolean;
 };
-const KeyboardTile = ({ letter }: KeyboardTileProps) => {
+const KeyboardTile = ({ letter, disabled = false }: KeyboardTileProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging, active } =
     useDraggable({
       id: letter,
+      disabled: disabled,
+      attributes: {
+        tabIndex: disabled ? -1 : 0,
+      },
     });
 
   const style = transform
@@ -23,12 +27,18 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
     <li
       data-testid="KeyboardTile-wrapper"
       className={styles.keyboardTileWrapper}
+      tabIndex={-1}
     >
       <div
         className={styles.keyboardTileBottom}
         data-not-dragging={active && active.id !== letter}
       >
-        <OutlineText text={letter} sizeInRem={1.2} upperCase={true} />
+        <OutlineText
+          text={letter}
+          sizeInRem={1.2}
+          upperCase={true}
+          alignment={"center"}
+        />
       </div>
       <div
         data-testid="top-tile"
@@ -40,7 +50,12 @@ const KeyboardTile = ({ letter }: KeyboardTileProps) => {
         data-dragging={isDragging}
         data-not-dragging={active && active.id !== letter}
       >
-        <OutlineText text={letter} sizeInRem={1.2} upperCase={true} />
+        <OutlineText
+          text={letter}
+          sizeInRem={1.2}
+          upperCase={true}
+          alignment={"center"}
+        />
       </div>
     </li>
   );

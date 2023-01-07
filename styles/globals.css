@@ -12,6 +12,19 @@ html {
 * {
   box-sizing: border-box;
 }
+
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px black !important;
+}
+
+a:focus-visible {
+  outline: none;
+}
+
+a:focus-visible li {
+  box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px black;
+}
 :root {
   --background-blue: #101828;
   --dark-background: #1e2d4a;
@@ -42,7 +55,7 @@ ul {
 }
 
 .central-width-container {
-  width: min(80vw, 700px);
+  width: min(90vw, 1200px);
   display: flex;
   flex-direction: column;
   margin-inline: auto;

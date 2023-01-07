@@ -5,13 +5,15 @@ export type OutlineTextProps = {
   text: string;
   sizeInRem: number;
   upperCase: boolean;
-  alignment?: "left" | "center" | "right";
+  alignment: "left" | "center" | "right";
+  focus?: boolean;
 };
 const OutlineText = ({
   text,
   sizeInRem,
   upperCase,
   alignment = "center",
+  focus = false,
 }: OutlineTextProps) => {
   return (
     <>
@@ -27,12 +29,14 @@ const OutlineText = ({
           style={{
             fontSize: `${sizeInRem}rem`,
           }}
+          tabIndex={focus ? 0 : -1}
         >
           {text}
         </div>
         <div
           className={styles.innerText}
           data-uppercase={upperCase}
+          aria-hidden={true}
           style={{
             fontSize: `${sizeInRem}rem`,
           }}

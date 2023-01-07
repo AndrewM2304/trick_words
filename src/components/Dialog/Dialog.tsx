@@ -3,28 +3,34 @@ import styles from "./Dialog.module.css";
 
 export type DialogProps = {
   children: React.ReactNode;
+  display: boolean;
+  setDisplay: () => void;
 };
-const Dialog = ({ children }: DialogProps) => {
+const Dialog = ({ children, display, setDisplay }: DialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!dialogRef.current) return;
-    dialogRef.current.showModal();
-    return () => {
-      if (!dialogRef.current) return;
-      dialogRef.current.close();
-    };
-  }, []);
+    console.log(display);
+    console.log(dialogRef.current.open);
+    dialogRef.current.removeAttribute("open");
+    console.log(dialogRef.current.open);
+
+    if (display && !dialogRef.current.open) dialogRef.current.showModal();
+  }, [display]);
 
   return (
     <>
-      <dialog
-        data-testid="Dialog-wrapper"
-        className={styles.Dialog}
-        ref={dialogRef}
-      >
-        {children}
-      </dialog>
+      {display && (
+        <dialog
+          onClose={() => setDisplay()}
+          data-testid="Dialog-wrapper"
+          className={styles.Dialog}
+          ref={dialogRef}
+        >
+          {children}
+        </dialog>
+      )}
     </>
   );
 };
