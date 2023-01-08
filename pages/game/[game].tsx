@@ -231,17 +231,37 @@ export default function Game() {
               <nav className={styles.nav}>
                 <Link href="/games" className={styles.backLink}>
                   <svg
+                    width="14"
+                    height="20"
+                    viewBox="0 0 14 20"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
                   >
                     <path
-                      fillRule="evenodd"
-                      d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
-                      clipRule="evenodd"
+                      d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
+                      stroke="black"
+                      stroke-width="5"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                      stroke="black"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                      stroke="white"
+                      strokeWidth="3"
+                      strokeLinecap="round"
                     />
                   </svg>
-                  Games
+                  <OutlineText
+                    text={"Back"}
+                    sizeInRem={1}
+                    upperCase={true}
+                    alignment={"left"}
+                  />
                 </Link>
               </nav>
               {!game.winner && (

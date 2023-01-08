@@ -14,7 +14,7 @@
   height: 60px;
   box-shadow: inset 2px 2px 0px rgb(255 255 255 / 60%),
     inset -2px -2px 0px rgb(0 0 0 / 20%);
-  border-radius: 6px;
+  border-radius: 5px;
   background: #e0eaee;
   position: relative;
   cursor: pointer;

@@ -4,7 +4,8 @@
   gap: 20px;
   justify-content: center;
   flex-direction: column;
-  height: min(60%, 300px);
+  height: fit-content;
+  min-height: 100px;
   backdrop-filter: blur(1px);
   border-radius: 10px;
   background: var(--dark-background);
@@ -18,4 +19,45 @@
   bottom: 0px;
   left: 0px;
   background: rgba(0, 0, 0, 0.7);
+}
+
+.Dialog:is([data-animate="true"]) {
+  animation: modalEntry 0.3s ease-in;
+}
+
+.Dialog::backdrop:is([data-animate="true"]) {
+  animation: backdropEntry 0.2s ease-in;
+}
+
+.Dialog::backdrop:is([data-exit="true"]) {
+  animation: backdropExit 0.2s ease-in;
+}
+
+@keyframes backdropEntry {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropExit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalEntryMove {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }

@@ -117,7 +117,7 @@ export const playerTurn = async (
     console.log("next player " + word);
     tempGame.current_word = word;
 
-    returnMessage = `next player`;
+    returnMessage = `Next player`;
     if (
       tempGame.game_type === GameType.COMPUTER &&
       tempGame.current_player_index === 1

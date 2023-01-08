@@ -8,6 +8,9 @@
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }
+.OutlineText > *:focus-visible {
+  outline: none;
+}
 .OutlineText:is([data-alignment="left"]) {
   place-items: start !important;
   text-align: left;
