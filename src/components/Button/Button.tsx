@@ -22,7 +22,7 @@ const Button = ({ text, type, action, iconUrl }: ButtonProps) => {
       onMouseUp={() => setPressed(false)}
       data-pressed={pressed}
     >
-      <OutlineText upperCase text={text} sizeInRem={1} />
+      <OutlineText upperCase text={text} sizeInRem={1} alignment={"center"} />
     </button>
   );
 };

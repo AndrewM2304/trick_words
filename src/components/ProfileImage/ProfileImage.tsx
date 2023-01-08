@@ -100,7 +100,12 @@ export const Gem = ({ text, color }: GemProps) => {
   return (
     <>
       <div className={styles.gemWrapper}>
-        <OutlineText text={text} sizeInRem={0.875} upperCase={false} />
+        <OutlineText
+          text={text}
+          sizeInRem={0.875}
+          upperCase={false}
+          alignment={"center"}
+        />
         <svg
           width="103"
           height="42"
@@ -178,7 +183,12 @@ type NotificationBadge = {
 export const NotificationBadge = ({ text }: NotificationBadge) => {
   return (
     <div className={styles.notification}>
-      <OutlineText text={text} sizeInRem={0.875} upperCase={false} />
+      <OutlineText
+        text={text}
+        sizeInRem={0.875}
+        upperCase={false}
+        alignment={"center"}
+      />
     </div>
   );
 };
