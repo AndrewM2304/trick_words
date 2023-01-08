@@ -1,4 +1,4 @@
-import { DragEndEvent } from "@dnd-kit/core";
+import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import React, { useState } from "react";
 import { Database } from "@utilities/supabase";
 import { playerTurn } from "@game/game-functions";
@@ -14,20 +14,21 @@ export const usePlayerTurn = () => {
   const supabase = useSupabaseClient<Database>();
   const [game, setGame] = useState<Game | null>(null);
 
-  function handleDragStart(e: DragEndEvent) {
+  function handleDragStart(e: DragStartEvent) {
     setSelectedLetter(e.active.id.toString());
   }
 
-  function handleDragEnd(e: DragEndEvent, game: Game) {
+  function handleDragEnd(e: DragEndEvent) {
     setSelectedLetter("");
-
-    if (!e.over) return;
+    if (!e.over || !game) return;
     if (e.over.id === "left") {
       const playerWord = `${e.active.id}${game.current_word}`;
       updateGame(playerWord, game);
     }
     if (e.over.id === "right") {
+      console.log("right");
       const playerWord = `${game?.current_word}${e.active.id}`;
+
       updateGame(playerWord, game);
     }
   }
@@ -116,12 +117,23 @@ export const usePlayerTurn = () => {
       setDialogMessage("Checking word...");
     }, 2000);
   };
+
+  const forfeitGame = () => {
+    setDialogMessage("You forfeit this round, next player");
+    updateGame(game?.current_word!, game!, true);
+  };
+
   return {
     handleDragStart,
     handleDragEnd,
     setGame,
+    forfeitGame,
+    setShowDialog,
+    setDialogMessage,
+    setSelectedLetter,
     game,
     selectedLetter,
     dialogMessage,
+    showDialog,
   };
 };

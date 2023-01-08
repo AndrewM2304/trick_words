@@ -57,7 +57,7 @@ describe("player turn", () => {
     expect(localGame.current_word).toBe("a");
     const returnValue = await playerTurn(wordPass, localGame, false);
     expect(returnValue.update).toBeTruthy();
-    expect(returnValue.message).toBe("next player");
+    expect(returnValue.message).toBe("Next player");
     expect(returnValue.value.current_player_index).toBe(1);
     expect(returnValue.value.current_word).toBe(wordPass);
   });

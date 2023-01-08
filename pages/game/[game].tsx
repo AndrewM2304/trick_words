@@ -1,5 +1,5 @@
 import { Keyboard } from "@components/keyboard/Keyboard";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../styles/Game.module.css";
 import {
   KeyboardSensor,
@@ -10,37 +10,45 @@ import {
   useSensor,
 } from "@dnd-kit/core";
 import { DroppableArea } from "@components/game/DroppableArea";
-import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 type Game = Database["public"]["Tables"]["games"]["Row"];
 import Link from "next/link";
 import { Layout } from "@components/Layout";
-import { playerTurn } from "@game/game-functions";
 import Image from "next/image";
-import { local_game } from "@utilities/constants";
-import { GameType } from "@utilities/game";
-import { useGetGameData } from "@hooks/useGetGameData";
-import { useDownloadImages } from "@hooks/useDownloadImages";
-import { useUserProfileStore } from "@components/store";
 import { Button } from "@components/Button";
 import { OutlineText } from "@components/OutlineText";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
 import { Dialog } from "@components/Dialog";
-export default function Game() {
-  const [selectedLetter, setSelectedLetter] = useState("");
-  const [dialogMessage, setDialogMessage] = useState("Checking word...");
-  const [showDialog, setShowDialog] = useState(false);
+import { GameType } from "@utilities/game";
 
-  const [game, setGame] = useState<Game | null>(null);
-  const supabase = useSupabaseClient<Database>();
+import { useGetGameData } from "@hooks/useGetGameData";
+import { useDownloadImages } from "@hooks/useDownloadImages";
+import { useUserProfileStore } from "@components/store";
+import { usePlayerTurn } from "@hooks/usePlayerTurn";
+import { useRouter } from "next/router";
+
+export default function Game() {
+  const [displayHomeLink, setDisplayHomeLink] = useState(false);
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const { gameData, status, error } = useGetGameData();
-  const user = useUser();
   const { userProfile } = useUserProfileStore();
+  const router = useRouter();
+  const {
+    handleDragStart,
+    handleDragEnd,
+    setGame,
+    forfeitGame,
+    setShowDialog,
+    game,
+    selectedLetter,
+    dialogMessage,
+    showDialog,
+    setDialogMessage,
+  } = usePlayerTurn();
 
+  // sensor setup for droppable area
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
       delay: 50,
@@ -53,115 +61,8 @@ export default function Game() {
       tolerance: 5,
     },
   });
-
   const keyboardSensor = useSensor(KeyboardSensor, {});
-
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
-  function handleDragStart(e: DragEndEvent) {
-    setSelectedLetter(e.active.id.toString());
-  }
-
-  function handleDragEnd(e: DragEndEvent) {
-    setSelectedLetter("");
-
-    if (e.over === null || !game) return;
-    if (e.over.id === "left") {
-      const playerWord = `${e.active.id}${game?.current_word}`;
-      updateGame(playerWord, game);
-    }
-    if (e.over.id === "right") {
-      const playerWord = `${game?.current_word}${e.active.id}`;
-      updateGame(playerWord, game);
-    }
-  }
-
-  const updateGame = (
-    playerWord: string,
-    game: Game,
-    forfeit: boolean = false
-  ) => {
-    if (!showDialog) {
-      setShowDialog(true);
-    }
-
-    playerTurn(playerWord, game, forfeit).then(async (val) => {
-      console.log(val);
-      setTimeout(() => {
-        setDialogMessage(val.message);
-      }, 1000);
-      if (val.update) {
-        successfulResult(val.value, val.computerWord);
-      }
-      if (!val.update || forfeit) {
-        closeModal();
-      }
-    });
-  };
-
-  const closeModal = () => {
-    setTimeout(() => {
-      setShowDialog(false);
-      setDialogMessage("Checking word...");
-    }, 2000);
-  };
-
-  const successfulResult = async (resultValue: Game, computerWord: string) => {
-    if (!game) return;
-
-    if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
-      const { data, error } = await supabase
-        .from("games")
-        .update(resultValue)
-        .eq("id", game.id)
-        .select();
-
-      if (data) {
-        setGame(data[0]);
-      }
-      if (error) {
-        console.log(error);
-      }
-    }
-    if (
-      game.game_type === GameType.COMPUTER ||
-      game.game_type === GameType.LOCAL_MULTIPLAYER
-    ) {
-      setGame(resultValue);
-      const gamesFromLocalStorage = window.localStorage.getItem(local_game);
-      if (gamesFromLocalStorage) {
-        const games: Game[] = JSON.parse(gamesFromLocalStorage);
-        const updatedGames = games.map((g: Game) => {
-          if (g.id === resultValue.id) {
-            return resultValue;
-          }
-          return g;
-        });
-        window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
-      }
-    }
-    if (
-      resultValue.game_type === GameType.COMPUTER &&
-      resultValue.current_player_index === 1
-    ) {
-      const computerEnty = computerTurn(resultValue.current_word, computerWord);
-      console.log(computerEnty);
-      updateGame(computerEnty, resultValue, false);
-    }
-    closeModal();
-  };
-
-  const computerTurn = (currentWord: string, computerWord: string): string => {
-    console.log(currentWord);
-    const indexOfWord = computerWord.indexOf(currentWord);
-    return indexOfWord >= 1
-      ? computerWord.charAt(indexOfWord - 1) + currentWord
-      : currentWord + computerWord.charAt(indexOfWord + 1);
-  };
-
-  const forfeitGame = () => {
-    setDialogMessage("You forfeit this round, next player");
-    updateGame(game?.current_word!, game!, true);
-  };
 
   const inviteGame = async () => {
     const shareData = {
@@ -179,23 +80,43 @@ export default function Game() {
 
   useEffect(() => {
     if (!userProfile) return;
-    setGame(gameData);
-    if (!gameData) return;
+    if (!gameData && !error) {
+      setShowDialog(true);
+      setDialogMessage("Loading Game");
+    }
+    if (error) {
+      setDialogMessage(error.message.toString());
+      setDisplayHomeLink(true);
+    }
 
-    downloadImagesFromUrls([
-      gameData.player_one_avatar,
-      gameData.player_two_avatar,
-    ]);
-  }, [gameData, userProfile]);
+    setGame(gameData);
+
+    if (gameData && !error) {
+      setShowDialog(false);
+
+      setDialogMessage("Checking word...");
+      setDisplayHomeLink(false);
+      downloadImagesFromUrls([
+        gameData.player_one_avatar,
+        gameData.player_two_avatar,
+      ]);
+    }
+  }, [gameData, userProfile, error]);
 
   const displayKeyboard = (): boolean => {
     if (!game) return false;
     if (game.game_type === GameType.LOCAL_MULTIPLAYER) return true;
 
-    if (game.player_one_id === user?.id && game.current_player_index === 0) {
+    if (
+      game.player_one_id === userProfile?.id &&
+      game.current_player_index === 0
+    ) {
       return true;
     }
-    if (game.player_two_id === user?.id && game.current_player_index === 1) {
+    if (
+      game.player_two_id === userProfile?.id &&
+      game.current_player_index === 1
+    ) {
       return true;
     }
     return false;
@@ -205,27 +126,6 @@ export default function Game() {
     <Layout>
       <div className={styles.gameWrapper} data-testid="Game-wrapper">
         <div className="central-width-container ">
-          {!gameData && (
-            <div className={styles.loading} data-testid="loading">
-              {" "}
-              loading game
-            </div>
-          )}
-          {error && status !== 406 && (
-            <div className={styles.error} data-testid="error">
-              Something has gone wrong
-              <br />
-              <b>Error Code: </b> {error.code} <br />
-              <b>Error Details: </b>
-              {error.details}
-            </div>
-          )}
-          {status === 406 && (
-            <div className={styles.noRows} data-testid="noRows">
-              no game found, <br />
-              <Link href={"/"}> return home</Link>
-            </div>
-          )}
           {game && userProfile && (
             <>
               <nav className={styles.nav}>
@@ -240,8 +140,8 @@ export default function Game() {
                     <path
                       d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
                       stroke="black"
-                      stroke-width="5"
-                      stroke-linecap="round"
+                      strokeWidth="5"
+                      strokeLinecap="round"
                     />
                     <path
                       d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
@@ -313,8 +213,8 @@ export default function Game() {
                     </div>
 
                     <DndContext
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
+                      onDragStart={(e) => handleDragStart(e)}
+                      onDragEnd={(e) => handleDragEnd(e)}
                       modifiers={[restrictToWindowEdges]}
                       sensors={sensors}
                     >
@@ -360,21 +260,27 @@ export default function Game() {
                 </>
               )}
               {game.winner && `winner is ${game.winner}`}
-
-              <Dialog
-                setDisplay={() => setShowDialog(false)}
-                display={showDialog}
-              >
-                <OutlineText
-                  text={dialogMessage}
-                  sizeInRem={1.4}
-                  upperCase={false}
-                  alignment={"center"}
-                  focus={true}
-                />
-              </Dialog>
             </>
           )}
+          <Dialog setDisplay={() => setShowDialog(false)} display={showDialog}>
+            <OutlineText
+              text={dialogMessage}
+              sizeInRem={1.4}
+              upperCase={false}
+              alignment={"center"}
+              focus={true}
+            />
+            {displayHomeLink && (
+              <>
+                <br />
+                <Button
+                  text="Go Home"
+                  action={() => router.push("/")}
+                  type="primary"
+                />{" "}
+              </>
+            )}
+          </Dialog>
         </div>
       </div>
     </Layout>

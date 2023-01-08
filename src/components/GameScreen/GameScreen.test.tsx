@@ -48,7 +48,7 @@ describe("GameScreen Component", () => {
 
     render(<GameScreen />);
     await waitFor(() =>
-      expect(screen.getAllByTestId("computer-game").length).toBe(2)
+      expect(screen.getAllByTestId("local_multiplayer-game").length).toBe(2)
     );
   });
 

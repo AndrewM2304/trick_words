@@ -14,6 +14,7 @@ export const useGetGameData = () => {
 
   const [gameData, setGameData] = useState<GameDB | null>(null);
   const [status, setStatus] = useState<number>();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<PostgrestError | null>();
   const supabase = useSupabaseClient<GameDB>();
   const { games } = useGamesStore();
@@ -21,14 +22,26 @@ export const useGetGameData = () => {
 
   useEffect(() => {
     if (gameData || !userProfile) return;
+    setLoading(true);
     getGame().then((d) => {
-      if (d === undefined) return;
+      if (d === undefined) {
+        setGameData(null);
+        setError({
+          details: "no_local",
+          hint: "none",
+          code: "100",
+          message: "No Local game found, return to home",
+        });
+
+        return;
+      }
       setGameData(d ?? null);
       addSecondPlayer(d).then((d) => {
         if (d === undefined) return;
         setGameData(d ?? null);
       });
     });
+    console.log(error);
   }, [router.query, gameData, userProfile]);
 
   useEffect(() => {
@@ -45,6 +58,14 @@ export const useGetGameData = () => {
     if (gametype === "local" && gamesFromLocalStorage) {
       const games: GameDB[] = JSON.parse(gamesFromLocalStorage);
       const selectedGame = games.filter((g) => g.id === Number(game))[0];
+      if (!selectedGame) {
+        setError({
+          details: "no_local",
+          hint: "none",
+          code: "100",
+          message: "No Local game found, return to home",
+        });
+      }
       return selectedGame;
     }
     if (gametype === undefined) {
@@ -72,12 +93,6 @@ export const useGetGameData = () => {
       gameroom === game.secret_key &&
       userProfile.id !== game.player_one_id
     ) {
-      console.log({
-        player_two_id: userProfile.id,
-        playerer_two_name: userProfile?.full_name,
-        player_two_avatar: userProfile?.avatar_url,
-      });
-
       const { data, error } = await supabase
         .from("games")
         .update({
@@ -91,10 +106,23 @@ export const useGetGameData = () => {
         return data[0];
       }
       if (error) {
-        console.log(error);
+        setError(error);
       }
+    }
+    if (
+      gametype === undefined &&
+      game.player_two_id === null &&
+      gameroom !== game.secret_key &&
+      userProfile.id !== game.player_one_id
+    ) {
+      setError({
+        details: "no_local",
+        hint: "none",
+        code: "100",
+        message: "You do not have access to this game",
+      });
     }
   };
 
-  return { gameData: gameData, status: status, error: error };
+  return { gameData: gameData, status: status, error: error, loading: loading };
 };

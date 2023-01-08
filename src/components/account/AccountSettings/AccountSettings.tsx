@@ -6,7 +6,6 @@ import {
 } from "@supabase/auth-helpers-react";
 import styles from "./AccountSettings.module.css";
 import { Database } from "@utilities/supabase";
-import AvatarWidget from "@components/account/AvatarWidget/AvatarWidget";
 import { useUserProfileStore } from "@components/store";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 import Cropper from "react-easy-crop";
@@ -123,6 +122,8 @@ const AccountSettings = () => {
 
   return (
     <>
+      {userProfile && <>user</>}
+      {session && <>session</>}
       {userProfile && session && (
         <>
           <div className="form-widget" data-testid="AccountSettings-wrapper">

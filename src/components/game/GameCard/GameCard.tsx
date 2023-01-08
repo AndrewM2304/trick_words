@@ -65,7 +65,10 @@ const GameCard = ({ game }: GameCardProps) => {
     <>
       <li data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
         <div className={styles.gradient}></div>
-        <div className={styles.profileWrapper}>
+        <div
+          className={styles.profileWrapper}
+          data-testid={`${game.game_type}-game`}
+        >
           <ProfileImage
             color={setColor() ?? "blue"}
             text={game.player_two_name}
@@ -79,7 +82,7 @@ const GameCard = ({ game }: GameCardProps) => {
           />
         </div>
 
-        <div className={styles.cardContent}>
+        <div className={styles.cardContent} data-testid="score">
           <OutlineText
             alignment="left"
             text={`${renderScore().currentPlayerScore} - ${
@@ -98,11 +101,12 @@ const GameCard = ({ game }: GameCardProps) => {
 
         {!game.player_two_id &&
           game.game_type === GameType.ONLINE_MULTIPLAYER && (
-            <div className={styles.waitOverlay}>
+            <div className={styles.waitOverlay} data-testid="waiting-overlay">
               <OutlineText
                 text="Waiting for player to accept"
                 sizeInRem={1.2}
                 upperCase
+                alignment={"center"}
               />
               <div className={styles.buttonRow}>
                 {navigator.canShare! && (

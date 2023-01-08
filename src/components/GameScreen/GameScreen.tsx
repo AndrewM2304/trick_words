@@ -38,11 +38,11 @@ const GameScreen = () => {
     <div data-testid="GameScreen-wrapper" className={styles.GameScreenWrapper}>
       <ul className="central-width-container">
         {localGames &&
-          localGames.map((localGame: Games) => {
+          localGames.map((localGame: Games, idx: number) => {
             return (
               <Link
                 href={`/game/${localGame.id}?gametype=local`}
-                key={`${localGame.id}-local`}
+                key={`${localGame.id}-local-${idx}`}
                 className={styles.gameLink}
                 data-id={`${localGame.id}-local`}
               >
@@ -51,13 +51,13 @@ const GameScreen = () => {
             );
           })}
         {games &&
-          games.map((game: Games) => {
+          games.map((game: Games, idx: number) => {
             return (
               <>
                 {!disableLink(game) && (
                   <Link
                     href={`/game/${game.id}`}
-                    key={game.id}
+                    key={`${game.id}-local-${idx}`}
                     className={styles.gameLink}
                     onClick={(e) =>
                       linkSetting(e, game.game_type, game.player_two_id)
@@ -72,7 +72,12 @@ const GameScreen = () => {
                     <GameCard game={game} />
                   </Link>
                 )}
-                {disableLink(game) && <GameCard game={game} />}
+                {disableLink(game) && (
+                  <GameCard
+                    game={game}
+                    key={`${game.id}-local-${idx}-nolink`}
+                  />
+                )}
               </>
             );
           })}

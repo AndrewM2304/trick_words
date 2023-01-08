@@ -33,6 +33,16 @@ export const handlers = [
     );
   }),
 
+  rest.get(`${game_functions_url}ar`, (_req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        inList: true,
+        exactMatch: true,
+      })
+    );
+  }),
+
   // supabase mocks
   // rest.get(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/avatars/default_user_avatar.svg`, (_req, res, ctx) => {
 

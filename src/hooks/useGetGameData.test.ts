@@ -1,7 +1,13 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useGetGameData } from "./useGetGameData";
-import { mockGame, mockUser } from "@testing/mockData";
+import {
+  mockGame,
+  mockUser,
+  mockUserProfile,
+  supabaseMockGame,
+} from "@testing/mockData";
 import { local_game } from "@utilities/constants";
+import { GameType } from "@utilities/game";
 
 let mockRouterValue: { query: { game: number; gametype: string | undefined } } =
   {
@@ -10,9 +16,6 @@ let mockRouterValue: { query: { game: number; gametype: string | undefined } } =
       gametype: "l",
     },
   };
-
-let supabaseMockGame = { ...mockGame };
-supabaseMockGame.current_word = "b";
 
 const setLocalStorage = (id: string, data: any) => {
   window.localStorage.setItem(id, JSON.stringify(data));
@@ -31,6 +34,15 @@ const mock = {
     })),
   })),
 };
+
+jest.mock("@components/store", () => ({
+  useUserProfileStore: jest.fn(() => ({
+    userProfile: jest.fn(() => mockUserProfile),
+  })),
+  useGamesStore: jest.fn(() => ({
+    games: [mockGame],
+  })),
+}));
 
 jest.mock("next/router", () => ({
   useRouter: () => {
@@ -65,7 +77,8 @@ describe("useGetGameData", () => {
     act(() => (mockRouterValue.query.gametype = undefined));
     const { result } = renderHook(() => useGetGameData());
     expect(result.current.gameData).toBeNull();
-    await waitFor(() =>
+
+    waitFor(() =>
       expect(result.current.gameData).toStrictEqual(supabaseMockGame)
     );
   });

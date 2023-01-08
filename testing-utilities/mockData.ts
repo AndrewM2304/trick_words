@@ -72,6 +72,17 @@ export const mockUser: User = {
   role: "authenticated",
 };
 
+export const mockUserProfile = {
+  id: "111",
+  updated_at: "111",
+  username: "Andrew M",
+  full_name: "Andrew James",
+  avatar_url:
+    '{"src":"/_next/static/media/default_user_avatar.942977fa.svg","height":90,"width":90}',
+  website: null,
+  email: null,
+};
+
 export const mockUserRow = {
   username: null,
   website: null,
@@ -86,26 +97,32 @@ const mockGameUser: User = {
   aud: mockUser.aud,
   created_at: mockUser.created_at,
 };
-export const mockGameCard: GameCardProps = {
-  playerOneId: "1",
-  playerOneName: "mock player one",
-  playerOneAvatar: "a",
-  playerOneScore: 0,
-  playerTwoId: "2",
-  playerTwoName: "mock player two",
-  playerTwoAvatar: "b",
-  playerTwoScore: 1,
-  currentPlayerIndex: 0,
-  currentWord: "a",
-  gameType: GameType.COMPUTER,
-};
 
 export const mockGame: Game = {
   id: 1,
   created_at: "",
   current_word: "a",
   current_letter_index: 0,
-  game_type: GameType.COMPUTER,
+  game_type: GameType.LOCAL_MULTIPLAYER,
+  secret_key: "",
+  current_player_index: 0,
+  player_one_score: 0,
+  player_two_score: 0,
+  player_one_id: "test 1",
+  player_two_id: "test 2",
+  player_one_name: "p1",
+  player_two_name: "p2",
+  player_one_avatar: "",
+  player_two_avatar: "",
+  winner: null,
+};
+
+export const supabaseMockGame: Game = {
+  id: 1,
+  created_at: "",
+  current_word: "b",
+  current_letter_index: 0,
+  game_type: GameType.ONLINE_MULTIPLAYER,
   secret_key: "",
   current_player_index: 0,
   player_one_score: 0,

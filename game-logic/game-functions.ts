@@ -5,7 +5,12 @@ import { Database } from "@utilities/supabase";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { letters } from "./word-list";
 type GameDBType = Database["public"]["Tables"]["games"]["Row"];
-
+export type playerTurnType = {
+  update: boolean;
+  value: GameDBType;
+  message: string;
+  computerWord: string;
+};
 export const identifyIfWordInList = (word: string): GameReturnValue => {
   let value: GameReturnValue = {
     inList: false,
@@ -37,14 +42,9 @@ export const playerTurn = async (
   word: string,
   currentGame: GameDBType,
   forfeit: boolean = false
-): Promise<{
-  update: boolean;
-  value: GameDBType;
-  message: string;
-  computerWord: string;
-}> => {
+): Promise<playerTurnType> => {
   const tempGame = { ...currentGame };
-
+  console.log(word);
   const result = await fetch(`${game_functions_url}${word}`);
 
   let returnMessage = "";
