@@ -2,10 +2,10 @@ import { AccountSettings } from "@components/account/AccountSettings";
 import { Layout } from "@components/Layout";
 import { TabWrapper } from "@components/TabWrapper";
 import React from "react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 
 function Profile() {
-  const { session } = useSessionContext();
+  const session = useSession();
   return (
     <Layout>
       {session && (

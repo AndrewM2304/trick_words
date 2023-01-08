@@ -7,14 +7,22 @@ import {
   mockUserProfile,
   mockUserRow,
 } from "@testing/mockData";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import {
+  SessionContextProvider,
+  SupabaseClient,
+} from "@supabase/auth-helpers-react";
+// import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import userAvatar from "../../../../public/user.svg";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { createClient } from "@supabase/supabase-js";
 
 jest.mock("@supabase/auth-helpers-react", () => ({
   useUser: jest.fn(() => mockUser),
   useSupabaseClient: jest.fn(() => mockUserRow),
-  useSessionContext: jest.fn(() => mockSession),
+  useSession: jest.fn(() => mockSession),
+}));
+
+jest.mock("@supabase/auth-helpers-nextjs", () => ({
+  createBrowserSupabaseClient: jest.fn(),
 }));
 
 jest.mock("@components/store", () => ({
@@ -23,19 +31,17 @@ jest.mock("@components/store", () => ({
   })),
 }));
 
-const mockSB = jest.fn();
-const MockWrapper = () => {
-  const [supabase] = useState(() => createBrowserSupabaseClient());
-
-  return (
-    <SessionContextProvider
-      supabaseClient={supabase}
-      initialSession={mockSession}
-    >
-      <AccountSettings />
-    </SessionContextProvider>
-  );
+const mockImage = {
+  playerOneImage: userAvatar,
+  playerTwoImage: userAvatar,
+  downloadImagesFromUrls: jest.fn(),
 };
+
+jest.mock("@hooks/useDownloadImages", () => ({
+  useDownloadImages: () => {
+    return mockImage;
+  },
+}));
 
 describe("AccountSettings Component", () => {
   test("it should exist", () => {

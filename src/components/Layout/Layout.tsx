@@ -4,7 +4,7 @@ import { useGamesStore, useUserProfileStore } from "@components/store";
 import {
   useUser,
   useSupabaseClient,
-  useSessionContext,
+  useSession,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 import { default_avatar } from "@utilities/constants";
@@ -31,7 +31,7 @@ const Layout = ({ children }: LayoutProps) => {
   const supabase = useSupabaseClient();
   const { downloadImagesFromUrls, playerOneImage } = useDownloadImages();
 
-  const { error, isLoading, session } = useSessionContext();
+  const session = useSession();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -147,7 +147,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      {(!session || isLoading) && (
+      {!session && (
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
@@ -155,7 +155,7 @@ const Layout = ({ children }: LayoutProps) => {
           providers={["google", "facebook", "twitter"]}
         />
       )}
-      {(session || !isLoading) && (
+      {session && (
         <main className={styles.main}>
           <>
             {userAvatarUrl !== "" && <>{children}</>}

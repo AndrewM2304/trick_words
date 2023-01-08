@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   useUser,
   useSupabaseClient,
-  useSessionContext,
+  useSession,
 } from "@supabase/auth-helpers-react";
 import styles from "./AccountSettings.module.css";
 import { Database } from "@utilities/supabase";
@@ -18,7 +18,7 @@ const AccountSettings = () => {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
   const [loading, setLoading] = useState(false);
-  const { session, isLoading } = useSessionContext();
+  const session = useSession();
   const { userProfile } = useUserProfileStore();
   const [fullName, setFullName] = useState<Profiles["full_name"]>("");
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);

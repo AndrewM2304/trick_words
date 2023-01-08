@@ -28,6 +28,7 @@ jest.mock("@hooks/useDownloadImages", () => ({
     return mockImage;
   },
 }));
+
 const mockImage = {
   playerOneImage: userAvatar,
   playerTwoImage: userAvatar,
@@ -68,6 +69,12 @@ const MockWrapper = () => {
     </Layout>
   );
 };
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.show = jest.fn();
+  HTMLDialogElement.prototype.showModal = jest.fn();
+  HTMLDialogElement.prototype.close = jest.fn();
+});
 
 describe("game", () => {
   beforeEach(() => {
