@@ -109,6 +109,7 @@ const Layout = ({ children }: LayoutProps) => {
             addGame(newItem);
           }
           if (payload.eventType === "DELETE") {
+            console.log(payload);
             const gameToRemove: Games = payload.old as Games;
             deleteGame(gameToRemove);
           }

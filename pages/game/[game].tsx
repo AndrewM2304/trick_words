@@ -27,14 +27,18 @@ import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUserProfileStore } from "@components/store";
 import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { local_game } from "@utilities/constants";
 
 export default function Game() {
   const [displayHomeLink, setDisplayHomeLink] = useState(false);
+  const [shareButtonText, setShareButtonText] = useState("Invite Player");
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const { gameData, status, error } = useGetGameData();
   const { userProfile } = useUserProfileStore();
   const router = useRouter();
+  const supabase = useSupabaseClient<Game>();
   const {
     handleDragStart,
     handleDragEnd,
@@ -70,11 +74,48 @@ export default function Game() {
       text: "Follow the link to join the game",
       url: `https://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key}`,
     };
-    try {
-      console.log(shareData);
-      await navigator.share(shareData);
-    } catch (err) {
-      console.log(err);
+
+    if (navigator.canShare!) {
+      try {
+        console.log(shareData);
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareData.url);
+      setShareButtonText("URL Copied!");
+      setTimeout(() => {
+        setShareButtonText("Invite Player");
+      }, 2000);
+    }
+  };
+
+  const deleteGame = async () => {
+    console.log("delete");
+    if (game?.game_type === GameType.ONLINE_MULTIPLAYER) {
+      const { data, error } = await supabase
+        .from("games")
+        .delete()
+        .eq("id", game.id);
+
+      if (data) {
+        console.log("dd");
+        console.log(data);
+        router.push("/games");
+      }
+    } else {
+      const gamesFromLocalStorage = window.localStorage.getItem(local_game);
+      if (!gamesFromLocalStorage) return;
+      const games: Game[] = JSON.parse(gamesFromLocalStorage);
+      console.log(games);
+      const remainingGames = games.filter((g) => g.id !== Number(game?.id));
+      console.log(remainingGames);
+      window.localStorage.setItem(
+        local_game,
+        JSON.stringify([...remainingGames])
+      );
+      router.push("/games");
     }
   };
 
@@ -100,6 +141,12 @@ export default function Game() {
         gameData.player_one_avatar,
         gameData.player_two_avatar,
       ]);
+    }
+
+    if (gameData && gameData.winner) {
+      setShowDialog(true);
+      setDialogMessage(`winner is ${gameData.winner}`);
+      setDisplayHomeLink(true);
     }
   }, [gameData, userProfile, error]);
 
@@ -176,24 +223,11 @@ export default function Game() {
                       {game.game_type === GameType.ONLINE_MULTIPLAYER &&
                         game.player_two_id === null && (
                           <>
-                            {navigator.canShare! && (
-                              <Button
-                                text="invite player"
-                                type={"primary"}
-                                action={() => inviteGame()}
-                              />
-                            )}
-                            {!navigator.canShare && (
-                              <Button
-                                text="copy game link"
-                                type={"primary"}
-                                action={() =>
-                                  navigator.clipboard.writeText(
-                                    "http://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key"
-                                  )
-                                }
-                              />
-                            )}
+                            <Button
+                              text={shareButtonText}
+                              type={"primary"}
+                              action={() => inviteGame()}
+                            />
                           </>
                         )}
 
@@ -208,7 +242,7 @@ export default function Game() {
                       <Button
                         text="End Game"
                         type={"delete"}
-                        action={() => forfeitGame()}
+                        action={() => deleteGame()}
                       />
                     </div>
 
@@ -259,7 +293,6 @@ export default function Game() {
                   </div>
                 </>
               )}
-              {game.winner && `winner is ${game.winner}`}
             </>
           )}
           <Dialog setDisplay={() => setShowDialog(false)} display={showDialog}>

@@ -30,7 +30,7 @@ export const useGetGameData = () => {
           details: "no_local",
           hint: "none",
           code: "100",
-          message: "No Local game found, return to home",
+          message: `No game found, return to home`,
         });
 
         return;
@@ -63,7 +63,7 @@ export const useGetGameData = () => {
           details: "no_local",
           hint: "none",
           code: "100",
-          message: "No Local game found, return to home",
+          message: "No game found, return to home",
         });
       }
       return selectedGame;

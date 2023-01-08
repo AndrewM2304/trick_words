@@ -6,6 +6,7 @@ import { Database } from "@utilities/supabase";
 import { useGamesStore } from "@components/store";
 import { local_game } from "@utilities/constants";
 import { GameType } from "@utilities/game";
+import { OutlineText } from "@components/OutlineText";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 const GameScreen = () => {
@@ -81,6 +82,17 @@ const GameScreen = () => {
               </>
             );
           })}
+
+        {localGames.length === 0 && games.length === 0 && (
+          <>
+            <OutlineText
+              text={"No games in progress"}
+              sizeInRem={2}
+              upperCase={false}
+              alignment={"center"}
+            />
+          </>
+        )}
       </ul>
     </div>
   );
