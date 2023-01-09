@@ -9,6 +9,11 @@
   margin: auto;
 }
 
+.gameLink {
+  margin: 0px;
+  list-style: none;
+}
+
 @media (min-width: 800px) {
   .GameScreenWrapper ul {
     gap: 20px 30px;

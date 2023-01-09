@@ -63,7 +63,7 @@ const GameCard = ({ game }: GameCardProps) => {
 
   return (
     <>
-      <li data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
+      <div data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
         <div className={styles.gradient}></div>
         <div
           className={styles.profileWrapper}
@@ -137,7 +137,7 @@ const GameCard = ({ game }: GameCardProps) => {
               </div>
             </div>
           )}
-      </li>
+      </div>
     </>
   );
 };

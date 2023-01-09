@@ -41,25 +41,26 @@ const GameScreen = () => {
         {localGames &&
           localGames.map((localGame: Games, idx: number) => {
             return (
-              <Link
-                href={`/game/${localGame.id}?gametype=local`}
+              <li
                 key={`${localGame.id}-local-${idx}`}
                 className={styles.gameLink}
-                data-id={`${localGame.id}-local`}
               >
-                <GameCard game={localGame} />
-              </Link>
+                <Link
+                  href={`/game/${localGame.id}?gametype=local`}
+                  data-id={`${localGame.id}-local`}
+                >
+                  <GameCard game={localGame} />
+                </Link>
+              </li>
             );
           })}
         {games &&
           games.map((game: Games, idx: number) => {
             return (
-              <>
+              <li key={`${game.id}-local-${idx}`} className={styles.gameLink}>
                 {!disableLink(game) && (
                   <Link
                     href={`/game/${game.id}`}
-                    key={`${game.id}-local-${idx}`}
-                    className={styles.gameLink}
                     onClick={(e) =>
                       linkSetting(e, game.game_type, game.player_two_id)
                     }
@@ -79,7 +80,7 @@ const GameScreen = () => {
                     key={`${game.id}-local-${idx}-nolink`}
                   />
                 )}
-              </>
+              </li>
             );
           })}
 

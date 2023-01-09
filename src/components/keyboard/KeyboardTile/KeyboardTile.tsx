@@ -35,7 +35,7 @@ const KeyboardTile = ({ letter, disabled = false }: KeyboardTileProps) => {
       >
         <OutlineText
           text={letter}
-          sizeInRem={1.2}
+          sizeInRem={1}
           upperCase={true}
           alignment={"center"}
         />
@@ -52,7 +52,7 @@ const KeyboardTile = ({ letter, disabled = false }: KeyboardTileProps) => {
       >
         <OutlineText
           text={letter}
-          sizeInRem={1.2}
+          sizeInRem={1}
           upperCase={true}
           alignment={"center"}
         />

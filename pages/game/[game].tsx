@@ -61,7 +61,7 @@ export default function Game() {
   });
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: {
-      delay: 50,
+      delay: 5,
       tolerance: 5,
     },
   });

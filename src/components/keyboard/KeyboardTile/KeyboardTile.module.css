@@ -8,10 +8,10 @@
 
 .keyboardTileBottom,
 .keyboardTileTop {
-  line-height: 50px;
+  line-height: 55px;
   display: grid;
   place-content: center;
-  height: 60px;
+  height: 50px;
   box-shadow: inset 2px 2px 0px rgb(255 255 255 / 60%),
     inset -2px -2px 0px rgb(0 0 0 / 20%);
   border-radius: 5px;

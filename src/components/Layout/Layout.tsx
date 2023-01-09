@@ -149,12 +149,15 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
       {!session && (
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          theme="dark"
-          providers={["google", "facebook", "twitter"]}
-        />
+        <main className={styles.main} style={{ margin: 15 }}>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="dark"
+            providers={["facebook", "google"]}
+            redirectTo={"https://word-game-2-5jouxygjw-andrewm2304.vercel.app"}
+          />
+        </main>
       )}
       {session && (
         <main className={styles.main}>
