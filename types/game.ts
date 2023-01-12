@@ -1,8 +1,7 @@
 export type GameReturnValue = {
   inList: boolean;
   exactMatch: boolean;
-  countOfPotentialWords: number;
-  computerWord: string;
+  computerWords: string[] | null;
 };
 
 export type GamePlayer = { id: string; score: number };

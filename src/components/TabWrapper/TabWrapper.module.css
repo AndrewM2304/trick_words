@@ -47,6 +47,10 @@
   width: 30px;
 }
 
+.landscape {
+  display: none;
+}
+
 @media (min-width: 800px) {
   .tabsWrapper {
     grid-template-rows: auto 1fr;
@@ -84,5 +88,16 @@
     position: absolute;
     right: 6px;
     top: 12px;
+  }
+}
+
+@media screen and (max-width: 900px) and (orientation: landscape) {
+  .landscape {
+    display: grid;
+    place-items: center;
+  }
+
+  .portrait {
+    display: none;
   }
 }

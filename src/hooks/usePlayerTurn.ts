@@ -48,7 +48,7 @@ export const usePlayerTurn = () => {
         setDialogMessage(val.message);
       }, 1000);
       if (val.update) {
-        successfulResult(val.value, val.computerWord, game);
+        successfulResult(val.value, val.computerWords, game);
       }
       if (!val.update || forfeit) {
         closeModal();
@@ -58,7 +58,7 @@ export const usePlayerTurn = () => {
 
   const successfulResult = async (
     resultValue: Game,
-    computerWord: string,
+    computerWords: string[] | null,
     game: Game
   ) => {
     if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
@@ -96,9 +96,7 @@ export const usePlayerTurn = () => {
       resultValue.game_type === GameType.COMPUTER &&
       resultValue.current_player_index === 1
     ) {
-      const computerEnty = computerTurn(resultValue.current_word, computerWord);
-      console.log(computerEnty);
-      updateGame(computerEnty, resultValue, false);
+      updateGame(computerWords[0], resultValue, false);
     }
     closeModal();
   };

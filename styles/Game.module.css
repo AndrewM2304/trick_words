@@ -8,7 +8,10 @@
 }
 
 .nav {
-  padding: 30px 15px;
+  height: 10dvh;
+  display: grid;
+  align-content: center;
+  padding-left: 15px;
 }
 .backLink {
   display: flex;
@@ -34,7 +37,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 80px auto 1fr auto;
-  height: 100%;
+  height: 90dvh;
 }
 
 .dropArea {
@@ -137,4 +140,24 @@
   background: var(--background-blue);
   border: 2px solid black;
   box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black;
+}
+
+.landscape {
+  display: none;
+}
+
+@media screen and (max-width: 900px) and (orientation: landscape) and (max-height: 400px) {
+  .landscape {
+    display: grid;
+    place-items: center;
+  }
+
+  .portrait {
+    display: none;
+  }
+
+  .gameWrapper [data-central] {
+    display: grid;
+    place-items: center;
+  }
 }

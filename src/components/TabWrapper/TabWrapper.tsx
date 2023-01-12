@@ -28,8 +28,15 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
 
   return (
     <div className={styles.tabsWrapper} data-testid="TabWrapper-wrapper">
-      {children}
-
+      <div className={styles.landscape}>
+        <OutlineText
+          text={"The game wont fit in landscape, please rotate your device"}
+          sizeInRem={2}
+          upperCase={false}
+          alignment={"center"}
+        />
+      </div>
+      <div className={styles.portrait}>{children}</div>
       <nav className={styles.tabs}>
         <Link
           href="/"

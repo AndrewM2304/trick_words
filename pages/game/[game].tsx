@@ -172,129 +172,139 @@ export default function Game() {
   return (
     <Layout>
       <div className={styles.gameWrapper} data-testid="Game-wrapper">
-        <div className="central-width-container ">
-          {game && userProfile && (
-            <>
-              <nav className={styles.nav}>
-                <Link href="/games" className={styles.backLink}>
-                  <svg
-                    width="14"
-                    height="20"
-                    viewBox="0 0 14 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
-                      stroke="black"
-                      strokeWidth="5"
-                      strokeLinecap="round"
+        <div className="central-width-container " data-central>
+          <div className={styles.landscape}>
+            <OutlineText
+              text={"The game wont fit in landscape, please rotate your device"}
+              sizeInRem={2}
+              upperCase={false}
+              alignment={"center"}
+            />
+          </div>
+          <div className={styles.portrait}>
+            {game && userProfile && (
+              <>
+                <nav className={styles.nav}>
+                  <Link href="/games" className={styles.backLink}>
+                    <svg
+                      width="14"
+                      height="20"
+                      viewBox="0 0 14 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
+                        stroke="black"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                        stroke="black"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                        stroke="white"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <OutlineText
+                      text={"Back"}
+                      sizeInRem={1}
+                      upperCase={true}
+                      alignment={"left"}
                     />
-                    <path
-                      d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
-                      stroke="black"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
-                      stroke="white"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <OutlineText
-                    text={"Back"}
-                    sizeInRem={1}
-                    upperCase={true}
-                    alignment={"left"}
-                  />
-                </Link>
-              </nav>
-              {!game.winner && (
-                <>
-                  <div className={styles.gameBody}>
-                    <ScoreSection
-                      playerOneAvatar={playerOneImage}
-                      playerTwoAvatar={playerTwoImage}
-                      game={game}
-                    />
-                    <div className={styles.buttonRow}>
-                      {game.game_type === GameType.ONLINE_MULTIPLAYER &&
-                        game.player_two_id === null && (
-                          <>
-                            <Button
-                              text={shareButtonText}
-                              type={"primary"}
-                              action={() => inviteGame()}
-                            />
-                          </>
+                  </Link>
+                </nav>
+                {!game.winner && (
+                  <>
+                    <div className={styles.gameBody}>
+                      <ScoreSection
+                        playerOneAvatar={playerOneImage}
+                        playerTwoAvatar={playerTwoImage}
+                        game={game}
+                      />
+                      <div className={styles.buttonRow}>
+                        {game.game_type === GameType.ONLINE_MULTIPLAYER &&
+                          game.player_two_id === null && (
+                            <>
+                              <Button
+                                text={shareButtonText}
+                                type={"primary"}
+                                action={() => inviteGame()}
+                              />
+                            </>
+                          )}
+
+                        {game.player_two_id && (
+                          <Button
+                            text="forfeit round"
+                            type={"secondary"}
+                            action={() => forfeitGame()}
+                          />
                         )}
 
-                      {game.player_two_id && (
                         <Button
-                          text="forfeit round"
-                          type={"secondary"}
-                          action={() => forfeitGame()}
-                        />
-                      )}
-
-                      <Button
-                        text="End Game"
-                        type={"delete"}
-                        action={() => deleteGame()}
-                      />
-                    </div>
-
-                    <DndContext
-                      onDragStart={(e) => handleDragStart(e)}
-                      onDragEnd={(e) => handleDragEnd(e)}
-                      modifiers={[restrictToWindowEdges]}
-                      sensors={sensors}
-                    >
-                      <div className={styles.dropArea}>
-                        <DroppableArea
-                          area={"left"}
-                          word={`${selectedLetter}${game.current_word}`}
-                        />
-
-                        <DroppableArea
-                          area={"right"}
-                          word={`${game.current_word}${selectedLetter}`}
+                          text="End Game"
+                          type={"delete"}
+                          action={() => deleteGame()}
                         />
                       </div>
-                      {displayKeyboard() ? <Keyboard /> : "not yours"}
-                    </DndContext>
-                    <div className={styles.gameInfo}>
-                      <OutlineText
-                        alignment={"center"}
-                        sizeInRem={2}
-                        text={
-                          game.current_player_index === 0
-                            ? `${game.player_one_name}'s turn`
-                            : `${game.player_two_name}'s turn`
-                        }
-                        upperCase={false}
-                      />
-                      <ul className={styles.wordWrapper}>
-                        <li className={styles.emptyTile}></li>
-                        {game.current_word.split("").map((w, idx) => {
-                          return (
-                            <KeyboardTile
-                              letter={w}
-                              key={idx}
-                              disabled={true}
-                            />
-                          );
-                        })}
-                        <li className={styles.emptyTile}></li>
-                      </ul>
+
+                      <DndContext
+                        onDragStart={(e) => handleDragStart(e)}
+                        onDragEnd={(e) => handleDragEnd(e)}
+                        modifiers={[restrictToWindowEdges]}
+                        sensors={sensors}
+                      >
+                        <div className={styles.dropArea}>
+                          <DroppableArea
+                            area={"left"}
+                            word={`${selectedLetter}${game.current_word}`}
+                          />
+
+                          <DroppableArea
+                            area={"right"}
+                            word={`${game.current_word}${selectedLetter}`}
+                          />
+                        </div>
+                        {displayKeyboard() ? <Keyboard /> : "not yours"}
+                      </DndContext>
+                      <div className={styles.gameInfo}>
+                        <OutlineText
+                          alignment={"center"}
+                          sizeInRem={2}
+                          text={
+                            game.current_player_index === 0
+                              ? `${game.player_one_name}'s turn`
+                              : `${game.player_two_name}'s turn`
+                          }
+                          upperCase={false}
+                        />
+                        <ul className={styles.wordWrapper}>
+                          <li className={styles.emptyTile}></li>
+                          {game.current_word.split("").map((w, idx) => {
+                            return (
+                              <KeyboardTile
+                                letter={w}
+                                key={idx}
+                                disabled={true}
+                              />
+                            );
+                          })}
+                          <li className={styles.emptyTile}></li>
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </>
-          )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
           <Dialog setDisplay={() => setShowDialog(false)} display={showDialog}>
             <OutlineText
               text={dialogMessage}
