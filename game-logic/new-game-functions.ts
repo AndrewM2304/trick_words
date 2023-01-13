@@ -1,6 +1,6 @@
 import { Database } from "@utilities/supabase";
 import { GameReturnValue, GameType } from "@utilities/game";
-import { letters } from "./letters";
+import { computerReturnedWords, letters } from "./letters";
 import { words as wordlist } from "./word-list";
 type GameDBType = Database["public"]["Tables"]["games"]["Row"];
 
@@ -15,14 +15,13 @@ export const identifyIfWordInList = (
     computerWords: null,
   };
 
-  const matchingWords = [];
-  const computerWords = [];
+  const computerWords: { index: number; word: string }[] = [];
 
   // iterate and build player matching words
   for (let i = 0; i < wordlist.length; i++) {
     if (wordlist[i].includes(word)) {
       value.inList = true;
-      matchingWords.push(wordlist[i]);
+      computerWords.push({ index: i, word: wordlist[i] });
     }
     if (wordlist[i].includes(word) && wordlist[i] === word) {
       value.exactMatch = true;
@@ -30,24 +29,24 @@ export const identifyIfWordInList = (
       break;
     }
   }
-  // build computer words based on slicing wordlist into easy, medium or normal
-  if (player) {
-    for (
-      let i = 0;
-      i < wordlist.slice(0, arraySlicer(difficulty)).length;
-      i++
-    ) {
-      if (wordlist[i].includes(word)) {
-        computerWords.push(wordlist[i]);
-      }
+  // build computer words based on slicing wordlist into easy, medium or normal length words
+  if (player && computerWords.length > 0) {
+    const wordsWithinDifficulty = computerWords.filter(
+      (c) => c.word.length <= difficultyFilter("normal")
+    );
+    if (wordsWithinDifficulty.length > 0) {
+      value.computerWords = [
+        wordsWithinDifficulty[
+          Math.floor(Math.random() * wordsWithinDifficulty.length)
+        ]?.word ?? "",
+        wordsWithinDifficulty[
+          Math.floor(Math.random() * wordsWithinDifficulty.length)
+        ]?.word ?? "",
+        wordsWithinDifficulty[
+          Math.floor(Math.random() * wordsWithinDifficulty.length)
+        ]?.word ?? "",
+      ];
     }
-
-    // generate three random words for the computer
-    value.computerWords = [
-      computerWords[Math.floor(Math.random() * computerWords.length)] ?? "",
-      computerWords[Math.floor(Math.random() * computerWords.length)] ?? "",
-      computerWords[Math.floor(Math.random() * computerWords.length)] ?? "",
-    ];
   }
   return value;
 };
@@ -57,9 +56,20 @@ export const arraySlicer = (difficulty: string): number => {
     case "easy":
       return 1000;
     case "medium":
-      return Math.round(wordlist.length / 2);
+      return Math.round(wordlist.length / 4);
     default:
-      return wordlist.length;
+      return wordlist.length / 2;
+  }
+};
+
+export const difficultyFilter = (difficulty: string): number => {
+  switch (difficulty) {
+    case "easy":
+      return 6;
+    case "medium":
+      return 8;
+    default:
+      return 14;
   }
 };
 
@@ -111,7 +121,6 @@ export const checkPlayerWordAndReturnComputerWord = (
           !checkComputerWordAgainstList.exactMatch &&
           checkComputerWordAgainstList.inList
         ) {
-          console.log(checkComputerWordAgainstList);
           compWord = computerWordToAttempt;
           break;
         }
@@ -127,7 +136,6 @@ export const checkPlayerWordAndReturnComputerWord = (
 
 export const updateGameBasedOnPlayerTurn = (
   playerGuess: string,
-  // computerWords: string[],
   difficulty: string,
   game: GameDBType,
   forfeit: boolean
@@ -145,12 +153,7 @@ export const updateGameBasedOnPlayerTurn = (
   }
 
   const { inList, exactMatch, computerWord } =
-    checkPlayerWordAndReturnComputerWord(
-      playerGuess,
-      computerWords,
-      difficulty
-    );
-
+    checkPlayerWordAndReturnComputerWord(playerGuess, difficulty);
   if (exactMatch) {
     // switch player
     // increment other players score
@@ -186,7 +189,7 @@ export const switchPlayer = (currentPlayerIndex: number): number => {
 };
 
 export const incrementLetter = (currentLetterIndex: number): number => {
-  return currentLetterIndex <= 25 ? currentLetterIndex++ : 25;
+  return currentLetterIndex <= 24 ? currentLetterIndex + 1 : 25;
 };
 
 export const setWinner = (
@@ -267,7 +270,6 @@ export const exactMatchLogic = (
     g.player_one_id!,
     g.player_two_id!
   );
-
   if (g.game_type !== GameType.COMPUTER) {
     g.current_player_index = switchPlayer(g.current_player_index);
   }
@@ -288,10 +290,11 @@ export const nextPlayerLogic = (
     g.current_player_index = switchPlayer(g.current_player_index);
     return { updatedGame: g, message: "Next player" };
   }
+
   if (g.game_type === GameType.COMPUTER && !computerWord) {
     g.player_one_score++;
     g.current_letter_index = incrementLetter(g.current_letter_index);
-    g.current_word = letters[g.current_letter_index];
+    g.current_word = computerReturnedWords[g.current_letter_index];
     g.winner = setWinner(
       g.current_letter_index,
       g.player_one_score,

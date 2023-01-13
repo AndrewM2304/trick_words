@@ -38,10 +38,10 @@ const GameCard = ({ game }: GameCardProps) => {
     const currentPlayerScore =
       game.player_one_id === user?.id
         ? game.player_one_score
-        : game.player_one_score;
+        : game.player_two_score;
     const opponentScore =
       game.player_one_id === user?.id
-        ? game.player_one_score
+        ? game.player_two_score
         : game.player_one_score;
 
     return { currentPlayerScore, opponentScore };

@@ -1,10 +1,9 @@
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import React, { useState } from "react";
 import { Database } from "@utilities/supabase";
-import { playerTurn } from "@game/game-functions";
 import { GameType } from "@utilities/game";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { local_game } from "@utilities/constants";
+import { game_functions_url, local_game } from "@utilities/constants";
 type Game = Database["public"]["Tables"]["games"]["Row"];
 
 export const usePlayerTurn = () => {
@@ -23,48 +22,73 @@ export const usePlayerTurn = () => {
     if (!e.over || !game) return;
     if (e.over.id === "left") {
       const playerWord = `${e.active.id}${game.current_word}`;
-      updateGame(playerWord, game);
+      updateGame(playerWord, game, false, "easy");
     }
     if (e.over.id === "right") {
       console.log("right");
       const playerWord = `${game?.current_word}${e.active.id}`;
 
-      updateGame(playerWord, game);
+      updateGame(playerWord, game, false, "easy");
     }
   }
 
-  const updateGame = (
+  const updateGame = async (
     playerWord: string,
     game: Game,
-    forfeit: boolean = false
+    forfeit: boolean = false,
+    difficulty: "easy" | "medium" | "normal"
   ) => {
     if (!showDialog) {
       setShowDialog(true);
     }
+    console.log(playerWord);
+    try {
+      const res = await typedFetch<{
+        update: boolean;
+        gameToReturn: Game;
+        message: string;
+      }>(
+        `${game_functions_url}`,
 
-    playerTurn(playerWord, game, forfeit).then(async (val) => {
-      console.log(val);
+        {
+          method: "POST", // *GET, POST, PUT, DELETE, etc.
+          mode: "cors", // no-cors, *cors, same-origin
+          cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: "same-origin", // include, *same-origin, omit
+          headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          redirect: "follow", // manual, *follow, error
+          referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          body: JSON.stringify({
+            game: game,
+            difficulty: "easy",
+            word: playerWord,
+            forfeit: forfeit,
+          }), // body data type must match "Content-Type" header
+        }
+      );
+
       setTimeout(() => {
-        setDialogMessage(val.message);
+        setDialogMessage(res.message);
       }, 1000);
-      if (val.update) {
-        successfulResult(val.value, val.computerWords, game);
+      if (res.update) {
+        successfulResult(res.gameToReturn);
       }
-      if (!val.update || forfeit) {
+      if (!res.update || forfeit) {
         closeModal();
       }
-    });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const successfulResult = async (
-    resultValue: Game,
-    computerWords: string[] | null,
-    game: Game
-  ) => {
+  const successfulResult = async (game: Game) => {
     if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
       const { data, error } = await supabase
         .from("games")
-        .update(resultValue)
+        .update(game)
         .eq("id", game.id)
         .select();
 
@@ -79,34 +103,20 @@ export const usePlayerTurn = () => {
       game.game_type === GameType.COMPUTER ||
       game.game_type === GameType.LOCAL_MULTIPLAYER
     ) {
-      setGame(resultValue);
+      setGame(game);
       const gamesFromLocalStorage = window.localStorage.getItem(local_game);
       if (gamesFromLocalStorage) {
         const games: Game[] = JSON.parse(gamesFromLocalStorage);
         const updatedGames = games.map((g: Game) => {
-          if (g.id === resultValue.id) {
-            return resultValue;
+          if (g.id === game.id) {
+            return game;
           }
           return g;
         });
         window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
       }
     }
-    if (
-      resultValue.game_type === GameType.COMPUTER &&
-      resultValue.current_player_index === 1
-    ) {
-      updateGame(computerWords[0], resultValue, false);
-    }
     closeModal();
-  };
-
-  const computerTurn = (currentWord: string, computerWord: string): string => {
-    console.log(currentWord);
-    const indexOfWord = computerWord.indexOf(currentWord);
-    return indexOfWord >= 1
-      ? computerWord.charAt(indexOfWord - 1) + currentWord
-      : currentWord + computerWord.charAt(indexOfWord + 1);
   };
 
   const closeModal = () => {
@@ -117,8 +127,9 @@ export const usePlayerTurn = () => {
   };
 
   const forfeitGame = () => {
+    if (!game) return;
     setDialogMessage("You forfeit this round, next player");
-    updateGame(game?.current_word!, game!, true);
+    updateGame(game.current_word, game, true, "easy");
   };
 
   return {
@@ -135,3 +146,21 @@ export const usePlayerTurn = () => {
     showDialog,
   };
 };
+
+function typedFetch<TResponse>(
+  url: string,
+  // `RequestInit` is a type for configuring
+  // a `fetch` request. By default, an empty object.
+  config: RequestInit = {}
+): Promise<TResponse> {
+  console.log(url);
+  console.log(config.body);
+  return fetch(url, config)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`something went wrong ${response}`);
+      }
+      return response.json();
+    })
+    .then((data) => data as TResponse);
+}

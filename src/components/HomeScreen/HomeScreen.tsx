@@ -1,4 +1,3 @@
-import { words } from "popular-english-words";
 import { useUserProfileStore } from "@components/store";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -99,20 +98,6 @@ const HomeScreen = ({}: HomeScreenProps) => {
     setSecondPlayer("");
     setGameType(null);
   };
-
-  React.useEffect(() => {
-    const allWords = words.getAll().length;
-    const greaterThanThreeLetters = words.getMostPopularFilter(
-      allWords,
-      (word: string) => {
-        return word.length > 2;
-      }
-    );
-
-    const ar = words.getWordRank("time");
-
-    console.log(greaterThanThreeLetters);
-  }, []);
 
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>

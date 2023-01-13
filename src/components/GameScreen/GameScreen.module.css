@@ -2,6 +2,7 @@
   background: var(--background-blue);
   padding: 40px 20px;
   overflow: auto;
+  height: 92vh;
 }
 .GameScreenWrapper ul {
   gap: 5px;

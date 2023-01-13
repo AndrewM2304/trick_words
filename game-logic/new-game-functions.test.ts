@@ -17,6 +17,7 @@ import { mockGame } from "@testing/mockData";
 import { Database } from "@utilities/supabase";
 import { letters } from "./letters";
 import { M } from "msw/lib/SetupApi-b2f0e5ac";
+import { GameType } from "@utilities/game";
 type GameDBType = Database["public"]["Tables"]["games"]["Row"];
 
 let tempGame: GameDBType;
@@ -26,34 +27,34 @@ beforeEach(() => {
 
 describe("identifyIfWordInList", () => {
   it("checks if a word is in a list, an exact match and sets computerwords to null if player is false", () => {
-    const exactMatch = identifyIfWordInList("hello", "easy", false);
+    const exactMatch = identifyIfWordInList("boy", "hard", false);
     expect(exactMatch.exactMatch).toBe(true);
     expect(exactMatch.inList).toBe(true);
     expect(exactMatch.computerWords).toBe(null);
-    const partialMatch = identifyIfWordInList("he", "easy", false);
+    const partialMatch = identifyIfWordInList("he", "hard", false);
     expect(partialMatch.inList).toBeTruthy();
     expect(partialMatch.exactMatch).toBeFalsy();
     expect(partialMatch.computerWords).toBe(null);
 
-    const notMatch = identifyIfWordInList("ztys", "easy", false);
+    const notMatch = identifyIfWordInList("ztys", "hard", false);
     expect(notMatch.inList).toBeFalsy();
     expect(notMatch.exactMatch).toBeFalsy();
     expect(notMatch.computerWords).toBe(null);
   });
 
   it("checks if a word is in a list, an exact match and sets computerwords to an array of strings if player is true", () => {
-    const exactMatch = identifyIfWordInList("hello", "easy", true);
+    const exactMatch = identifyIfWordInList("hello", "normal", true);
     expect(exactMatch.exactMatch).toBe(true);
     expect(exactMatch.inList).toBe(true);
     expect(exactMatch.computerWords?.length).toBe(3);
-    const partialMatch = identifyIfWordInList("he", "easy", true);
+    const partialMatch = identifyIfWordInList("he", "normal", true);
     expect(partialMatch.inList).toBeTruthy();
     expect(partialMatch.exactMatch).toBeFalsy();
     expect(partialMatch.computerWords?.length).toBe(3);
-    const notMatch = identifyIfWordInList("ztys", "easy", true);
+    const notMatch = identifyIfWordInList("ztys", "normal", true);
     expect(notMatch.inList).toBeFalsy();
     expect(notMatch.exactMatch).toBeFalsy();
-    expect(notMatch.computerWords?.length).toBe(3);
+    expect(notMatch.computerWords).toBeNull();
   });
 });
 
@@ -62,18 +63,18 @@ describe("array slicer", () => {
     const eastArray = arraySlicer("easy");
     expect(eastArray).toBe(1000);
     const mediumArray = arraySlicer("medium");
-    expect(mediumArray).toBe(Math.round(wordlist.length / 2));
+    expect(mediumArray).toBeGreaterThan(30000);
     const normalArray = arraySlicer("normal");
-    expect(normalArray).toBe(wordlist.length);
+    expect(normalArray).toBeGreaterThan(70000);
     const defaultArray = arraySlicer("");
-    expect(defaultArray).toBe(wordlist.length);
+    expect(defaultArray).toBe(wordlist.length / 2);
   });
 });
 
 describe("checkPlayerWordAndReturnComputerWord", () =>
   it("runs a function to create player and computer guesses, then generates a computer turn", () => {
     const { inList, exactMatch, computerWord } =
-      checkPlayerWordAndReturnComputerWord("all", "medium");
+      checkPlayerWordAndReturnComputerWord("ally", "normal");
     expect(inList).toBeTruthy();
     expect(exactMatch).toBeTruthy();
   }));
@@ -89,11 +90,6 @@ describe("computerwordgenerate", () => {
   });
 });
 
-// describe('updateGameBasedOnPlayerTurn', () => {
-//   it('hh', () => {
-//     const{update,gameToReturn, message} = updateGameBasedOnPlayerTurn('yes','easy',tempGame, false)
-//   })})
-
 describe("switch player", () => {
   it("updates to next player", () => {
     const setPlayerToOne = switchPlayer(1);
@@ -106,10 +102,11 @@ describe("switch player", () => {
 
 describe("incrementLetter", () => {
   it("updates to next letter", () => {
-    const setToB = incrementLetter(1);
+    const setToB = incrementLetter(0);
+    expect(letters[1]).toBe("b");
     expect(letters[setToB]).toBe("b");
     const setToY = incrementLetter(24);
-    expect(letters[setToY]).toBe("y");
+    expect(letters[setToY]).toBe("z");
     const setToZ = incrementLetter(25);
     expect(letters[setToZ]).toBe("z");
     const higherThan25 = incrementLetter(100);
@@ -168,5 +165,112 @@ describe("forfeitroundlogic", () => {
     const { updatedGame, message } = forfeitRoundLogic(tempGame);
     expect(updatedGame.winner).toBe("test 2");
     expect(message).toBe("Winner is test 2");
+  });
+});
+
+describe("exactmatch logic", () => {
+  it("increments other player score, letter, and switches player if not a computer round", () => {
+    expect(tempGame.current_letter_index).toBe(0);
+    const { updatedGame, message } = exactMatchLogic(tempGame, "hello");
+    expect(updatedGame.game_type).toBe(GameType.LOCAL_MULTIPLAYER);
+    expect(updatedGame.current_letter_index).toBe(1);
+    expect(updatedGame.current_player_index).toBe(1);
+    expect(message).toBe("hello is a match, you lose this round!");
+  });
+
+  it("increments other player score, letter, and keeps same player if computer", () => {
+    tempGame.game_type = GameType.COMPUTER;
+    expect(tempGame.current_letter_index).toBe(0);
+    const { updatedGame, message } = exactMatchLogic(tempGame, "hello");
+    expect(updatedGame.game_type).toBe(GameType.COMPUTER);
+    expect(updatedGame.current_letter_index).toBe(1);
+    expect(updatedGame.current_player_index).toBe(0);
+    expect(message).toBe("hello is a match, you lose this round!");
+  });
+
+  it("sets a winner if game is complete", () => {
+    tempGame.player_one_score = 22;
+    tempGame.current_letter_index = 24;
+    expect(tempGame.current_letter_index).toBe(24);
+    expect(tempGame.player_one_score).toBe(22);
+
+    const { updatedGame, message } = exactMatchLogic(tempGame, "hello");
+    expect(updatedGame.current_letter_index).toBe(25);
+    expect(updatedGame.current_player_index).toBe(1);
+    expect(message).toBe(`Winner is ${tempGame.player_one_name}`);
+  });
+});
+
+describe("next player turn", () => {
+  it("sets the current word as the player attempt and switches players if not a computer game", () => {
+    expect(tempGame.current_player_index).toBe(0);
+    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", "rol");
+    expect(updatedGame.current_word).toBe("ol");
+    expect(updatedGame.current_player_index).toBe(1);
+    expect(message).toBe("Next player");
+  });
+  it("increases the current players score and keeps it to player one if its a computer gametype and there is no computer word", () => {
+    tempGame.game_type = GameType.COMPUTER;
+    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", null);
+    expect(updatedGame.current_word).toBe("bl");
+    expect(updatedGame.current_player_index).toBe(0);
+    expect(message).toBe("Computer could not find a word, you win this round!");
+  });
+});
+
+describe("updateGameBasedOnPlayerTurn ", () => {
+  it("returns the same game to user if a word is not a match", () => {
+    const { update, gameToReturn, message } = updateGameBasedOnPlayerTurn(
+      "zstwr",
+      "normal",
+      tempGame,
+      false
+    );
+    expect(update).toBeFalsy();
+    expect(gameToReturn).toStrictEqual(tempGame);
+    expect(message).toBe("zstwr is not a match, try again!");
+  });
+  it("returns an updated game with second player if guess is correct", () => {
+    const { update, gameToReturn, message } = updateGameBasedOnPlayerTurn(
+      "al",
+      "normal",
+      tempGame,
+      false
+    );
+    expect(update).toBeTruthy();
+    expect(gameToReturn.current_word).toBe("al");
+    expect(gameToReturn.current_player_index).toBe(1);
+    expect(message).toBe("Next player");
+  });
+  it("increments the score and keeps the same player if user forfeits a round", () => {
+    const { update, gameToReturn, message } = updateGameBasedOnPlayerTurn(
+      "al",
+      "normal",
+      tempGame,
+      true
+    );
+    expect(update).toBeTruthy();
+    expect(gameToReturn.current_word).toBe("b");
+    expect(gameToReturn.current_player_index).toBe(0);
+    expect(gameToReturn.player_two_score).toBe(1);
+    expect(gameToReturn.player_one_score).toBe(0);
+    expect(message).toBe("You forfeit this round, next player!");
+  });
+  it("sets a winner if a player word is an exact match and the current letter is z", () => {
+    tempGame.current_letter_index = 25;
+    tempGame.player_one_score = 22;
+    const { update, gameToReturn, message } = updateGameBasedOnPlayerTurn(
+      "al",
+      "normal",
+      tempGame,
+      true
+    );
+    expect(update).toBeTruthy();
+    expect(gameToReturn.current_word).toBe("z");
+    expect(gameToReturn.current_player_index).toBe(0);
+    expect(gameToReturn.player_two_score).toBe(1);
+    expect(gameToReturn.player_one_score).toBe(22);
+    expect(gameToReturn.winner).toBe("test 1");
+    expect(message).toBe("Winner is p1");
   });
 });

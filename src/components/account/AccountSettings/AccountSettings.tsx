@@ -34,7 +34,6 @@ const AccountSettings = () => {
 
   useEffect(() => {
     if (!userProfile) return;
-    console.log(userProfile);
     setFullName(userProfile.full_name);
     downloadImagesFromUrls([userProfile.avatar_url ?? default_avatar, ""]);
   }, [userProfile]);
@@ -51,15 +50,11 @@ const AccountSettings = () => {
         avatar_url: playerOneImage,
       };
 
-      console.log(updates);
       let { error, data } = await supabase.from("profiles").upsert(updates);
-      if (data) {
-        console.log(data);
-      }
       if (error) throw error;
     } catch (error) {
       alert("Error updating the data!");
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -67,8 +62,6 @@ const AccountSettings = () => {
 
   const onCropComplete = useCallback(
     (croppedArea: any, croppedAreaPixels: any) => {
-      console.log(croppedArea);
-      console.log(croppedAreaPixels);
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []

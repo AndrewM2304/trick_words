@@ -77,10 +77,9 @@ export default function Game() {
 
     if (navigator.canShare!) {
       try {
-        console.log(shareData);
         await navigator.share(shareData);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     } else {
       navigator.clipboard.writeText(shareData.url);
@@ -92,7 +91,6 @@ export default function Game() {
   };
 
   const deleteGame = async () => {
-    console.log("delete");
     if (game?.game_type === GameType.ONLINE_MULTIPLAYER) {
       const { data, error } = await supabase
         .from("games")
@@ -100,17 +98,13 @@ export default function Game() {
         .eq("id", game.id);
 
       if (data) {
-        console.log("dd");
-        console.log(data);
         router.push("/games");
       }
     } else {
       const gamesFromLocalStorage = window.localStorage.getItem(local_game);
       if (!gamesFromLocalStorage) return;
       const games: Game[] = JSON.parse(gamesFromLocalStorage);
-      console.log(games);
       const remainingGames = games.filter((g) => g.id !== Number(game?.id));
-      console.log(remainingGames);
       window.localStorage.setItem(
         local_game,
         JSON.stringify([...remainingGames])

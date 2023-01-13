@@ -1,9 +1,7 @@
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { playerTurn } from "@game/game-functions";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { mockGame } from "@testing/mockData";
 import { local_game } from "@utilities/constants";
-import { GameType } from "@utilities/game";
 import { usePlayerTurn } from "./usePlayerTurn";
 
 const mockReturnFromPlayerTurn = {
@@ -31,10 +29,6 @@ const mockReturnFromPlayerTurn = {
 const setLocalStorage = (id: string, data: any) => {
   window.localStorage.setItem(id, JSON.stringify(data));
 };
-
-jest.mock("@game/game-functions", () => ({
-  playerTurn: jest.fn(() => Promise.resolve(mockReturnFromPlayerTurn)),
-}));
 
 describe("usePlayerTurn", () => {
   beforeEach(() => {
