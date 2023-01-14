@@ -28,6 +28,10 @@
   cursor: pointer;
 }
 
+.keyboardTileTop:has(:hover, :focus-visible) {
+  background: #fff;
+}
+
 .keyboardTileWrapper [data-dragging="true"] {
   z-index: 99;
 }

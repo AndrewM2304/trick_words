@@ -148,7 +148,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      {!session && (
+      {children}
+      {/* {!session && (
         <main className={styles.main} style={{ margin: 15 }}>
           <Auth
             supabaseClient={supabase}
@@ -166,7 +167,7 @@ const Layout = ({ children }: LayoutProps) => {
             {userAvatarUrl === "" && <AccountSettings />}
           </>
         </main>
-      )}
+      )} */}
     </div>
   );
 };

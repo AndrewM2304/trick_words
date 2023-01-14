@@ -23,7 +23,7 @@ const DroppableArea = ({ area, word }: DroppableAreaProps) => {
           text={`${word}`}
           sizeInRem={1.4}
           alignment="center"
-          upperCase={false}
+          upperCase={true}
         />
       </div>
     </div>

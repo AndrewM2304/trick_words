@@ -208,7 +208,7 @@ export default function Game() {
                     </svg>
                     <OutlineText
                       text={"Back"}
-                      sizeInRem={1}
+                      sizeInRem={1.1}
                       upperCase={true}
                       alignment={"left"}
                     />
@@ -355,7 +355,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
         <OutlineText
           text={game.player_one_score.toString()}
           sizeInRem={2}
-          upperCase
+          upperCase={false}
           alignment="left"
         />
       </div>
@@ -379,7 +379,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
         <OutlineText
           text={game.player_two_score.toString()}
           sizeInRem={2}
-          upperCase
+          upperCase={false}
           alignment="right"
         />
       </div>

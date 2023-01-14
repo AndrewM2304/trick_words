@@ -1,14 +1,14 @@
-@import url(https://fonts.googleapis.com/css?family=Londrina+Solid:100,300,regular,900);
-@import url(https://fonts.googleapis.com/css?family=Lilita+One:regular);
+@import url(https://fonts.googleapis.com/css?family=Baloo+2:regular,500,600,700,800);
 
 body,
 html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Lilita One";
+  font-family: "Baloo 2";
   background: var(--background-blue);
   overflow: hidden;
+  font-weight: 400;
 }
 
 * {
@@ -16,10 +16,14 @@ html {
   color: #ffffff !important;
   letter-spacing: 2px;
 }
+*:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px black !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px black !important;
 }
 
 a:focus-visible {
@@ -27,7 +31,7 @@ a:focus-visible {
 }
 
 a:focus-visible li {
-  box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px black;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px black;
 }
 :root {
   --background-blue: #101828;
@@ -38,6 +42,22 @@ a:focus-visible li {
   --purple-bright: #957dd8;
   --red: #a0362b;
   --red-bright: #be6054;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--background-blue);
+  margin: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--dark-background);
+  border-radius: 4px;
 }
 
 .shadow {
@@ -64,6 +84,22 @@ ul {
   flex-direction: column;
   margin-inline: auto;
   flex: 1;
+}
+
+.auth-button {
+  font-family: "Baloo 2" !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  background: var(--dark-background) !important;
+  border: 2px solid var(--dark-background) !important;
+  border-radius: 5px !important;
+  margin-block: 3px !important;
+  transition: 0.2s ease-in-out !important;
+}
+
+.auth-button:hover {
+  background: #2e4675 !important;
 }
 
 @media (max-width: 500px) {

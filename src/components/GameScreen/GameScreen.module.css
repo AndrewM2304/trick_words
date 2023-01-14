@@ -5,7 +5,6 @@
   height: 92vh;
 }
 .GameScreenWrapper ul {
-  gap: 5px;
   max-width: 600px;
   margin: auto;
 }
@@ -13,6 +12,10 @@
 .gameLink {
   margin: 0px;
   list-style: none;
+}
+
+.gameLink:has(:focus-within, :hover) [data-testid="GameCard-wrapper"] {
+  box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
 }
 
 @media (min-width: 800px) {

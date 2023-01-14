@@ -8,7 +8,7 @@
 }
 
 .nav {
-  height: 10dvh;
+  height: 8dvh;
   display: grid;
   align-content: center;
   padding-left: 15px;
@@ -18,18 +18,28 @@
   gap: 8px;
   position: relative;
   width: fit-content;
-  padding: 15px 0px;
+  padding: 10px;
+  margin-left: -10px;
+  transition: 0.2s ease-in-out;
+  text-decoration: underline;
+  text-underline-offset: 10px;
+  text-decoration-color: rgb(255 255 255 / 0%);
+  border-radius: 5px;
 }
 
-.backLink:after {
-  content: "";
-  position: absolute;
-  left: 22px;
-  right: 2px;
-  bottom: 5px;
-  height: 2px;
-  background: #fff;
-  border-radius: 4px;
+.backLink:is(:hover) {
+  text-decoration-color: rgb(255 255 255 / 100%);
+  text-decoration: underline;
+  text-underline-offset: 10px;
+}
+
+.backLink:is(:focus-visible) {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.backLink svg {
+  margin-top: 3px;
 }
 
 .gameBody {
@@ -37,7 +47,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 80px auto 1fr auto;
-  height: 90dvh;
+  height: 92dvh;
 }
 
 .dropArea {
@@ -64,9 +74,7 @@
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.15);
   border: 2px solid black;
-  box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black, 2px 2px 0 5px rgb(0 0 0 / 70%),
-    inset 3px 3px 0px rgb(0 0 0 / 37%),
-    inset -3px -3px 0px rgb(255 255 255 / 5%);
+  box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black, 2px 2px 0 4px rgb(0 0 0 / 70%);
 }
 
 .buttonRow {
@@ -85,7 +93,7 @@
 .wordWrapper li {
   flex: inherit;
   width: 35px;
-  box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black;
+  box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
   border-radius: 5px;
   height: 54px;
 }
@@ -105,6 +113,7 @@
 
 .playerOneImage {
   border-radius: 16px;
+  margin-top: 3px;
 }
 
 .playerOneName {
@@ -123,6 +132,7 @@
 }
 
 .playerTwoImage {
+  margin-top: 3px;
   grid-row: 1/3;
   grid-column: 4/5;
 }
