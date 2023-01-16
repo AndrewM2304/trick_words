@@ -1,89 +1,27 @@
-import { useUserProfileStore } from "@components/store";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./HomeScreen.module.css";
-import { Database } from "@utilities/supabase";
-import {
-  default_avatar,
-  default_computer,
-  local_game,
-} from "@utilities/constants";
 import { GameType } from "@utilities/game";
 import { Button } from "@components/Button";
 import { Dialog } from "@components/Dialog";
 import { OutlineText } from "@components/OutlineText";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
+import { useCreateGame } from "@hooks/useCreateGame";
 
-type Games = Database["public"]["Tables"]["games"]["Row"];
 export type HomeScreenProps = {};
 const HomeScreen = ({}: HomeScreenProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const user = useUser();
-  const { userProfile } = useUserProfileStore();
-  const [secondPlayer, setSecondPlayer] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [gameType, setGameType] = useState<GameType>(GameType.COMPUTER);
-  const supabase = useSupabaseClient<Games>();
+  const {
+    gameType,
+    setGameType,
+    createGame,
+    gameDifficulty,
+    setGameDifficulty,
+    secondPlayer,
+    setSecondPlayer,
+  } = useCreateGame();
   const supabasedefault = useSupabaseClient();
-
-  const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
-
-  const createGame = async () => {
-    if (!user) throw new Error("No user");
-    const newGame: Partial<Games> = {
-      current_word: "a",
-      current_letter_index: 0,
-      player_one_id: user.id,
-      player_one_name: user.user_metadata.full_name,
-      player_one_avatar:
-        userProfile?.avatar_url ?? user.user_metadata.avatar_url,
-      game_type: gameType!,
-      current_player_index: 0,
-    };
-    if (
-      gameType === GameType.COMPUTER ||
-      gameType === GameType.LOCAL_MULTIPLAYER
-    ) {
-      const savedItems = window.localStorage.getItem(local_game);
-      newGame.player_two_id = crypto.randomUUID();
-      newGame.player_two_name =
-        gameType === GameType.COMPUTER ? "Computer" : secondPlayer;
-      newGame.player_two_avatar =
-        gameType === GameType.COMPUTER ? default_computer : default_avatar;
-      newGame.player_one_score = 0;
-      newGame.player_two_score = 0;
-      const arrayOfGames: Games[] = [];
-      if (savedItems) {
-        arrayOfGames.push(...JSON.parse(savedItems));
-      }
-      newGame.id = arrayOfGames.length + 1;
-      window.localStorage.setItem(
-        local_game,
-        JSON.stringify([...arrayOfGames, newGame])
-      );
-      router.push(`/game/${newGame.id}?gametype=local`);
-    }
-
-    if (gameType === GameType.ONLINE_MULTIPLAYER) {
-      try {
-        const { data, error } = await supabase
-          .from("games")
-          .insert(newGame)
-          .select();
-        if (data) {
-          router.push(`/game/${data[0].id}`);
-        }
-        if (error) throw new Error(error.message);
-      } catch (error) {
-        console.log("Error loading user data!");
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+  const session = useSession();
 
   const displayButton = () => {
     if (
@@ -108,6 +46,11 @@ const HomeScreen = ({}: HomeScreenProps) => {
     }
   };
 
+  const selectDifficulty = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const option: any = e.target.value;
+    setGameDifficulty(option);
+  };
+
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
       <div className={styles.central}>
@@ -127,28 +70,32 @@ const HomeScreen = ({}: HomeScreenProps) => {
           action={() => setShowDialog(true)}
           type="secondary"
         />
-        <div className={styles.auth}>
-          <OutlineText
-            text={"Sign in to play online"}
-            sizeInRem={1.2}
-            upperCase={false}
-            alignment={"left"}
-          />
+        {!session && (
+          <>
+            <div className={styles.auth}>
+              <OutlineText
+                text={"Sign in to play online"}
+                sizeInRem={1.2}
+                upperCase={false}
+                alignment={"left"}
+              />
 
-          <Auth
-            onlyThirdPartyProviders
-            supabaseClient={supabasedefault}
-            appearance={{
-              theme: ThemeSupa,
-              className: {
-                button: "auth-button",
-              },
-            }}
-            theme="dark"
-            providers={["facebook", "google"]}
-            redirectTo={redirect()}
-          />
-        </div>
+              <Auth
+                onlyThirdPartyProviders
+                supabaseClient={supabasedefault}
+                appearance={{
+                  theme: ThemeSupa,
+                  className: {
+                    button: "auth-button",
+                  },
+                }}
+                theme="dark"
+                providers={["facebook", "google"]}
+                redirectTo={redirect()}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <Dialog
@@ -171,16 +118,16 @@ const HomeScreen = ({}: HomeScreenProps) => {
             <path
               d="M3 15L15 3M3 3L15 15"
               stroke="black"
-              stroke-width="5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M3 15L15 3M3 3L15 15"
               stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </button>
@@ -208,7 +155,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
               name="game-type"
               value="computer"
               checked={gameType === GameType.COMPUTER}
-              onChange={(e) => setGameType(GameType.COMPUTER)}
+              onChange={() => setGameType(GameType.COMPUTER)}
             />
           </label>
           <label className={styles.radio}>
@@ -227,9 +174,10 @@ const HomeScreen = ({}: HomeScreenProps) => {
               name="game-type"
               value="local_multiplayer"
               checked={gameType === GameType.LOCAL_MULTIPLAYER}
-              onChange={(e) => setGameType(GameType.LOCAL_MULTIPLAYER)}
+              onChange={() => setGameType(GameType.LOCAL_MULTIPLAYER)}
             />
           </label>
+
           <label className={styles.radio}>
             <div
               className={styles.indicator}
@@ -238,14 +186,51 @@ const HomeScreen = ({}: HomeScreenProps) => {
             <div className={styles.title}>Online Multiplayer</div>
             <div className={styles.smallText}>Play online against friends</div>
             <input
+              disabled={!session}
               type="radio"
               name="game-type"
               value="online_multiplayer"
               checked={gameType === GameType.ONLINE_MULTIPLAYER}
-              onChange={(e) => setGameType(GameType.ONLINE_MULTIPLAYER)}
+              onChange={() => setGameType(GameType.ONLINE_MULTIPLAYER)}
             />
           </label>
         </fieldset>
+        {gameType === GameType.COMPUTER && (
+          <>
+            <label htmlFor="difficulty" className={styles.inputLabel}>
+              Select game difficulty
+            </label>
+            <div className={styles.select}>
+              <select
+                name="difficulty"
+                id="difficulty"
+                className={styles.input}
+                value={gameDifficulty ?? ""}
+                placeholder="Select Difficulty"
+                onChange={(e) => selectDifficulty(e)}
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+              <svg
+                width="18"
+                height="10"
+                viewBox="0 0 18 10"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M16.5 1.25L9 8.75L1.5 1.25"
+                  stroke="black"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+          </>
+        )}
         {gameType === GameType.LOCAL_MULTIPLAYER && (
           <>
             <label htmlFor="player_name" className={styles.inputLabel}>

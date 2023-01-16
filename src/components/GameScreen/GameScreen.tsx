@@ -60,7 +60,7 @@ const GameScreen = () => {
               <li key={`${game.id}-local-${idx}`} className={styles.gameLink}>
                 {!disableLink(game) && (
                   <Link
-                    href={`/game/${game.id}`}
+                    href={`/game/${game.id}?gametype=online`}
                     onClick={(e) =>
                       linkSetting(e, game.game_type, game.player_two_id)
                     }
@@ -85,14 +85,14 @@ const GameScreen = () => {
           })}
 
         {localGames.length === 0 && games.length === 0 && (
-          <>
+          <li className={styles.noGame}>
             <OutlineText
               text={"No games in progress"}
               sizeInRem={2}
               upperCase={false}
               alignment={"center"}
             />
-          </>
+          </li>
         )}
       </ul>
     </div>

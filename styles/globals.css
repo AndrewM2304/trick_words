@@ -79,7 +79,7 @@ ul {
 }
 
 .central-width-container {
-  width: min(90vw, 1200px);
+  width: min(90vw, 1000px);
   display: flex;
   flex-direction: column;
   margin-inline: auto;

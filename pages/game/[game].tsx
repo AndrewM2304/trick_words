@@ -29,6 +29,7 @@ import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { local_game } from "@utilities/constants";
+import { useDeleteGame } from "@hooks/useDeleteGame";
 
 export default function Game() {
   const [displayHomeLink, setDisplayHomeLink] = useState(false);
@@ -51,6 +52,8 @@ export default function Game() {
     showDialog,
     setDialogMessage,
   } = usePlayerTurn();
+
+  const { deleteGame } = useDeleteGame();
 
   // sensor setup for droppable area
   const mouseSensor = useSensor(MouseSensor, {
@@ -90,31 +93,8 @@ export default function Game() {
     }
   };
 
-  const deleteGame = async () => {
-    if (game?.game_type === GameType.ONLINE_MULTIPLAYER) {
-      const { data, error } = await supabase
-        .from("games")
-        .delete()
-        .eq("id", game.id);
-
-      if (data) {
-        router.push("/games");
-      }
-    } else {
-      const gamesFromLocalStorage = window.localStorage.getItem(local_game);
-      if (!gamesFromLocalStorage) return;
-      const games: Game[] = JSON.parse(gamesFromLocalStorage);
-      const remainingGames = games.filter((g) => g.id !== Number(game?.id));
-      window.localStorage.setItem(
-        local_game,
-        JSON.stringify([...remainingGames])
-      );
-      router.push("/games");
-    }
-  };
-
   useEffect(() => {
-    if (!userProfile) return;
+    // if (!userProfile) return;
     if (!gameData && !error) {
       setShowDialog(true);
       setDialogMessage("Loading Game");
@@ -149,7 +129,7 @@ export default function Game() {
     if (game.game_type === GameType.LOCAL_MULTIPLAYER) return true;
 
     if (
-      game.player_one_id === userProfile?.id &&
+      (game.player_one_id === userProfile?.id || "not-logged-in-user") &&
       game.current_player_index === 0
     ) {
       return true;
@@ -161,6 +141,16 @@ export default function Game() {
       return true;
     }
     return false;
+  };
+
+  const renderPlayerName = (): string => {
+    if (game?.current_player_index === 0 && !userProfile) {
+      return "Your turn";
+    } else {
+      return game?.current_player_index === 0
+        ? `${game?.player_one_name}'s turn`
+        : `${game?.player_two_name}'s turn`;
+    }
   };
 
   return (
@@ -176,7 +166,7 @@ export default function Game() {
             />
           </div>
           <div className={styles.portrait}>
-            {game && userProfile && (
+            {game && (
               <>
                 <nav className={styles.nav}>
                   <Link href="/games" className={styles.backLink}>
@@ -245,7 +235,7 @@ export default function Game() {
                         <Button
                           text="End Game"
                           type={"delete"}
-                          action={() => deleteGame()}
+                          action={() => deleteGame(game)}
                         />
                       </div>
 
@@ -272,11 +262,7 @@ export default function Game() {
                         <OutlineText
                           alignment={"center"}
                           sizeInRem={2}
-                          text={
-                            game.current_player_index === 0
-                              ? `${game.player_one_name}'s turn`
-                              : `${game.player_two_name}'s turn`
-                          }
+                          text={renderPlayerName()}
                           upperCase={false}
                         />
                         <ul className={styles.wordWrapper}>

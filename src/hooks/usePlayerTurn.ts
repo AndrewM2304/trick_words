@@ -140,6 +140,7 @@ export const usePlayerTurn = () => {
     setShowDialog,
     setDialogMessage,
     setSelectedLetter,
+    updateGame,
     game,
     selectedLetter,
     dialogMessage,

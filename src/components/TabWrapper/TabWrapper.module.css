@@ -59,7 +59,7 @@
 
   .tabs {
     grid-row: 1/1;
-    grid-template-columns: auto 200px 200px 200px auto;
+    grid-template-columns: auto 250px 250px 250px auto;
   }
 
   .tabs > :nth-child(1) {

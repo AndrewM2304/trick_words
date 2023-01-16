@@ -4,7 +4,6 @@ import { GameCard } from "./index";
 import { mockGame } from "@testing/mockData";
 import userAvatar from "../../../../public/user.svg";
 import { GameType } from "@utilities/game";
-
 const mock = {
   playerOneImage: userAvatar,
   playerTwoImage: userAvatar,
@@ -15,6 +14,12 @@ jest.mock("@hooks/useDownloadImages", () => ({
   useDownloadImages: () => {
     return mock;
   },
+}));
+
+jest.mock("@hooks/useDeleteGame", () => ({
+  useDeleteGame: jest.fn(() => ({
+    deleteGame: jest.fn(),
+  })),
 }));
 
 describe("GameCard Component", () => {

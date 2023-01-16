@@ -8,10 +8,7 @@ import {
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 import { default_avatar } from "@utilities/constants";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { AccountSettings } from "@components/account/AccountSettings";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
@@ -30,8 +27,6 @@ const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
   const supabase = useSupabaseClient();
   const { downloadImagesFromUrls, playerOneImage } = useDownloadImages();
-
-  const session = useSession();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -149,25 +144,6 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
       {children}
-      {/* {!session && (
-        <main className={styles.main} style={{ margin: 15 }}>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            theme="dark"
-            providers={["facebook", "google"]}
-            redirectTo={"https://word-game-2-5jouxygjw-andrewm2304.vercel.app"}
-          />
-        </main>
-      )}
-      {session && (
-        <main className={styles.main}>
-          <>
-            {userAvatarUrl !== "" && <>{children}</>}
-            {userAvatarUrl === "" && <AccountSettings />}
-          </>
-        </main>
-      )} */}
     </div>
   );
 };

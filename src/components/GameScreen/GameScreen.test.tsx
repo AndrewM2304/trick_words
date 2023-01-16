@@ -10,6 +10,11 @@ import { GameType } from "@utilities/game";
 const setLocalStorage = (id: string, data: any) => {
   window.localStorage.setItem(id, JSON.stringify(data));
 };
+jest.mock("@hooks/useDeleteGame", () => ({
+  useDeleteGame: jest.fn(() => ({
+    deleteGame: jest.fn(),
+  })),
+}));
 
 let mockGame2 = { ...mockGame };
 mockGame2.id = 2;

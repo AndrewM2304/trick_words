@@ -10,7 +10,7 @@
   border-radius: 10px;
   background: var(--dark-background);
   border: 2px solid black;
-  box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black, 2px 2px 0 5px rgb(0 0 0 / 70%);
+  box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
 }
 .Dialog::backdrop {
   position: fixed;

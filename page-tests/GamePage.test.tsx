@@ -4,10 +4,8 @@ import { local_game } from "@utilities/constants";
 import mockRouter from "next-router-mock";
 import Game from "../pages/game/[game]";
 import userAvatar from "../../public/user.svg";
-import { mockSession, mockUser, mockUserRow } from "@testing/mockData";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useEffect, useState } from "react";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { mockSession, mockUser } from "@testing/mockData";
+import { useEffect } from "react";
 import { Layout } from "@components/Layout";
 import { useUserProfileStore } from "@components/store";
 
@@ -27,6 +25,13 @@ jest.mock("@hooks/useDownloadImages", () => ({
   useDownloadImages: () => {
     return mockImage;
   },
+}));
+
+jest.mock("@hooks/useGetGameData", () => ({
+  useGetGameData: jest.fn(() => ({
+    error: null,
+    gameData: mockGame,
+  })),
 }));
 
 const mockImage = {

@@ -11,87 +11,87 @@ export interface Database {
     Tables: {
       games: {
         Row: {
-          id: number
           created_at: string
-          current_word: string
           current_letter_index: number
-          game_type: string
-          secret_key: string
           current_player_index: number
-          player_one_score: number
-          player_two_score: number
-          player_one_id: string | null
-          player_two_id: string | null
-          player_one_name: string
-          player_two_name: string
+          current_word: string
+          difficulty: string | null
+          game_type: string
+          id: number
           player_one_avatar: string
+          player_one_id: string | null
+          player_one_name: string
+          player_one_score: number
           player_two_avatar: string
+          player_two_id: string | null
+          player_two_name: string
+          player_two_score: number
+          secret_key: string
           winner: string | null
         }
         Insert: {
-          id?: number
           created_at?: string
-          current_word?: string
           current_letter_index?: number
-          game_type?: string
-          secret_key?: string
           current_player_index?: number
-          player_one_score?: number
-          player_two_score?: number
-          player_one_id?: string | null
-          player_two_id?: string | null
-          player_one_name?: string
-          player_two_name?: string
+          current_word?: string
+          difficulty?: string | null
+          game_type?: string
+          id?: number
           player_one_avatar?: string
+          player_one_id?: string | null
+          player_one_name?: string
+          player_one_score?: number
           player_two_avatar?: string
+          player_two_id?: string | null
+          player_two_name?: string
+          player_two_score?: number
+          secret_key?: string
           winner?: string | null
         }
         Update: {
-          id?: number
           created_at?: string
-          current_word?: string
           current_letter_index?: number
-          game_type?: string
-          secret_key?: string
           current_player_index?: number
-          player_one_score?: number
-          player_two_score?: number
-          player_one_id?: string | null
-          player_two_id?: string | null
-          player_one_name?: string
-          player_two_name?: string
+          current_word?: string
+          difficulty?: string | null
+          game_type?: string
+          id?: number
           player_one_avatar?: string
+          player_one_id?: string | null
+          player_one_name?: string
+          player_one_score?: number
           player_two_avatar?: string
+          player_two_id?: string | null
+          player_two_name?: string
+          player_two_score?: number
+          secret_key?: string
           winner?: string | null
         }
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          email: string | null
+          full_name: string | null
           id: string
           updated_at: string | null
           username: string | null
-          full_name: string | null
-          avatar_url: string | null
-          website: string | null
-          email: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          email?: string | null
+          full_name?: string | null
           id: string
           updated_at?: string | null
           username?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          website?: string | null
-          email?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          email?: string | null
+          full_name?: string | null
           id?: string
           updated_at?: string | null
           username?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          website?: string | null
-          email?: string | null
         }
       }
     }

@@ -5,8 +5,14 @@
   height: 92vh;
 }
 .GameScreenWrapper ul {
-  max-width: 600px;
+  max-width: 800px;
   margin: auto;
+}
+
+.GameScreenWrapper ul:has(.noGame) {
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
 
 .gameLink {
@@ -18,10 +24,15 @@
   box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
 }
 
+.noGame {
+  margin: auto;
+  list-style: none;
+}
+
 @media (min-width: 800px) {
   .GameScreenWrapper ul {
     gap: 20px 30px;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;

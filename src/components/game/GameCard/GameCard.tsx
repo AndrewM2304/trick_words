@@ -9,6 +9,7 @@ import { default_avatar } from "@utilities/constants";
 import { OutlineText } from "@components/OutlineText";
 import { Button } from "@components/Button";
 import { Database } from "@utilities/supabase";
+import { useDeleteGame } from "@hooks/useDeleteGame";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 
@@ -19,6 +20,7 @@ const GameCard = ({ game }: GameCardProps) => {
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const user = useUser();
+  const { deleteGame } = useDeleteGame();
 
   useEffect(() => {
     downloadImagesFromUrls([game.player_one_avatar, game.player_two_avatar]);
@@ -131,7 +133,7 @@ const GameCard = ({ game }: GameCardProps) => {
 
                 <Button
                   text="cancel game"
-                  action={() => console.log("hello")}
+                  action={() => deleteGame(game)}
                   type={"delete"}
                 />
               </div>
