@@ -45,7 +45,7 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
         >
           <OutlineText
             text={"Home"}
-            sizeInRem={1}
+            sizeInRem={0.875}
             upperCase={true}
             alignment={"center"}
           />
@@ -57,7 +57,7 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
         >
           <OutlineText
             text={"My Games"}
-            sizeInRem={1}
+            sizeInRem={0.875}
             upperCase={true}
             alignment={"center"}
           />
@@ -75,7 +75,7 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
         >
           <OutlineText
             text={"Profile"}
-            sizeInRem={1}
+            sizeInRem={0.875}
             upperCase={true}
             alignment={"center"}
           />
