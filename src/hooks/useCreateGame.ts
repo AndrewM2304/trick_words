@@ -67,7 +67,7 @@ export const useCreateGame = () => {
           .insert(newGame)
           .select();
         if (data) {
-          router.push(`/game/${data[0].id}`);
+          router.push(`/game/${data[0].id}?gametype=online`);
         }
         if (error) throw new Error(error.message);
       } catch (error) {

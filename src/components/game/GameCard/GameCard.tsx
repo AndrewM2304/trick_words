@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./GameCard.module.css";
 import Image from "next/image";
 import { User, useUser } from "@supabase/auth-helpers-react";
@@ -17,6 +17,8 @@ export type GameCardProps = {
   game: Games;
 };
 const GameCard = ({ game }: GameCardProps) => {
+  const [shareButtonText, setShareButtonText] = useState("Invite Player");
+
   const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
     useDownloadImages();
   const user = useUser();
@@ -50,16 +52,29 @@ const GameCard = ({ game }: GameCardProps) => {
   };
 
   const inviteGame = async () => {
+    if (typeof window === undefined) return;
     const shareData = {
-      title: `Join the game`,
+      title: `${game?.player_one_name} invites you to a game`,
       text: "Follow the link to join the game",
-      url: `https://localhost:3000/game/${game.id}?gameroom=${game.secret_key}`,
+      url: `${window.location.origin}/game/${game?.id}?gameroom=${
+        game?.secret_key
+      }&gametype=${
+        game?.game_type === GameType.ONLINE_MULTIPLAYER ? "online" : "local"
+      }`,
     };
-    try {
-      console.log(shareData);
-      await navigator.share(shareData);
-    } catch (err) {
-      console.log(err);
+
+    if (navigator.canShare!) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareData.url);
+      setShareButtonText("URL Copied!");
+      setTimeout(() => {
+        setShareButtonText("Invite Player");
+      }, 2000);
     }
   };
 
@@ -121,12 +136,8 @@ const GameCard = ({ game }: GameCardProps) => {
 
                 {!navigator.canShare && (
                   <Button
-                    text="copy game link"
-                    action={() =>
-                      navigator.clipboard.writeText(
-                        `https://localhost:3000/game/${game.id}?gameroom=${game.secret_key}`
-                      )
-                    }
+                    text={shareButtonText}
+                    action={() => inviteGame()}
                     type={"primary"}
                   />
                 )}

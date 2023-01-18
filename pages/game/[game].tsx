@@ -72,10 +72,15 @@ export default function Game() {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   const inviteGame = async () => {
+    if (typeof window === undefined) return;
     const shareData = {
       title: `${game?.player_one_name} invites you to a game`,
       text: "Follow the link to join the game",
-      url: `https://localhost:3000/game/${game?.id}?gameroom=${game?.secret_key}`,
+      url: `${window.location.origin}/game/${game?.id}?gameroom=${
+        game?.secret_key
+      }&gametype=${
+        game?.game_type === GameType.ONLINE_MULTIPLAYER ? "online" : "local"
+      }`,
     };
 
     if (navigator.canShare!) {

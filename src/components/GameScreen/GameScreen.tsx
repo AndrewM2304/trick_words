@@ -16,7 +16,6 @@ const GameScreen = () => {
 
   useEffect(() => {
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
-    console.log("al");
     if (gamesFromLocalStorage) {
       const game: Games[] = JSON.parse(gamesFromLocalStorage);
       setLocalGames(game);
