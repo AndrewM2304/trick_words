@@ -10,6 +10,7 @@ import { Database } from "@utilities/supabase";
 import { default_avatar } from "@utilities/constants";
 import { useRouter } from "next/router";
 import { useDownloadImages } from "@hooks/useDownloadImages";
+import { SetupProfile } from "@components/SetupProfile";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -26,7 +27,7 @@ const Layout = ({ children }: LayoutProps) => {
   const supabaseGames = useSupabaseClient<Games>();
   const router = useRouter();
   const supabase = useSupabaseClient();
-  const { downloadImagesFromUrls, playerOneImage } = useDownloadImages();
+  const session = useSession();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -51,13 +52,12 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   useEffect(() => {
+    console.log(userProfile);
     if (!user) return;
     if (!userProfile) {
       getProfile().then((profile) => {
         if (profile) {
           setUserProfile(profile);
-          downloadImagesFromUrls([profile.avatar_url ?? default_avatar, ""]);
-          setUserAvatarUrl(playerOneImage);
         }
       });
     }
@@ -141,9 +141,14 @@ const Layout = ({ children }: LayoutProps) => {
     retrieveAllGames();
   }, [user]);
 
+  const setUpProfile = (): boolean => {
+    return !userProfile && session ? true : false;
+  };
+
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      {children}
+      {setUpProfile() && <SetupProfile />}
+      {!setUpProfile() && <> {children}</>}
     </div>
   );
 };

@@ -115,6 +115,7 @@ export const mockGame: Game = {
   player_one_avatar: "",
   player_two_avatar: "",
   winner: null,
+  difficulty: "easy",
 };
 
 export const supabaseMockGame: Game = {
@@ -134,6 +135,7 @@ export const supabaseMockGame: Game = {
   player_one_avatar: "",
   player_two_avatar: "",
   winner: null,
+  difficulty: "easy",
 };
 
 export const wordPass = "ath";

@@ -49,6 +49,5 @@ describe("Layout Component", () => {
   test("it should exist", () => {
     act(() => render(<MockWrapper />));
     expect(screen.getByTestId("Layout-wrapper")).toBeInTheDocument();
-    expect(screen.getByText(/hello test/i)).toBeInTheDocument();
   });
 });

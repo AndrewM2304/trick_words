@@ -13,7 +13,6 @@ html {
 
 * {
   box-sizing: border-box;
-  color: #ffffff !important;
   letter-spacing: 2px;
 }
 *:focus-visible {

@@ -25,7 +25,6 @@ export const useGetGameData = () => {
     setLoading(true);
     getGame().then((d) => {
       if (d === undefined || !d) {
-        console.log("undefined");
         setGameData(null);
         setError({
           details: "no_local",
@@ -36,8 +35,7 @@ export const useGetGameData = () => {
 
         return;
       }
-      console.log("game!!");
-      console.log(d);
+
       setGameData(d ?? null);
       addSecondPlayer(d).then((d) => {
         if (d === undefined) return;
@@ -49,21 +47,16 @@ export const useGetGameData = () => {
   useEffect(() => {
     const currentGame = games.filter((g) => g.id === gameData?.id)[0];
     if (currentGame) {
-      console.log("curr");
       setGameData(currentGame);
     }
   }, [games]);
 
   const getGame = async (): Promise<GameDB | undefined> => {
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
-    console.log("loc" + gametype);
-    console.log(gamesFromLocalStorage);
 
     if (gametype === "local" && gamesFromLocalStorage) {
-      console.log("local" + game);
       const games: GameDB[] = JSON.parse(gamesFromLocalStorage);
       const selectedGame = games.filter((g) => g.id === Number(game))[0];
-      console.log(selectedGame);
       if (!selectedGame) {
         setError({
           details: "no_local",
@@ -75,7 +68,6 @@ export const useGetGameData = () => {
       return selectedGame;
     }
     if (gametype === "online") {
-      console.log("not local");
       let { data, error, status } = await supabase
         .from("games")
         .select()
@@ -86,7 +78,6 @@ export const useGetGameData = () => {
         return data;
       }
       if (error) {
-        console.log(error);
         setError(error);
       }
     }
