@@ -15,6 +15,10 @@
   place-items: center;
 }
 
+.GameScreenWrapper ul:has(.noGame) li {
+  grid-column: 1/3;
+}
+
 .gameLink {
   margin: 0px;
   list-style: none;

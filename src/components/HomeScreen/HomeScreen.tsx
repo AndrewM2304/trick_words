@@ -7,6 +7,7 @@ import { Dialog } from "@components/Dialog";
 import { OutlineText } from "@components/OutlineText";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useCreateGame } from "@hooks/useCreateGame";
+import { url } from "inspector";
 
 export type HomeScreenProps = {};
 const HomeScreen = ({}: HomeScreenProps) => {

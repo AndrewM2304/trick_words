@@ -60,6 +60,7 @@
   background: var(--background-blue);
   cursor: pointer;
   transition: 0.2s ease-in-out;
+  color: #fff;
 }
 
 .radio:has(input:focus-visible) {
@@ -135,6 +136,7 @@
   letter-spacing: 0.02em;
   font-size: 0.875rem;
   line-height: 1.1rem;
+  color: #fff;
 }
 
 .close {
@@ -193,6 +195,7 @@
 .inputLabel {
   font-weight: 500;
   letter-spacing: 0.05em;
+  color: #fff;
 }
 
 @media (min-width: 800px) {

@@ -18,6 +18,7 @@
   letter-spacing: 0.02em;
   font-size: 0.875rem;
   line-height: 1.1rem;
+  color: #fff;
 }
 .SetupProfile input[type="file"] {
   height: 2px;
