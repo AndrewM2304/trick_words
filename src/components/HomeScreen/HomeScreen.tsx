@@ -223,9 +223,9 @@ const HomeScreen = ({}: HomeScreenProps) => {
                 <path
                   d="M16.5 1.25L9 8.75L1.5 1.25"
                   stroke="black"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>
