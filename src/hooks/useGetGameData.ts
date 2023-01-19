@@ -22,7 +22,7 @@ export const useGetGameData = () => {
 
   useEffect(() => {
     if (gameData || !game || !gametype) return;
-    setLoading(true);
+
     getGame().then((d) => {
       if (d === undefined || !d) {
         setGameData(null);
@@ -41,6 +41,7 @@ export const useGetGameData = () => {
         if (d === undefined) return;
         setGameData(d ?? null);
       });
+      setLoading(false);
     });
   }, [router.query, gameData]);
 
@@ -52,6 +53,7 @@ export const useGetGameData = () => {
   }, [games]);
 
   const getGame = async (): Promise<GameDB | undefined> => {
+    setLoading(true);
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
 
     if (gametype === "local" && gamesFromLocalStorage) {
@@ -86,7 +88,7 @@ export const useGetGameData = () => {
   const addSecondPlayer = async (game: GameDB): Promise<GameDB | undefined> => {
     if (!userProfile) return;
     if (
-      gametype === undefined &&
+      gametype === "online" &&
       game.player_two_id === null &&
       gameroom === game.secret_key &&
       userProfile.id !== game.player_one_id
@@ -108,7 +110,7 @@ export const useGetGameData = () => {
       }
     }
     if (
-      gametype === undefined &&
+      gametype === "online" &&
       game.player_two_id === null &&
       gameroom !== game.secret_key &&
       userProfile.id !== game.player_one_id

@@ -270,7 +270,7 @@ describe("updateGameBasedOnPlayerTurn ", () => {
     expect(gameToReturn.current_player_index).toBe(0);
     expect(gameToReturn.player_two_score).toBe(1);
     expect(gameToReturn.player_one_score).toBe(22);
-    expect(gameToReturn.winner).toBe("test 1");
+    expect(gameToReturn.winner).toBe("d5bcd50f-4595-4d20-b940-1ac6f800dc13");
     expect(message).toBe("Winner is p1");
   });
 });

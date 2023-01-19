@@ -18,14 +18,14 @@ export type GameCardProps = {
 };
 const GameCard = ({ game }: GameCardProps) => {
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
+  const [p2Image, setp2Image] = useState<string | null>(null);
 
-  const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
-    useDownloadImages();
+  const { setImage } = useDownloadImages();
   const user = useUser();
   const { deleteGame } = useDeleteGame();
 
   useEffect(() => {
-    downloadImagesFromUrls([game.player_one_avatar, game.player_two_avatar]);
+    setImage(game.player_two_avatar).then((i) => setp2Image(i));
   }, []);
 
   const setColor = () => {
@@ -78,79 +78,88 @@ const GameCard = ({ game }: GameCardProps) => {
     }
   };
 
+  const playerTurnNotification = (): boolean => {
+    if (game.game_type !== GameType.ONLINE_MULTIPLAYER) return false;
+    if (
+      (user?.id === game.player_one_id && game.current_player_index === 0) ||
+      (user?.id === game.player_two_id && game.current_player_index === 1)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
-      <div data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
-        <div className={styles.gradient}></div>
-        <div
-          className={styles.profileWrapper}
-          data-testid={`${game.game_type}-game`}
-        >
-          <ProfileImage
-            color={setColor() ?? "blue"}
-            text={game.player_two_name}
-            url={playerTwoImage ?? default_avatar}
-            notification={
-              game.game_type === GameType.ONLINE_MULTIPLAYER &&
-              game.current_player_index === 1
-                ? "!"
-                : null
-            }
-          />
-        </div>
+      {p2Image && (
+        <div data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
+          <div className={styles.gradient}></div>
+          <div
+            className={styles.profileWrapper}
+            data-testid={`${game.game_type}-game`}
+          >
+            <ProfileImage
+              color={setColor() ?? "blue"}
+              text={game.player_two_name}
+              url={p2Image}
+              notification={playerTurnNotification() ? "!" : null}
+            />
+          </div>
 
-        <div className={styles.cardContent} data-testid="score">
-          <OutlineText
-            alignment="left"
-            text={`${renderScore().currentPlayerScore} - ${
-              renderScore().opponentScore
-            }`}
-            sizeInRem={1.2}
-            upperCase
-          />
-          <OutlineText
-            alignment="left"
-            text={game.current_word}
-            sizeInRem={1.2}
-            upperCase
-          />
-        </div>
+          <div className={styles.cardContent} data-testid="score">
+            <OutlineText
+              alignment="left"
+              text={`${renderScore().currentPlayerScore} - ${
+                renderScore().opponentScore
+              }`}
+              sizeInRem={1.2}
+              upperCase
+            />
+            <OutlineText
+              alignment="left"
+              text={game.current_word}
+              sizeInRem={1.2}
+              upperCase
+            />
+          </div>
 
-        {!game.player_two_id &&
-          game.game_type === GameType.ONLINE_MULTIPLAYER && (
-            <div className={styles.waitOverlay} data-testid="waiting-overlay">
-              <OutlineText
-                text="Waiting for player to accept"
-                sizeInRem={1.2}
-                upperCase
-                alignment={"center"}
-              />
-              <div className={styles.buttonRow}>
-                {navigator.canShare! && (
-                  <Button
-                    text="share game"
-                    action={() => inviteGame()}
-                    type={"primary"}
-                  />
-                )}
-
-                {!navigator.canShare && (
-                  <Button
-                    text={shareButtonText}
-                    action={() => inviteGame()}
-                    type={"primary"}
-                  />
-                )}
-
-                <Button
-                  text="cancel game"
-                  action={() => deleteGame(game)}
-                  type={"delete"}
+          {!game.player_two_id &&
+            game.game_type === GameType.ONLINE_MULTIPLAYER && (
+              <div className={styles.waitOverlay} data-testid="waiting-overlay">
+                <OutlineText
+                  text="Waiting for player to accept"
+                  sizeInRem={1.2}
+                  upperCase
+                  alignment={"center"}
                 />
+                <div className={styles.buttonRow}>
+                  {navigator.canShare! && (
+                    <Button
+                      text="share game"
+                      action={() => inviteGame()}
+                      type={"primary"}
+                    />
+                  )}
+
+                  {!navigator.canShare && (
+                    <Button
+                      text={shareButtonText}
+                      action={() => inviteGame()}
+                      type={"primary"}
+                    />
+                  )}
+
+                  <Button
+                    text="cancel game"
+                    action={() => deleteGame(game)}
+                    type={"delete"}
+                  />
+                </div>
               </div>
-            </div>
-          )}
-      </div>
+            )}
+        </div>
+      )}
     </>
   );
 };

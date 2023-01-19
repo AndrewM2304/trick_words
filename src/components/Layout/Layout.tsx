@@ -7,9 +7,7 @@ import {
   useSession,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
-import { default_avatar } from "@utilities/constants";
 import { useRouter } from "next/router";
-import { useDownloadImages } from "@hooks/useDownloadImages";
 import { SetupProfile } from "@components/SetupProfile";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
@@ -19,8 +17,7 @@ export type LayoutProps = {
   children: React.ReactNode;
 };
 const Layout = ({ children }: LayoutProps) => {
-  const { userProfile, setUserProfile, userAvatarUrl, setUserAvatarUrl } =
-    useUserProfileStore();
+  const { userProfile, setUserProfile } = useUserProfileStore();
   const { games, addGame, deleteGame, updateGame } = useGamesStore();
   const user = useUser();
   const supabaseProfiles = useSupabaseClient<Profiles>();
@@ -52,7 +49,6 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   useEffect(() => {
-    console.log(userProfile);
     if (!user) return;
     if (!userProfile) {
       getProfile().then((profile) => {
@@ -142,7 +138,7 @@ const Layout = ({ children }: LayoutProps) => {
   }, [user]);
 
   const setUpProfile = (): boolean => {
-    return !userProfile && session ? true : false;
+    return !userProfile?.avatar_url && session ? true : false;
   };
 
   return (

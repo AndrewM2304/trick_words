@@ -106,3 +106,9 @@ ul {
     width: 100%;
   }
 }
+
+@media (hover: none) {
+  *:focus-visible {
+    outline: none;
+  }
+}

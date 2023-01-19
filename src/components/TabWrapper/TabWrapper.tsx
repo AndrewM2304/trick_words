@@ -20,8 +20,8 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
   useEffect(() => {
     const gamesWhereUserTurn = games.filter(
       (g) =>
-        (g.player_one_id === user?.id && g.current_player_index === 0) ||
-        (g.player_two_id === user?.id && g.current_player_index === 1)
+        (user?.id === g.player_one_id && g.current_player_index === 0) ||
+        (user?.id === g.player_two_id && g.current_player_index === 1)
     );
     setGameNotifications(gamesWhereUserTurn.length);
   }, [games]);

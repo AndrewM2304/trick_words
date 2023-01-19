@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { AccountSettings } from "./index";
 import {
   mockSession,
@@ -38,14 +38,16 @@ const mockImage = {
 };
 
 jest.mock("@hooks/useDownloadImages", () => ({
-  useDownloadImages: () => {
-    return mockImage;
-  },
+  useDownloadImages: jest.fn(() => ({
+    setImage: (e: any) => Promise.resolve(userAvatar),
+  })),
 }));
 
 describe("AccountSettings Component", () => {
-  test("it should exist", () => {
+  test("it should exist", async () => {
     render(<AccountSettings />);
-    expect(screen.getByTestId("AccountSettings-wrapper")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByTestId("AccountSettings-wrapper")).toBeInTheDocument()
+    );
   });
 });

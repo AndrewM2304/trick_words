@@ -3,7 +3,6 @@ import { OutlineText } from "@components/OutlineText";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUser } from "@supabase/auth-helpers-react";
 import { default_avatar } from "@utilities/constants";
-import Image from "next/image";
 import React, { useCallback, useState, useEffect } from "react";
 import styles from "./SetupProfile.module.css";
 import Cropper from "react-easy-crop";
@@ -64,6 +63,7 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
 
   const onCropComplete = useCallback(
     (croppedArea: any, croppedAreaPixels: any) => {
+      console.log(croppedAreaPixels);
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []
@@ -138,7 +138,11 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
                   <Button
                     type={"primary"}
                     text={"Save"}
-                    action={() => upload(user.id)}
+                    action={() => {
+                      savePhotoAndUpload(user.id).then(() => {
+                        upload(user.id);
+                      });
+                    }}
                   />
                 </>
               )}
@@ -167,7 +171,6 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
                 type={"primary"}
                 text={"Select Photo"}
                 action={() => {
-                  savePhotoAndUpload(user.id);
                   setDisplayCropperDialog(false);
                 }}
               />

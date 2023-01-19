@@ -1,12 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { mockGame } from "@testing/mockData";
+import { mockGame, mockUserProfile } from "@testing/mockData";
 import { local_game } from "@utilities/constants";
 import mockRouter from "next-router-mock";
 import Game from "../pages/game/[game]";
 import userAvatar from "../../public/user.svg";
 import { mockSession, mockUser } from "@testing/mockData";
 import { useEffect } from "react";
-import { Layout } from "@components/Layout";
 import { useUserProfileStore } from "@components/store";
 
 const setLocalStorage = (id: string, data: any) => {
@@ -22,9 +21,9 @@ jest.mock("@supabase/auth-helpers-react", () => ({
 }));
 
 jest.mock("@hooks/useDownloadImages", () => ({
-  useDownloadImages: () => {
-    return mockImage;
-  },
+  useDownloadImages: jest.fn(() => ({
+    setImage: (e: any) => Promise.resolve(userAvatar),
+  })),
 }));
 
 jest.mock("@hooks/useGetGameData", () => ({
@@ -62,18 +61,15 @@ const mockSB = {
   })),
 };
 
-const MockWrapper = () => {
-  const { setUserAvatarUrl } = useUserProfileStore();
-
-  useEffect(() => {
-    setUserAvatarUrl("hello");
-  }, []);
-  return (
-    <Layout>
-      <Game />
-    </Layout>
-  );
-};
+jest.mock("@components/store", () => ({
+  useUserProfileStore: jest.fn(() => ({
+    userProfile: mockUserProfile,
+    setUserProfile: jest.fn(() => mockUserProfile),
+  })),
+  useGamesStore: jest.fn(() => ({
+    games: [mockGame],
+  })),
+}));
 
 beforeAll(() => {
   HTMLDialogElement.prototype.show = jest.fn();
@@ -84,12 +80,12 @@ beforeAll(() => {
 describe("game", () => {
   beforeEach(() => {
     window.localStorage.clear();
-    mockRouter.setCurrentUrl("game/1");
+    mockRouter.setCurrentUrl("/game/1?gametype=local");
   });
 
   it("loads a game from local storage if the url has ?gametype=local", async () => {
     setLocalStorage(local_game, mockGame);
-    render(<MockWrapper />);
+    render(<Game />);
     await waitFor(() =>
       expect(screen.getByTestId("player-one-name")).toHaveTextContent("p1")
     );

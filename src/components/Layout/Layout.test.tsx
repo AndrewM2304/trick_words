@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { render, screen, act } from "@testing-library/react";
 import { Layout } from "./index";
 import mockRouter from "next-router-mock";
-import { mockGame, mockSession, mockUser } from "@testing/mockData";
+import {
+  mockGame,
+  mockSession,
+  mockUser,
+  mockUserProfile,
+} from "@testing/mockData";
 import { useUserProfileStore } from "@components/store";
 
 jest.mock("next/router", () => require("next-router-mock"));
@@ -33,10 +38,10 @@ const mockSB = {
 };
 
 const MockWrapper = () => {
-  const { setUserAvatarUrl } = useUserProfileStore();
+  const { setUserProfile } = useUserProfileStore();
 
   useEffect(() => {
-    setUserAvatarUrl("hello");
+    setUserProfile(mockUserProfile);
   }, []);
   return (
     <Layout>

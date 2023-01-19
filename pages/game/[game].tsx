@@ -27,19 +27,19 @@ import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUserProfileStore } from "@components/store";
 import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { local_game } from "@utilities/constants";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useDeleteGame } from "@hooks/useDeleteGame";
 
 export default function Game() {
   const [displayHomeLink, setDisplayHomeLink] = useState(false);
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
-  const { playerOneImage, playerTwoImage, downloadImagesFromUrls } =
-    useDownloadImages();
-  const { gameData, status, error } = useGetGameData();
+  const { setImage } = useDownloadImages();
+  const { gameData, status, error, loading } = useGetGameData();
   const { userProfile } = useUserProfileStore();
   const router = useRouter();
-  const supabase = useSupabaseClient<Game>();
+  const [p1image, setp1Image] = useState<string | null>(null);
+  const [p2image, setp2Image] = useState<string | null>(null);
+  const user = useUser();
   const {
     handleDragStart,
     handleDragEnd,
@@ -99,7 +99,6 @@ export default function Game() {
   };
 
   useEffect(() => {
-    // if (!userProfile) return;
     if (!gameData && !error) {
       setShowDialog(true);
       setDialogMessage("Loading Game");
@@ -116,10 +115,8 @@ export default function Game() {
 
       setDialogMessage("Checking word...");
       setDisplayHomeLink(false);
-      downloadImagesFromUrls([
-        gameData.player_one_avatar,
-        gameData.player_two_avatar,
-      ]);
+      setImage(gameData.player_one_avatar).then((i) => setp1Image(i));
+      setImage(gameData.player_two_avatar).then((i) => setp2Image(i));
     }
 
     if (gameData && gameData.winner) {
@@ -158,159 +155,202 @@ export default function Game() {
     }
   };
 
+  const displayGame = (): boolean => {
+    return (
+      user?.id === gameData?.player_one_id ||
+      user?.id === gameData?.player_two_id
+    );
+  };
+
   return (
     <Layout>
-      <div className={styles.gameWrapper} data-testid="Game-wrapper">
-        <div className="central-width-container " data-central>
-          <div className={styles.landscape}>
-            <OutlineText
-              text={"The game wont fit in landscape, please rotate your device"}
-              sizeInRem={2}
-              upperCase={false}
-              alignment={"center"}
-            />
-          </div>
-          <div className={styles.portrait}>
-            {game && (
-              <>
-                <nav className={styles.nav}>
-                  <Link href="/games" className={styles.backLink}>
-                    <svg
-                      width="14"
-                      height="20"
-                      viewBox="0 0 14 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
-                        stroke="black"
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
-                        stroke="black"
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
-                        stroke="white"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <OutlineText
-                      text={"Back"}
-                      sizeInRem={1.1}
-                      upperCase={true}
-                      alignment={"left"}
-                    />
-                  </Link>
-                </nav>
-                {!game.winner && (
+      {gameData && (
+        <div className={styles.gameWrapper} data-testid="Game-wrapper">
+          {displayGame() && (
+            <div className="central-width-container " data-central>
+              <div className={styles.landscape}>
+                <OutlineText
+                  text={
+                    "The game wont fit in landscape, please rotate your device"
+                  }
+                  sizeInRem={2}
+                  upperCase={false}
+                  alignment={"center"}
+                />
+              </div>
+              <div className={styles.portrait}>
+                {game && p1image && p2image && (
                   <>
-                    <div className={styles.gameBody}>
-                      <ScoreSection
-                        playerOneAvatar={playerOneImage}
-                        playerTwoAvatar={playerTwoImage}
-                        game={game}
-                      />
-                      <div className={styles.buttonRow}>
-                        {game.game_type === GameType.ONLINE_MULTIPLAYER &&
-                          game.player_two_id === null && (
-                            <>
-                              <Button
-                                text={shareButtonText}
-                                type={"primary"}
-                                action={() => inviteGame()}
-                              />
-                            </>
-                          )}
-
-                        {game.player_two_id && (
-                          <Button
-                            text="forfeit round"
-                            type={"secondary"}
-                            action={() => forfeitGame()}
+                    <nav className={styles.nav}>
+                      <Link href="/games" className={styles.backLink}>
+                        <svg
+                          width="14"
+                          height="20"
+                          viewBox="0 0 14 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M11 4L3.95522 9.72389C3.46267 10.1241 3.46267 10.8759 3.95522 11.2761L11 17"
+                            stroke="black"
+                            strokeWidth="5"
+                            strokeLinecap="round"
                           />
-                        )}
-
-                        <Button
-                          text="End Game"
-                          type={"delete"}
-                          action={() => deleteGame(game)}
-                        />
-                      </div>
-
-                      <DndContext
-                        onDragStart={(e) => handleDragStart(e)}
-                        onDragEnd={(e) => handleDragEnd(e)}
-                        modifiers={[restrictToWindowEdges]}
-                        sensors={sensors}
-                      >
-                        <div className={styles.dropArea}>
-                          <DroppableArea
-                            area={"left"}
-                            word={`${selectedLetter}${game.current_word}`}
+                          <path
+                            d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                            stroke="black"
+                            strokeWidth="5"
+                            strokeLinecap="round"
                           />
-
-                          <DroppableArea
-                            area={"right"}
-                            word={`${game.current_word}${selectedLetter}`}
+                          <path
+                            d="M10 3L2.95522 8.72389C2.46267 9.12408 2.46267 9.87592 2.95522 10.2761L10 16"
+                            stroke="white"
+                            strokeWidth="3"
+                            strokeLinecap="round"
                           />
-                        </div>
-                        {displayKeyboard() ? <Keyboard /> : "not yours"}
-                      </DndContext>
-                      <div className={styles.gameInfo}>
+                        </svg>
                         <OutlineText
-                          alignment={"center"}
-                          sizeInRem={2}
-                          text={renderPlayerName()}
-                          upperCase={false}
+                          text={"Back"}
+                          sizeInRem={1.1}
+                          upperCase={true}
+                          alignment={"left"}
                         />
-                        <ul className={styles.wordWrapper}>
-                          <li className={styles.emptyTile}></li>
-                          {game.current_word.split("").map((w, idx) => {
-                            return (
-                              <KeyboardTile
-                                letter={w}
-                                key={idx}
-                                disabled={true}
+                      </Link>
+                    </nav>
+                    {!game.winner && (
+                      <>
+                        <div className={styles.gameBody}>
+                          <ScoreSection
+                            playerOneAvatar={p1image}
+                            playerTwoAvatar={p2image}
+                            game={game}
+                          />
+                          <div className={styles.buttonRow}>
+                            {game.game_type === GameType.ONLINE_MULTIPLAYER &&
+                              game.player_two_id === null && (
+                                <>
+                                  <Button
+                                    text={shareButtonText}
+                                    type={"primary"}
+                                    action={() => inviteGame()}
+                                  />
+                                </>
+                              )}
+
+                            {game.player_two_id && (
+                              <Button
+                                text="forfeit round"
+                                type={"secondary"}
+                                action={() => forfeitGame()}
                               />
-                            );
-                          })}
-                          <li className={styles.emptyTile}></li>
-                        </ul>
-                      </div>
-                    </div>
+                            )}
+
+                            <Button
+                              text="End Game"
+                              type={"delete"}
+                              action={() => deleteGame(game)}
+                            />
+                          </div>
+
+                          <DndContext
+                            onDragStart={(e) => handleDragStart(e)}
+                            onDragEnd={(e) => handleDragEnd(e)}
+                            modifiers={[restrictToWindowEdges]}
+                            sensors={sensors}
+                          >
+                            <div className={styles.dropArea}>
+                              <DroppableArea
+                                area={"left"}
+                                word={`${selectedLetter}${game.current_word}`}
+                              />
+
+                              <DroppableArea
+                                area={"right"}
+                                word={`${game.current_word}${selectedLetter}`}
+                              />
+                            </div>
+                            {displayKeyboard() ? (
+                              <Keyboard />
+                            ) : (
+                              <div className={styles.noKeyboard}>
+                                <OutlineText
+                                  alignment={"center"}
+                                  sizeInRem={2}
+                                  text={"Not your turn"}
+                                  upperCase={false}
+                                />
+                              </div>
+                            )}
+                          </DndContext>
+                          <div className={styles.gameInfo}>
+                            <OutlineText
+                              alignment={"center"}
+                              sizeInRem={2}
+                              text={renderPlayerName()}
+                              upperCase={false}
+                            />
+                            <ul className={styles.wordWrapper}>
+                              <li className={styles.emptyTile}></li>
+                              {game.current_word.split("").map((w, idx) => {
+                                return (
+                                  <KeyboardTile
+                                    letter={w}
+                                    key={idx}
+                                    disabled={true}
+                                  />
+                                );
+                              })}
+                              <li className={styles.emptyTile}></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
-              </>
-            )}
-          </div>
-          <Dialog setDisplay={() => setShowDialog(false)} display={showDialog}>
-            <OutlineText
-              text={dialogMessage}
-              sizeInRem={1.4}
-              upperCase={false}
-              alignment={"center"}
-              focus={true}
-            />
-            {displayHomeLink && (
-              <>
-                <br />
-                <Button
-                  text="Go Home"
-                  action={() => router.push("/")}
-                  type="primary"
-                />{" "}
-              </>
-            )}
-          </Dialog>
+              </div>
+              <Dialog
+                setDisplay={() => setShowDialog(false)}
+                display={showDialog}
+              >
+                <OutlineText
+                  text={dialogMessage}
+                  sizeInRem={1.4}
+                  upperCase={false}
+                  alignment={"center"}
+                  focus={true}
+                />
+                {displayHomeLink && (
+                  <>
+                    <br />
+                    <Button
+                      text="Go Home"
+                      action={() => router.push("/")}
+                      type="primary"
+                    />{" "}
+                  </>
+                )}
+              </Dialog>
+            </div>
+          )}
+
+          {!displayGame() && (
+            <div className={styles.noDisplay}>
+              <OutlineText
+                text={"No game found, return home"}
+                sizeInRem={2}
+                upperCase={false}
+                alignment={"center"}
+              />{" "}
+              <Button
+                text="Go Home"
+                action={() => router.push("/")}
+                type="primary"
+              />
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </Layout>
   );
 }

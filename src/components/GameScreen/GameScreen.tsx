@@ -82,8 +82,7 @@ const GameScreen = () => {
               </li>
             );
           })}
-
-        {localGames.length === 0 && games.length === 0 && (
+        {localGames?.length === 0 && games?.length === 0 && (
           <li className={styles.noGame}>
             <OutlineText
               text={"No games in progress"}

@@ -5,9 +5,7 @@ type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
 type userProfileStore = {
   userProfile: Profiles | null;
-  userAvatarUrl: string;
   setUserProfile: (user: Profiles) => void;
-  setUserAvatarUrl: (url: string) => void;
 };
 
 type useGamesStore = {
@@ -19,9 +17,7 @@ type useGamesStore = {
 
 export const useUserProfileStore = create<userProfileStore>((set) => ({
   userProfile: null,
-  userAvatarUrl: "",
   setUserProfile: (user: Profiles) => set({ userProfile: user }),
-  setUserAvatarUrl: (url: string) => set({ userAvatarUrl: url }),
 }));
 
 export const useGamesStore = create<useGamesStore>((set, get) => ({

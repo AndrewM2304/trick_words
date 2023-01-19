@@ -29,9 +29,9 @@ const mockDownload = {
 };
 
 jest.mock("@hooks/useDownloadImages", () => ({
-  useDownloadImages: () => {
-    return mockDownload;
-  },
+  useDownloadImages: jest.fn(() => ({
+    setImage: (e: any) => Promise.resolve(userAvatar),
+  })),
 }));
 
 const MockWrapperComponent = () => {

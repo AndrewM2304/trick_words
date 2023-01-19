@@ -22,7 +22,8 @@ const AccountSettings = () => {
   const { userProfile } = useUserProfileStore();
   const [fullName, setFullName] = useState<Profiles["full_name"]>("");
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
-  const { playerOneImage, downloadImagesFromUrls } = useDownloadImages();
+  const { setImage } = useDownloadImages();
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   const [showCropper, setShowCropper] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>();
@@ -35,7 +36,7 @@ const AccountSettings = () => {
   useEffect(() => {
     if (!userProfile) return;
     setFullName(userProfile.full_name);
-    downloadImagesFromUrls([userProfile.avatar_url ?? default_avatar, ""]);
+    setImage(userProfile.avatar_url).then((i) => setUserImage(i));
   }, [userProfile]);
 
   async function updateProfile(name: string) {
@@ -47,7 +48,7 @@ const AccountSettings = () => {
         id: user.id,
         updated_at: new Date().toISOString(),
         full_name: name,
-        avatar_url: playerOneImage,
+        avatar_url: userImage,
       };
 
       let { error, data } = await supabase.from("profiles").upsert(updates);
@@ -117,7 +118,7 @@ const AccountSettings = () => {
     <>
       {userProfile && <>user</>}
       {session && <>session</>}
-      {userProfile && session && (
+      {userProfile && session && userImage && (
         <>
           <div className="form-widget" data-testid="AccountSettings-wrapper">
             <div>
@@ -134,7 +135,7 @@ const AccountSettings = () => {
                 alt={`${userProfile?.full_name} avatar`}
                 height={50}
                 width={50}
-                src={playerOneImage}
+                src={userImage}
               />
 
               <input
