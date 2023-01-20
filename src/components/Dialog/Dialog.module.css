@@ -1,5 +1,5 @@
 .Dialog {
-  width: min(80%, 500px);
+  width: min(90%, 500px);
   display: flex;
   gap: 20px;
   justify-content: center;

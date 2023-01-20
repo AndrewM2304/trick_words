@@ -27,18 +27,21 @@ import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUserProfileStore } from "@components/store";
 import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useDeleteGame } from "@hooks/useDeleteGame";
+import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 
 export default function Game() {
   const [displayHomeLink, setDisplayHomeLink] = useState(false);
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
   const { setImage } = useDownloadImages();
-  const { gameData, status, error, loading } = useGetGameData();
   const { userProfile } = useUserProfileStore();
+
+  const { gameData, status, error, loading } = useGetGameData(userProfile);
   const router = useRouter();
   const [p1image, setp1Image] = useState<string | null>(null);
   const [p2image, setp2Image] = useState<string | null>(null);
+  const [playerTurnName, setPlayerTurnName] = useState("");
   const user = useUser();
   const {
     handleDragStart,
@@ -52,6 +55,7 @@ export default function Game() {
     showDialog,
     setDialogMessage,
   } = usePlayerTurn();
+  const supabasedefault = useSupabaseClient();
 
   const { deleteGame } = useDeleteGame();
 
@@ -126,32 +130,23 @@ export default function Game() {
     }
   }, [gameData, userProfile, error]);
 
+  useEffect(() => {
+    if (game?.current_player_index === 0 && !userProfile) {
+      return setPlayerTurnName("Your turn");
+    } else {
+      game?.current_player_index === 0
+        ? setPlayerTurnName(`${game?.player_one_name}'s turn`)
+        : setPlayerTurnName(`${game?.player_two_name}'s turn`);
+    }
+  }, [game?.current_player_index]);
+
   const displayKeyboard = (): boolean => {
     if (!game) return false;
-    if (game.game_type === GameType.LOCAL_MULTIPLAYER) return true;
-
-    if (
-      (game.player_one_id === userProfile?.id || "not-logged-in-user") &&
-      game.current_player_index === 0
-    ) {
+    if (game.game_type !== GameType.ONLINE_MULTIPLAYER) return true;
+    if (playerTurnName.includes(userProfile?.full_name!)) {
       return true;
-    }
-    if (
-      game.player_two_id === userProfile?.id &&
-      game.current_player_index === 1
-    ) {
-      return true;
-    }
-    return false;
-  };
-
-  const renderPlayerName = (): string => {
-    if (game?.current_player_index === 0 && !userProfile) {
-      return "Your turn";
     } else {
-      return game?.current_player_index === 0
-        ? `${game?.player_one_name}'s turn`
-        : `${game?.player_two_name}'s turn`;
+      return false;
     }
   };
 
@@ -162,9 +157,18 @@ export default function Game() {
     );
   };
 
+  const displayAuth = (): boolean => {
+    return gameData?.game_type === GameType.ONLINE_MULTIPLAYER && !user;
+  };
+  const redirect = () => {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/redirect`;
+    }
+  };
+
   return (
     <Layout>
-      {gameData && (
+      {gameData && !displayAuth() && !loading && (
         <div className={styles.gameWrapper} data-testid="Game-wrapper">
           {displayGame() && (
             <div className="central-width-container " data-central>
@@ -248,7 +252,11 @@ export default function Game() {
                             <Button
                               text="End Game"
                               type={"delete"}
-                              action={() => deleteGame(game)}
+                              action={() => {
+                                deleteGame(game).then(() =>
+                                  router.push("/games")
+                                );
+                              }}
                             />
                           </div>
 
@@ -286,7 +294,7 @@ export default function Game() {
                             <OutlineText
                               alignment={"center"}
                               sizeInRem={2}
-                              text={renderPlayerName()}
+                              text={playerTurnName}
                               upperCase={false}
                             />
                             <ul className={styles.wordWrapper}>
@@ -351,6 +359,39 @@ export default function Game() {
           )}
         </div>
       )}
+      {displayAuth() && !loading && (
+        <div className={styles.gameWrapper}>
+          <div className={styles.auth}>
+            <OutlineText
+              text={
+                "Looks like you are trying to access an online game, sign in to play online"
+              }
+              sizeInRem={1.2}
+              upperCase={false}
+              alignment={"left"}
+            />
+
+            <Auth
+              onlyThirdPartyProviders
+              supabaseClient={supabasedefault}
+              appearance={{
+                theme: ThemeSupa,
+                className: {
+                  button: "auth-button",
+                },
+              }}
+              theme="dark"
+              providers={["facebook", "google"]}
+              redirectTo={redirect()}
+            />
+            <Button
+              type={"primary"}
+              text={"Return to home"}
+              action={() => router.push("/")}
+            />
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
@@ -369,15 +410,15 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       <Image
         className={styles.playerOneImage}
         src={playerOneAvatar}
-        height={28}
-        width={28}
+        height={38}
+        width={38}
         alt={`${game.player_one_name} avatar`}
       />
 
       <div className={styles.playerOneName} data-testid="player-one-name">
         <OutlineText
           text={game.player_one_name}
-          sizeInRem={1.4}
+          sizeInRem={1.2}
           alignment="left"
           upperCase={false}
         />
@@ -385,7 +426,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       <div className={styles.playerOneScore} data-testid="player-one-score">
         <OutlineText
           text={game.player_one_score.toString()}
-          sizeInRem={2}
+          sizeInRem={1.4}
           upperCase={false}
           alignment="left"
         />
@@ -393,15 +434,15 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       <Image
         className={styles.playerTwoImage}
         src={playerTwoAvatar}
-        height={28}
-        width={28}
+        height={38}
+        width={38}
         alt={`${game.player_two_name} avatar`}
       />
 
       <div className={styles.playerTwoName}>
         <OutlineText
           text={game.player_two_name}
-          sizeInRem={1.4}
+          sizeInRem={1.2}
           alignment="right"
           upperCase={false}
         />
@@ -409,7 +450,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       <div className={styles.playerTwoScore}>
         <OutlineText
           text={game.player_two_score.toString()}
-          sizeInRem={2}
+          sizeInRem={1.4}
           upperCase={false}
           alignment="right"
         />

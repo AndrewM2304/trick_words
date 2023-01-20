@@ -1,14 +1,15 @@
 import { useGamesStore, useUserProfileStore } from "@components/store";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { PostgrestError } from "@supabase/supabase-js";
-import { local_game } from "@utilities/constants";
+import { local_game, redirect_key } from "@utilities/constants";
 import { Database } from "@utilities/supabase";
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 type GameDB = Database["public"]["Tables"]["games"]["Row"];
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 
-export const useGetGameData = () => {
+export const useGetGameData = (userProfile: Profile | null) => {
   const router = useRouter();
   const { game, gametype, gameroom } = router.query;
 
@@ -18,11 +19,9 @@ export const useGetGameData = () => {
   const [error, setError] = useState<PostgrestError | null>();
   const supabase = useSupabaseClient<GameDB>();
   const { games } = useGamesStore();
-  const { userProfile } = useUserProfileStore();
 
   useEffect(() => {
     if (gameData || !game || !gametype) return;
-
     getGame().then((d) => {
       if (d === undefined || !d) {
         setGameData(null);
@@ -37,13 +36,16 @@ export const useGetGameData = () => {
       }
 
       setGameData(d ?? null);
-      addSecondPlayer(d).then((d) => {
-        if (d === undefined) return;
-        setGameData(d ?? null);
-      });
+      if (gametype === "online" && d) {
+        addSecondPlayer(d).then((d) => {
+          if (d === undefined) return;
+
+          setGameData(d ?? null);
+        });
+      }
       setLoading(false);
     });
-  }, [router.query, gameData]);
+  }, [router.query, gameData, userProfile]);
 
   useEffect(() => {
     const currentGame = games.filter((g) => g.id === gameData?.id)[0];
@@ -77,6 +79,12 @@ export const useGetGameData = () => {
         .single();
       setStatus(status);
       if (data) {
+        if (data.player_two_id === null) {
+          window.localStorage.setItem(
+            redirect_key,
+            `/game/${data.id}/?gameroom=${gameroom}&gametype=online`
+          );
+        }
         return data;
       }
       if (error) {

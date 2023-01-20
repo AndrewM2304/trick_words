@@ -66,7 +66,7 @@ describe("useGetGameData", () => {
   it("returns a game from localhost if the url contains local", async () => {
     setLocalStorage(local_game, [mockGame]);
     act(() => (mockRouterValue.query.gametype = "local"));
-    const { result } = renderHook(() => useGetGameData());
+    const { result } = renderHook(() => useGetGameData(mockUserProfile));
     expect(result.current.gameData).toBeNull();
     await waitFor(() =>
       expect(result.current.gameData).toStrictEqual(mockGame)
@@ -75,7 +75,7 @@ describe("useGetGameData", () => {
 
   it("returns value from supabase database if matching game", async () => {
     act(() => (mockRouterValue.query.gametype = undefined));
-    const { result } = renderHook(() => useGetGameData());
+    const { result } = renderHook(() => useGetGameData(mockUserProfile));
     expect(result.current.gameData).toBeNull();
 
     waitFor(() =>

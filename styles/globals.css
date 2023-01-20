@@ -43,18 +43,18 @@ a:focus-visible li {
   --red-bright: #be6054;
 }
 
-::-webkit-scrollbar {
+html ::-webkit-scrollbar {
   width: 10px;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
+html ::-webkit-scrollbar-track {
   background: var(--background-blue);
   margin: 10px;
 }
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+html ::-webkit-scrollbar-thumb {
   background: var(--dark-background);
   border-radius: 4px;
 }
