@@ -24,7 +24,6 @@ const GameScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log(games);
     setGamesDisplay(games);
   }, [games]);
 
@@ -36,7 +35,8 @@ const GameScreen = () => {
 
   const disableLink = (game: Games): boolean => {
     return (
-      !game.player_two_id && game.game_type === GameType.ONLINE_MULTIPLAYER
+      (!game.player_two_id && game.game_type === GameType.ONLINE_MULTIPLAYER) ||
+      (game.winner !== null && game.winner !== undefined)
     );
   };
 

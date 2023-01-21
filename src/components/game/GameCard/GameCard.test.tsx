@@ -30,7 +30,7 @@ describe("GameCard Component", () => {
       expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument()
     );
     expect(screen.getByTestId("local_multiplayer-game")).toBeInTheDocument();
-    expect(screen.getAllByText(/p2/i).length).toBe(2);
+    expect(screen.getAllByText(/p1/i).length).toBe(2);
     expect(screen.getByTestId("score")).toBeInTheDocument();
     expect(screen.getAllByText(/0 - 0/i).length).toBe(2);
   });

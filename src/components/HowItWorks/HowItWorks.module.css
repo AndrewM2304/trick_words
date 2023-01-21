@@ -1,0 +1,32 @@
+.howToPlayContainer {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: auto;
+  padding-right: 16px;
+}
+.howToPlayContainer > :nth-child(2) {
+  text-decoration: underline;
+  font-weight: 700;
+}
+.howToPlayContainer :is(p, li) {
+  letter-spacing: 0.03em;
+  margin: 0px;
+}
+.howToPlayContainer ol {
+  display: grid;
+  margin: 0px;
+  padding-left: 20px;
+  gap: 5px;
+}
+.howToPlayContainer p:focus-visible {
+  outline: none;
+}
+
+.howToPlayContainer button {
+  height: fit-content;
+}

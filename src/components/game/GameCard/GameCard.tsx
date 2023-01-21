@@ -18,14 +18,24 @@ export type GameCardProps = {
 };
 const GameCard = ({ game }: GameCardProps) => {
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
-  const [p2Image, setp2Image] = useState<string | null>(null);
+  const [playerImage, setPlayerImage] = useState<string | null>(null);
+  const [playerName, setPlayerName] = useState<string>("");
 
   const { setImage } = useDownloadImages();
   const user = useUser();
   const { deleteGame } = useDeleteGame();
 
   useEffect(() => {
-    setImage(game.player_two_avatar).then((i) => setp2Image(i));
+    const playerToDisplayImage =
+      user?.id === game.player_one_id
+        ? game.player_two_avatar
+        : game.player_one_avatar;
+    const playerToDisplayName =
+      user?.id === game.player_one_id
+        ? game.player_two_name
+        : game.player_one_name;
+    setImage(playerToDisplayImage).then((i) => setPlayerImage(i));
+    setPlayerName(playerToDisplayName);
   }, []);
 
   const setColor = () => {
@@ -92,7 +102,7 @@ const GameCard = ({ game }: GameCardProps) => {
 
   return (
     <>
-      {p2Image && (
+      {playerImage && (
         <div data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
           <div className={styles.gradient}></div>
           <div
@@ -101,8 +111,8 @@ const GameCard = ({ game }: GameCardProps) => {
           >
             <ProfileImage
               color={setColor() ?? "blue"}
-              text={game.player_two_name}
-              url={p2Image}
+              text={playerName}
+              url={playerImage}
               notification={playerTurnNotification() ? "!" : null}
             />
           </div>
@@ -158,6 +168,24 @@ const GameCard = ({ game }: GameCardProps) => {
                 </div>
               </div>
             )}
+
+          {game.winner !== null && game.winner !== undefined && (
+            <div className={styles.waitOverlay} data-testid="waiting-overlay">
+              <OutlineText
+                text={`Winner is ${game.winner}`}
+                sizeInRem={1.2}
+                upperCase
+                alignment={"center"}
+              />
+              <div className={styles.buttonRow}>
+                <Button
+                  text="delete game"
+                  action={() => deleteGame(game)}
+                  type={"delete"}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

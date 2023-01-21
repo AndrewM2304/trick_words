@@ -22,8 +22,6 @@ const Layout = ({ children }: LayoutProps) => {
   const user = useUser();
   const supabaseProfiles = useSupabaseClient<Profiles>();
   const supabaseGames = useSupabaseClient<Games>();
-  const router = useRouter();
-  const supabase = useSupabaseClient();
   const session = useSession();
 
   async function getProfile(): Promise<Profiles | undefined> {
@@ -71,6 +69,7 @@ const Layout = ({ children }: LayoutProps) => {
           filter: `player_one_id=eq.${user.id}`,
         },
         (payload) => {
+          console.log(payload);
           if (payload.eventType === "INSERT") {
             const newItem: Games = payload.new as Games;
             addGame(newItem);
@@ -94,6 +93,7 @@ const Layout = ({ children }: LayoutProps) => {
           filter: `player_two_id=eq.${user.id}`,
         },
         (payload) => {
+          console.log(payload);
           if (payload.eventType === "INSERT") {
             const newItem: Games = payload.new as Games;
             addGame(newItem);

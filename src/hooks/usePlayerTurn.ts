@@ -61,7 +61,7 @@ export const usePlayerTurn = () => {
           referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
           body: JSON.stringify({
             game: game,
-            difficulty: "easy",
+            difficulty: difficulty,
             word: playerWord,
             forfeit: forfeit,
           }), // body data type must match "Content-Type" header
@@ -126,7 +126,7 @@ export const usePlayerTurn = () => {
 
   const forfeitGame = () => {
     if (!game) return;
-    setDialogMessage("You forfeit this round, next player!");
+    setDialogMessage("You forfeit this round, next letter!");
     updateGame(game.current_word, game, true, "easy");
   };
 

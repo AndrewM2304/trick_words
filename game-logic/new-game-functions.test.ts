@@ -142,7 +142,7 @@ describe("set message", () => {
     tempGame.player_one_name = "test winner";
     tempGame.winner = "test";
     const winner = setMessage(tempGame, "other message");
-    expect(winner).toBe("Winner is test winner");
+    expect(winner).toBe("Winner is test");
   });
   it("sets a base message if no winner", () => {
     tempGame.winner = null;
@@ -156,7 +156,7 @@ describe("forfeitroundlogic", () => {
     expect(tempGame.player_two_score).toBe(0);
     const { updatedGame, message } = forfeitRoundLogic(tempGame);
     expect(updatedGame.player_two_score).toBe(1);
-    expect(message).toBe("You forfeit this round, next player!");
+    expect(message).toBe("You forfeit this round, next letter!");
   });
   it("sets a winner if current letter is z", () => {
     tempGame.current_letter_index = 25;
@@ -254,7 +254,7 @@ describe("updateGameBasedOnPlayerTurn ", () => {
     expect(gameToReturn.current_player_index).toBe(0);
     expect(gameToReturn.player_two_score).toBe(1);
     expect(gameToReturn.player_one_score).toBe(0);
-    expect(message).toBe("You forfeit this round, next player!");
+    expect(message).toBe("You forfeit this round, next letter!");
   });
   it("sets a winner if a player word is an exact match and the current letter is z", () => {
     tempGame.current_letter_index = 25;
@@ -270,7 +270,7 @@ describe("updateGameBasedOnPlayerTurn ", () => {
     expect(gameToReturn.current_player_index).toBe(0);
     expect(gameToReturn.player_two_score).toBe(1);
     expect(gameToReturn.player_one_score).toBe(22);
-    expect(gameToReturn.winner).toBe("d5bcd50f-4595-4d20-b940-1ac6f800dc13");
+    expect(gameToReturn.winner).toBe("p1");
     expect(message).toBe("Winner is p1");
   });
 });

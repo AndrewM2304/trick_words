@@ -29,8 +29,6 @@ export const useGamesStore = create<useGamesStore>((set, get) => ({
   },
   updateGame: (game: Games) => {
     const filteredGames = [...get().games];
-    const itemToUpdate = filteredGames.filter((g) => g.id === game.id);
-    itemToUpdate[0] = game;
 
     const updatedItems = filteredGames.map((obj) => {
       if (obj.id === game.id) {

@@ -30,10 +30,12 @@ import { useRouter } from "next/router";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useDeleteGame } from "@hooks/useDeleteGame";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
+import { HowItWorks } from "@components/HowItWorks";
 
 export default function Game() {
   const [displayHomeLink, setDisplayHomeLink] = useState(false);
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
+  const [help, setHelp] = useState(false);
   const { setImage } = useDownloadImages();
   const { userProfile } = useUserProfileStore();
   const [displayKeyboard, setDisplayKeyboard] = useState(false);
@@ -214,6 +216,11 @@ export default function Game() {
                           alignment={"left"}
                         />
                       </Link>
+                      <Button
+                        type={"tertiary"}
+                        text={"Help"}
+                        action={() => setHelp(true)}
+                      />
                     </nav>
                     {!game.winner && (
                       <>
@@ -337,6 +344,9 @@ export default function Game() {
                   </>
                 )}
               </Dialog>
+              <Dialog setDisplay={() => setHelp(false)} display={help}>
+                <HowItWorks closeDialog={() => setHelp(false)} />
+              </Dialog>
             </div>
           )}
         </div>
@@ -391,6 +401,24 @@ export default function Game() {
           </div>
         </div>
       )}
+      {gameData?.winner !== null ||
+        (gameData !== undefined && (
+          <div className={styles.gameWrapper} data-testid="Game-wrapper">
+            <div className={styles.auth}>
+              <OutlineText
+                text={`Winner is ${gameData.winner}`}
+                sizeInRem={2}
+                upperCase={false}
+                alignment={"center"}
+              />{" "}
+              <Button
+                text="Go Home"
+                action={() => router.push("/")}
+                type="primary"
+              />
+            </div>
+          </div>
+        ))}
     </>
   );
 }

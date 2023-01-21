@@ -1,6 +1,6 @@
 .tabsWrapper {
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr 60px;
   height: 100dvh;
 }
 
@@ -50,6 +50,10 @@
 
 .landscape {
   display: none;
+}
+
+.portrait {
+  overflow: auto;
 }
 
 @media (min-width: 800px) {

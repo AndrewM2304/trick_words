@@ -59,3 +59,20 @@
 .Button:is([data-button-type="delete"]):hover {
   background: var(--red);
 }
+
+.Button:is([data-button-type="tertiary"]) {
+  box-shadow: none;
+  border-radius: 5px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  padding: 8px;
+}
+.Button:is([data-button-type="tertiary"]):is(:focus-visible, :hover) {
+  background: var(--background-blue);
+}
+.Button:is([data-button-type="tertiary"])::before {
+  display: none;
+}
+.Button:is([data-button-type="tertiary"])::after {
+  display: none;
+}

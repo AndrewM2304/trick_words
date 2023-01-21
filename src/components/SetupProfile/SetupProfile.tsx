@@ -11,14 +11,23 @@ import { useCropPhoto } from "@hooks/useCropPhoto";
 
 export type SetupProfileProps = {
   photoFromParent?: string;
+  nameFromParent?: string;
 };
-const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
+const SetupProfile = ({
+  photoFromParent,
+  nameFromParent,
+}: SetupProfileProps) => {
   const user = useUser();
+  const { setImage } = useDownloadImages();
 
   useEffect(() => {
-    setName(user?.user_metadata.name ?? "");
+    if (nameFromParent) {
+      setName(nameFromParent);
+    } else {
+      setName(user?.user_metadata.name.split(" ")[0] ?? "");
+    }
     if (photoFromParent) {
-      setPhoto(photoFromParent);
+      setImage(photoFromParent).then((i) => setPhoto(i));
     } else {
       setPhoto(user?.user_metadata?.picture ?? default_avatar);
     }
@@ -44,6 +53,7 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
   } = useCropPhoto();
 
   const selectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
     if (!e.target.files || e === undefined) return;
     const photo = e.target.files[0];
     if (photo) {
@@ -55,7 +65,7 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
   };
 
   const cancelPhoto = () => {
-    setPhoto(user?.user_metadata?.picture ?? default_avatar);
+    setPhoto(photo ?? default_avatar);
     setDisplayCropperDialog(false);
   };
 
@@ -75,19 +85,22 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
             className={styles.SetupProfile}
           >
             <div className={styles.central}>
-              <OutlineText
-                text={"Welcome"}
-                sizeInRem={2.5}
-                upperCase={true}
-                alignment={"center"}
-              />
-              <OutlineText
-                text={"Choose a profile photo and name to get started"}
-                sizeInRem={1.2}
-                upperCase={false}
-                alignment={"center"}
-              />
-
+              {!photoFromParent && (
+                <>
+                  <OutlineText
+                    text={"Welcome"}
+                    sizeInRem={2.5}
+                    upperCase={true}
+                    alignment={"center"}
+                  />
+                  <OutlineText
+                    text={"Choose a profile photo and name to get started"}
+                    sizeInRem={1.2}
+                    upperCase={false}
+                    alignment={"center"}
+                  />
+                </>
+              )}
               <label htmlFor="">
                 <div className={styles.smallText}>
                   Enter your name (max 12 characters)

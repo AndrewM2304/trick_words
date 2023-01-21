@@ -203,14 +203,14 @@ export const setWinner = (
   currentLetterIndex: number,
   player_one_score: number,
   player_two_score: number,
-  player_one_id: string,
-  player_two_id: string
+  player_one_name: string,
+  player_two_name: string
 ): string | null => {
   if (player_one_score > player_two_score && currentLetterIndex === 25) {
-    return player_one_id;
+    return player_one_name;
   }
   if (player_two_score > player_one_score && currentLetterIndex === 25) {
-    return player_two_id;
+    return player_two_name;
   }
   if (player_two_score === player_one_score && currentLetterIndex === 25) {
     return "draw";
@@ -223,9 +223,7 @@ export const setMessage = (g: GameDBType, baseMessage: string): string => {
     if (g.winner === "draw") {
       return `Game is a draw!`;
     }
-    const name =
-      g.winner === g.player_one_id ? g.player_one_name : g.player_two_name;
-    return `Winner is ${name}`;
+    return `Winner is ${g.winner}`;
   }
   return baseMessage;
 };
@@ -244,15 +242,15 @@ export const forfeitRoundLogic = (
     g.current_letter_index,
     g.player_one_score,
     g.player_two_score,
-    g.player_one_id!,
-    g.player_two_id!
+    g.player_one_name,
+    g.player_two_name
   );
   g.current_letter_index = incrementLetter(g.current_letter_index);
   g.current_word = letters[g.current_letter_index];
 
   return {
     updatedGame: g,
-    message: setMessage(g, "You forfeit this round, next player!"),
+    message: setMessage(g, "You forfeit this round, next letter!"),
   };
 };
 
@@ -274,8 +272,8 @@ export const exactMatchLogic = (
     g.current_letter_index,
     g.player_one_score,
     g.player_two_score,
-    g.player_one_id!,
-    g.player_two_id!
+    g.player_one_name,
+    g.player_two_name
   );
   if (g.game_type === GameType.LOCAL_MULTIPLAYER) {
     g.current_player_id = switchPlayerID(g.current_player_index, g);
@@ -308,8 +306,8 @@ export const nextPlayerLogic = (
       g.current_letter_index,
       g.player_one_score,
       g.player_two_score,
-      g.player_one_id!,
-      g.player_two_id!
+      g.player_one_name,
+      g.player_two_name
     );
     return {
       updatedGame: g,
