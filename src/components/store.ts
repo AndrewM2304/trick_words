@@ -1,5 +1,5 @@
 import { Database } from "@utilities/supabase";
-import create from "zustand";
+import { create } from "zustand";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -39,9 +39,6 @@ export const useGamesStore = create<useGamesStore>((set, get) => ({
 
       return obj;
     });
-
-    console.log(updatedItems);
-
     set(() => ({ games: updatedItems }));
   },
 }));

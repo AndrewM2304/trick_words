@@ -32,7 +32,7 @@ export const identifyIfWordInList = (
   // build computer words based on slicing wordlist into easy, medium or normal length words
   if (player && computerWords.length > 0) {
     const wordsWithinDifficulty = computerWords.filter(
-      (c) => c.word.length <= difficultyFilter("normal")
+      (c) => c.word.length <= difficultyFilter(difficulty)
     );
     if (wordsWithinDifficulty.length > 0) {
       value.computerWords = [
@@ -188,6 +188,13 @@ export const switchPlayer = (currentPlayerIndex: number): number => {
   return currentPlayerIndex === 0 ? 1 : 0;
 };
 
+export const switchPlayerID = (
+  currentPlayerIndex: number,
+  game: GameDBType
+): string | null => {
+  return currentPlayerIndex === 0 ? game.player_two_id : game.player_one_id;
+};
+
 export const incrementLetter = (currentLetterIndex: number): number => {
   return currentLetterIndex <= 24 ? currentLetterIndex + 1 : 25;
 };
@@ -270,7 +277,8 @@ export const exactMatchLogic = (
     g.player_one_id!,
     g.player_two_id!
   );
-  if (g.game_type !== GameType.COMPUTER) {
+  if (g.game_type === GameType.LOCAL_MULTIPLAYER) {
+    g.current_player_id = switchPlayerID(g.current_player_index, g);
     g.current_player_index = switchPlayer(g.current_player_index);
   }
 
@@ -287,6 +295,7 @@ export const nextPlayerLogic = (
 ): { updatedGame: GameDBType; message: string } => {
   if (g.game_type !== GameType.COMPUTER) {
     g.current_word = playerGuess;
+    g.current_player_id = switchPlayerID(g.current_player_index, g);
     g.current_player_index = switchPlayer(g.current_player_index);
     return { updatedGame: g, message: "Next player" };
   }

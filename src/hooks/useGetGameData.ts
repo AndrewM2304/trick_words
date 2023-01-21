@@ -15,7 +15,7 @@ export const useGetGameData = (userProfile: Profile | null) => {
 
   const [gameData, setGameData] = useState<GameDB | null>(null);
   const [status, setStatus] = useState<number>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PostgrestError | null>();
   const supabase = useSupabaseClient<GameDB>();
   const { games } = useGamesStore();
@@ -25,6 +25,7 @@ export const useGetGameData = (userProfile: Profile | null) => {
     getGame().then((d) => {
       if (d === undefined || !d) {
         setGameData(null);
+        setLoading(false);
         setError({
           details: "no_local",
           hint: "none",
@@ -34,16 +35,15 @@ export const useGetGameData = (userProfile: Profile | null) => {
 
         return;
       }
-
       setGameData(d ?? null);
+      setLoading(false);
       if (gametype === "online" && d) {
         addSecondPlayer(d).then((d) => {
           if (d === undefined) return;
-
+          console.log(d);
           setGameData(d ?? null);
         });
       }
-      setLoading(false);
     });
   }, [router.query, gameData, userProfile]);
 
@@ -55,7 +55,6 @@ export const useGetGameData = (userProfile: Profile | null) => {
   }, [games]);
 
   const getGame = async (): Promise<GameDB | undefined> => {
-    setLoading(true);
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
 
     if (gametype === "local" && gamesFromLocalStorage) {
@@ -107,6 +106,10 @@ export const useGetGameData = (userProfile: Profile | null) => {
           player_two_id: userProfile.id,
           player_two_name: userProfile?.full_name,
           player_two_avatar: userProfile?.avatar_url,
+          current_player_id:
+            game.current_player_id === null
+              ? userProfile?.id
+              : game.player_one_id,
         })
         .eq("id", game.id)
         .select();

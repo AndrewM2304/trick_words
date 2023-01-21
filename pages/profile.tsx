@@ -7,15 +7,9 @@ import { useSession } from "@supabase/auth-helpers-react";
 function Profile() {
   const session = useSession();
   return (
-    <Layout>
-      {session && (
-        <>
-          <TabWrapper>
-            <AccountSettings />
-          </TabWrapper>
-        </>
-      )}
-    </Layout>
+    <TabWrapper>
+      <AccountSettings />
+    </TabWrapper>
   );
 }
 

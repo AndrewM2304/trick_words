@@ -44,10 +44,8 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
   } = useCropPhoto();
 
   const selectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
     if (!e.target.files || e === undefined) return;
     const photo = e.target.files[0];
-    console.log(photo);
     if (photo) {
       const url = URL.createObjectURL(photo);
       setPhoto(url);
@@ -63,7 +61,6 @@ const SetupProfile = ({ photoFromParent }: SetupProfileProps) => {
 
   const onCropComplete = useCallback(
     (croppedArea: any, croppedAreaPixels: any) => {
-      console.log(croppedAreaPixels);
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []

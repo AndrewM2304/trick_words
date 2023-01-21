@@ -7,15 +7,25 @@ export type ButtonProps = {
   text: string;
   action: () => void;
   iconUrl?: string;
+  disabled?: boolean;
 };
 
-const Button = ({ text, type, action, iconUrl }: ButtonProps) => {
+const Button = ({
+  text,
+  type,
+  action,
+  iconUrl,
+  disabled = false,
+}: ButtonProps) => {
   return (
     <button
       data-testid="Button-wrapper"
       className={styles.Button}
       data-button-type={type}
-      onClick={() => action()}
+      onClick={() => {
+        disabled ? void 0 : action();
+      }}
+      aria-disabled={disabled}
     >
       <OutlineText upperCase text={text} sizeInRem={1} alignment={"center"} />
     </button>

@@ -159,12 +159,12 @@ export const useCropPhoto = () => {
       }
 
       if (uploadError) {
-        console.log(uploadError);
+        console.error(uploadError);
       }
     }
     if (error) {
-      console.log("uploading error");
-      console.log(error);
+      console.error("uploading error");
+      console.error(error);
     }
   };
   return {

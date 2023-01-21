@@ -36,7 +36,7 @@ export default function Game() {
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
   const { setImage } = useDownloadImages();
   const { userProfile } = useUserProfileStore();
-
+  const [displayKeyboard, setDisplayKeyboard] = useState(false);
   const { gameData, status, error, loading } = useGetGameData(userProfile);
   const router = useRouter();
   const [p1image, setp1Image] = useState<string | null>(null);
@@ -103,10 +103,6 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (!gameData && !error) {
-      setShowDialog(true);
-      setDialogMessage("Loading Game");
-    }
     if (error) {
       setDialogMessage(error.message.toString());
       setDisplayHomeLink(true);
@@ -115,9 +111,6 @@ export default function Game() {
     setGame(gameData);
 
     if (gameData && !error) {
-      setShowDialog(false);
-
-      setDialogMessage("Checking word...");
       setDisplayHomeLink(false);
       setImage(gameData.player_one_avatar).then((i) => setp1Image(i));
       setImage(gameData.player_two_avatar).then((i) => setp2Image(i));
@@ -131,26 +124,27 @@ export default function Game() {
   }, [gameData, userProfile, error]);
 
   useEffect(() => {
-    if (game?.current_player_index === 0 && !userProfile) {
-      return setPlayerTurnName("Your turn");
+    if (!gameData) return;
+    if (gameData?.current_player_index === 0 && !userProfile) {
+      setPlayerTurnName("Your turn");
     } else {
-      game?.current_player_index === 0
-        ? setPlayerTurnName(`${game?.player_one_name}'s turn`)
-        : setPlayerTurnName(`${game?.player_two_name}'s turn`);
+      gameData?.current_player_index === 0
+        ? setPlayerTurnName(`${gameData?.player_one_name}'s turn`)
+        : setPlayerTurnName(`${gameData?.player_two_name}'s turn`);
     }
-  }, [game?.current_player_index]);
-
-  const displayKeyboard = (): boolean => {
-    if (!game) return false;
-    if (game.game_type !== GameType.ONLINE_MULTIPLAYER) return true;
-    if (playerTurnName.includes(userProfile?.full_name!)) {
-      return true;
+    if (gameData?.game_type !== GameType.ONLINE_MULTIPLAYER) {
+      setDisplayKeyboard(true);
     } else {
-      return false;
+      gameData?.current_player_id === userProfile?.id
+        ? setDisplayKeyboard(true)
+        : setDisplayKeyboard(false);
     }
-  };
+  }, [gameData, game]);
 
   const displayGame = (): boolean => {
+    if (gameData?.game_type !== GameType.ONLINE_MULTIPLAYER) {
+      return true;
+    }
     return (
       user?.id === gameData?.player_one_id ||
       user?.id === gameData?.player_two_id
@@ -167,8 +161,8 @@ export default function Game() {
   };
 
   return (
-    <Layout>
-      {gameData && !displayAuth() && !loading && (
+    <>
+      {!displayAuth() && !loading && gameData && (
         <div className={styles.gameWrapper} data-testid="Game-wrapper">
           {displayGame() && (
             <div className="central-width-container " data-central>
@@ -246,6 +240,11 @@ export default function Game() {
                                 text="forfeit round"
                                 type={"secondary"}
                                 action={() => forfeitGame()}
+                                disabled={
+                                  game.game_type ===
+                                    GameType.ONLINE_MULTIPLAYER &&
+                                  userProfile?.id !== game.current_player_id
+                                }
                               />
                             )}
 
@@ -277,9 +276,8 @@ export default function Game() {
                                 word={`${game.current_word}${selectedLetter}`}
                               />
                             </div>
-                            {displayKeyboard() ? (
-                              <Keyboard />
-                            ) : (
+                            {displayKeyboard && <Keyboard />}
+                            {!displayKeyboard && (
                               <div className={styles.noKeyboard}>
                                 <OutlineText
                                   alignment={"center"}
@@ -341,22 +339,6 @@ export default function Game() {
               </Dialog>
             </div>
           )}
-
-          {!displayGame() && (
-            <div className={styles.noDisplay}>
-              <OutlineText
-                text={"No game found, return home"}
-                sizeInRem={2}
-                upperCase={false}
-                alignment={"center"}
-              />{" "}
-              <Button
-                text="Go Home"
-                action={() => router.push("/")}
-                type="primary"
-              />
-            </div>
-          )}
         </div>
       )}
       {displayAuth() && !loading && (
@@ -392,7 +374,24 @@ export default function Game() {
           </div>
         </div>
       )}
-    </Layout>
+      {!gameData && !loading && (
+        <div className={styles.gameWrapper} data-testid="Game-wrapper">
+          <div className={styles.auth}>
+            <OutlineText
+              text={"No game found, return home"}
+              sizeInRem={2}
+              upperCase={false}
+              alignment={"center"}
+            />{" "}
+            <Button
+              text="Go Home"
+              action={() => router.push("/")}
+              type="primary"
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

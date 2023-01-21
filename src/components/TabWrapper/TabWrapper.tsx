@@ -1,3 +1,4 @@
+import { Layout } from "@components/Layout";
 import { OutlineText } from "@components/OutlineText";
 import { NotificationBadge } from "@components/ProfileImage/ProfileImage";
 import { useGamesStore } from "@components/store";
@@ -20,8 +21,9 @@ const TabWrapper = ({ children }: TabWrapperProps) => {
   useEffect(() => {
     const gamesWhereUserTurn = games.filter(
       (g) =>
-        (user?.id === g.player_one_id && g.current_player_index === 0) ||
-        (user?.id === g.player_two_id && g.current_player_index === 1)
+        ((user?.id === g.player_one_id && g.current_player_index === 0) ||
+          (user?.id === g.player_two_id && g.current_player_index === 1)) &&
+        g.player_two_id !== null
     );
     setGameNotifications(gamesWhereUserTurn.length);
   }, [games]);

@@ -13,6 +13,7 @@ export interface Database {
         Row: {
           created_at: string
           current_letter_index: number
+          current_player_id: string | null
           current_player_index: number
           current_word: string
           difficulty: string | null
@@ -32,6 +33,7 @@ export interface Database {
         Insert: {
           created_at?: string
           current_letter_index?: number
+          current_player_id?: string | null
           current_player_index?: number
           current_word?: string
           difficulty?: string | null
@@ -51,6 +53,7 @@ export interface Database {
         Update: {
           created_at?: string
           current_letter_index?: number
+          current_player_id?: string | null
           current_player_index?: number
           current_word?: string
           difficulty?: string | null

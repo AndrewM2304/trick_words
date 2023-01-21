@@ -10,7 +10,6 @@ export const useDeleteGame = () => {
   const router = useRouter();
 
   const deleteGame = async (game: Game) => {
-    console.log("delete");
     if (game?.game_type === GameType.ONLINE_MULTIPLAYER) {
       const { data, error } = await supabase
         .from("games")
@@ -19,6 +18,9 @@ export const useDeleteGame = () => {
 
       if (data) {
         router.push("/games");
+      }
+      if (error) {
+        console.error(error);
       }
     } else {
       const gamesFromLocalStorage = window.localStorage.getItem(local_game);

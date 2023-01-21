@@ -14,9 +14,5 @@ export default function AuthenticationRedirect() {
     router.push(urlRedirect ?? "/");
     window.localStorage.removeItem(redirect_key);
   }, []);
-  return (
-    <Layout>
-      <div className="ds">loading</div>
-    </Layout>
-  );
+  return <div className="ds">loading</div>;
 }

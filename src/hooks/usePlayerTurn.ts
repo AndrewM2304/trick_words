@@ -25,7 +25,6 @@ export const usePlayerTurn = () => {
       updateGame(playerWord, game, false, "easy");
     }
     if (e.over.id === "right") {
-      console.log("right");
       const playerWord = `${game?.current_word}${e.active.id}`;
 
       updateGame(playerWord, game, false, "easy");
@@ -41,7 +40,6 @@ export const usePlayerTurn = () => {
     if (!showDialog) {
       setShowDialog(true);
     }
-    console.log(playerWord);
     try {
       const res = await typedFetch<{
         update: boolean;
@@ -80,7 +78,7 @@ export const usePlayerTurn = () => {
         closeModal();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -96,7 +94,7 @@ export const usePlayerTurn = () => {
         setGame(data[0]);
       }
       if (error) {
-        console.log(error);
+        console.error(error);
       }
     }
     if (
@@ -128,7 +126,7 @@ export const usePlayerTurn = () => {
 
   const forfeitGame = () => {
     if (!game) return;
-    setDialogMessage("You forfeit this round, next player");
+    setDialogMessage("You forfeit this round, next player!");
     updateGame(game.current_word, game, true, "easy");
   };
 
@@ -154,8 +152,6 @@ function typedFetch<TResponse>(
   // a `fetch` request. By default, an empty object.
   config: RequestInit = {}
 ): Promise<TResponse> {
-  console.log(url);
-  console.log(config.body);
   return fetch(url, config)
     .then((response) => {
       if (!response.ok) {

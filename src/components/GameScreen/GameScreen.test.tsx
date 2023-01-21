@@ -38,7 +38,7 @@ const MockWrapperComponent = () => {
   const { addGame } = useGamesStore();
   React.useEffect(() => {
     addGame(supabaseMockGame);
-  }, []);
+  }, [addGame]);
   return <GameScreen />;
 };
 

@@ -11,6 +11,11 @@
   transition: 0.2s ease-in-out;
 }
 
+.Button:is([aria-disabled="true"]) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .Button:hover {
   background: var(--teal);
 }

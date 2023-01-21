@@ -6,10 +6,8 @@ import React from "react";
 
 export default function Games() {
   return (
-    <Layout>
-      <TabWrapper>
-        <GameScreen />
-      </TabWrapper>
-    </Layout>
+    <TabWrapper>
+      <GameScreen />
+    </TabWrapper>
   );
 }

@@ -36,7 +36,6 @@ export default async function getCroppedImg(
   type,
   flip = { horizontal: false, vertical: false }
 ) {
-  console.log(id);
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -92,7 +91,6 @@ export default async function getCroppedImg(
       const fileFromBlob = new File([file], id, {
         type: type,
       });
-      console.log(fileFromBlob);
       resolve(URL.createObjectURL(file));
     }, "image/jpeg");
   });

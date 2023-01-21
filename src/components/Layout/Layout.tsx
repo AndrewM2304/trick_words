@@ -43,8 +43,7 @@ const Layout = ({ children }: LayoutProps) => {
         return data as Profiles;
       }
     } catch (error) {
-      console.log("Error loading user data!");
-      console.log(error);
+      console.error("Error loading user data!");
     }
   }
 
@@ -100,7 +99,6 @@ const Layout = ({ children }: LayoutProps) => {
             addGame(newItem);
           }
           if (payload.eventType === "DELETE") {
-            console.log(payload);
             const gameToRemove: Games = payload.old as Games;
             deleteGame(gameToRemove);
           }
@@ -108,7 +106,6 @@ const Layout = ({ children }: LayoutProps) => {
             const gameToUpdate: Games = payload.new as Games;
             updateGame(gameToUpdate);
           }
-          console.log("Change received plyer two!", payload);
         }
       )
       .subscribe();
@@ -130,7 +127,7 @@ const Layout = ({ children }: LayoutProps) => {
         gameGata.forEach((game) => addGame(game));
       }
       if (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
