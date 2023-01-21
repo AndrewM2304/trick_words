@@ -116,6 +116,7 @@ export const mockGame: Game = {
   player_two_avatar: "",
   winner: null,
   difficulty: "easy",
+  current_player_id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
 };
 
 export const supabaseMockGame: Game = {
@@ -136,6 +137,7 @@ export const supabaseMockGame: Game = {
   player_two_avatar: "",
   winner: null,
   difficulty: "easy",
+  current_player_id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
 };
 
 export const wordPass = "ath";
