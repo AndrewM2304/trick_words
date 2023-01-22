@@ -13,7 +13,6 @@ const GameScreen = () => {
   const { games } = useGamesStore();
 
   const [localGames, setLocalGames] = useState<Games[]>([]);
-  const [gamesDisplay, setGamesDisplay] = useState<Games[]>([]);
 
   useEffect(() => {
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
@@ -22,10 +21,6 @@ const GameScreen = () => {
       setLocalGames(game);
     }
   }, []);
-
-  useEffect(() => {
-    setGamesDisplay(games);
-  }, [games]);
 
   const linkSetting = (e: any, gameType: string, playerID: string | null) => {
     if (gameType === GameType.ONLINE_MULTIPLAYER && playerID === null) {
@@ -59,8 +54,8 @@ const GameScreen = () => {
               </li>
             );
           })}
-        {gamesDisplay &&
-          gamesDisplay.map((game: Games, idx: number) => {
+        {games &&
+          games.map((game: Games, idx: number) => {
             return (
               <li key={`${game.id}-local-${idx}`} className={styles.gameLink}>
                 {!disableLink(game) && (

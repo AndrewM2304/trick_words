@@ -5,6 +5,7 @@ import {
   useUser,
   useSupabaseClient,
   useSession,
+  useSessionContext,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
 import { useRouter } from "next/router";
@@ -22,7 +23,8 @@ const Layout = ({ children }: LayoutProps) => {
   const user = useUser();
   const supabaseProfiles = useSupabaseClient<Profiles>();
   const supabaseGames = useSupabaseClient<Games>();
-  const session = useSession();
+  const { session, isLoading } = useSessionContext();
+  const [localLoad, setLocalLoad] = useState(false);
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -47,12 +49,18 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     if (!user) return;
+    setLocalLoad(true);
     if (!userProfile) {
       getProfile().then((profile) => {
         if (profile) {
           setUserProfile(profile);
         }
+        setTimeout(() => {
+          setLocalLoad(false);
+        }, 100);
       });
+    } else {
+      setLocalLoad(false);
     }
   }, [userProfile, user]);
 
@@ -69,7 +77,6 @@ const Layout = ({ children }: LayoutProps) => {
           filter: `player_one_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log(payload);
           if (payload.eventType === "INSERT") {
             const newItem: Games = payload.new as Games;
             addGame(newItem);
@@ -93,7 +100,6 @@ const Layout = ({ children }: LayoutProps) => {
           filter: `player_two_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log(payload);
           if (payload.eventType === "INSERT") {
             const newItem: Games = payload.new as Games;
             addGame(newItem);
@@ -140,8 +146,12 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div data-testid="Layout-wrapper" className={styles.layout}>
-      {setUpProfile() && <SetupProfile />}
-      {!setUpProfile() && <> {children}</>}
+      {!isLoading && !localLoad && (
+        <>
+          {setUpProfile() && <SetupProfile />}
+          {!setUpProfile() && <> {children}</>}
+        </>
+      )}
     </div>
   );
 };

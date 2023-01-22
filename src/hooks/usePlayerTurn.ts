@@ -4,6 +4,7 @@ import { Database } from "@utilities/supabase";
 import { GameType } from "@utilities/game";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { game_functions_url, local_game } from "@utilities/constants";
+import { PostgrestError } from "@supabase/supabase-js";
 type Game = Database["public"]["Tables"]["games"]["Row"];
 
 export const usePlayerTurn = () => {
@@ -12,6 +13,7 @@ export const usePlayerTurn = () => {
   const [dialogMessage, setDialogMessage] = useState("Checking word...");
   const supabase = useSupabaseClient<Database>();
   const [game, setGame] = useState<Game | null>(null);
+  const [error, setError] = useState<PostgrestError | null>(null);
 
   function handleDragStart(e: DragStartEvent) {
     setSelectedLetter(e.active.id.toString());
@@ -68,13 +70,13 @@ export const usePlayerTurn = () => {
         }
       );
 
-      setTimeout(() => {
-        setDialogMessage(res.message);
-      }, 1000);
       if (res.update) {
-        successfulResult(res.gameToReturn);
+        successfulResult(res);
       }
       if (!res.update || forfeit) {
+        setTimeout(() => {
+          setDialogMessage(res.message);
+        }, 1000);
         closeModal();
       }
     } catch (error) {
@@ -82,39 +84,52 @@ export const usePlayerTurn = () => {
     }
   };
 
-  const successfulResult = async (game: Game) => {
-    if (game.game_type === GameType.ONLINE_MULTIPLAYER) {
+  const successfulResult = async (result: {
+    update: boolean;
+    gameToReturn: Game;
+    message: string;
+  }) => {
+    if (result.gameToReturn.game_type === GameType.ONLINE_MULTIPLAYER) {
       const { data, error } = await supabase
         .from("games")
-        .update(game)
-        .eq("id", game.id)
+        .update(result.gameToReturn)
+        .eq("id", result.gameToReturn.id)
         .select();
 
       if (data) {
         setGame(data[0]);
+        setTimeout(() => {
+          setDialogMessage(result.message);
+          closeModal();
+        }, 1000);
       }
       if (error) {
+        setError(error);
+        setDialogMessage(error.message);
         console.error(error);
       }
     }
     if (
-      game.game_type === GameType.COMPUTER ||
-      game.game_type === GameType.LOCAL_MULTIPLAYER
+      result.gameToReturn.game_type === GameType.COMPUTER ||
+      result.gameToReturn.game_type === GameType.LOCAL_MULTIPLAYER
     ) {
-      setGame(game);
+      setTimeout(() => {
+        setDialogMessage(result.message);
+      }, 1000);
+      setGame(result.gameToReturn);
       const gamesFromLocalStorage = window.localStorage.getItem(local_game);
       if (gamesFromLocalStorage) {
         const games: Game[] = JSON.parse(gamesFromLocalStorage);
         const updatedGames = games.map((g: Game) => {
-          if (g.id === game.id) {
+          if (g.id === result.gameToReturn.id) {
             return game;
           }
           return g;
         });
         window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
       }
+      closeModal();
     }
-    closeModal();
   };
 
   const closeModal = () => {
@@ -143,6 +158,7 @@ export const usePlayerTurn = () => {
     selectedLetter,
     dialogMessage,
     showDialog,
+    error,
   };
 };
 

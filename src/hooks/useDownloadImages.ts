@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Database } from "@utilities/supabase";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import userAvatar from "../../public/default_user_avatar.svg";
 import computer from "../../public/default_computer_avatar.svg";
 
 export const useDownloadImages = () => {
   const supabase = useSupabaseClient<Database>();
+  const user = useUser();
 
   const setImage = async (image: any): Promise<string> => {
     if (image.includes("default_user_avatar.svg")) {
@@ -14,7 +15,11 @@ export const useDownloadImages = () => {
     if (image.includes("default_computer_avatar.svg")) {
       return Promise.resolve(computer);
     }
-    return await downloadImage(image);
+    if (image.includes(user?.id)) {
+      return await downloadImage(image);
+    } else {
+      return user?.user_metadata.picture;
+    }
   };
 
   async function downloadImage(path: string): Promise<string> {
@@ -28,7 +33,7 @@ export const useDownloadImages = () => {
       const url = URL.createObjectURL(data);
       return url;
     } catch (error) {
-      console.log("Error downloading image: ", error);
+      console.error("Error downloading image: ", error);
       return userAvatar;
     }
   }

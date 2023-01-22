@@ -37,10 +37,10 @@ export const useGetGameData = (userProfile: Profile | null) => {
       }
       setGameData(d ?? null);
       setLoading(false);
+
       if (gametype === "online" && d) {
         addSecondPlayer(d).then((d) => {
           if (d === undefined) return;
-          console.log(d);
           setGameData(d ?? null);
         });
       }
@@ -77,7 +77,12 @@ export const useGetGameData = (userProfile: Profile | null) => {
         .eq("id", game)
         .single();
       setStatus(status);
-      if (data) {
+      if (
+        data &&
+        (data.player_two_id === userProfile?.id ||
+          data.player_one_id === userProfile?.id ||
+          data.player_two_id === null)
+      ) {
         if (data.player_two_id === null) {
           window.localStorage.setItem(
             redirect_key,

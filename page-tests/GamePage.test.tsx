@@ -5,8 +5,6 @@ import mockRouter from "next-router-mock";
 import Game from "../pages/game/[game]";
 import userAvatar from "../../public/user.svg";
 import { mockSession, mockUser } from "@testing/mockData";
-import { useEffect } from "react";
-import { useUserProfileStore } from "@components/store";
 
 const setLocalStorage = (id: string, data: any) => {
   window.localStorage.setItem(id, JSON.stringify(data));

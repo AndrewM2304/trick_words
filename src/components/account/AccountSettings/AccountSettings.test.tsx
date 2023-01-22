@@ -7,13 +7,9 @@ import {
   mockUserProfile,
   mockUserRow,
 } from "@testing/mockData";
-import {
-  SessionContextProvider,
-  SupabaseClient,
-} from "@supabase/auth-helpers-react";
 // import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import userAvatar from "../../../../public/user.svg";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+jest.mock("next/router", () => require("next-router-mock"));
 
 jest.mock("@supabase/auth-helpers-react", () => ({
   useUser: jest.fn(() => mockUser),

@@ -1,27 +1,46 @@
 .howToPlayContainer {
   font-size: 1rem;
   color: #fff;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.3rem;
   display: flex;
   flex-direction: column;
   gap: 15px;
   overflow: auto;
-  padding-right: 16px;
+}
+
+.howToPlayContainer > :nth-child(1) {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 2.2rem;
+  margin-top: 15px;
 }
 .howToPlayContainer > :nth-child(2) {
+  text-align: center;
+}
+
+.howToPlayContainer > :nth-child(3) {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 1.2rem;
   text-decoration: underline;
-  font-weight: 700;
+  text-underline-offset: 6px;
+  text-align: center;
+  margin-top: 15px;
 }
 .howToPlayContainer :is(p, li) {
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   margin: 0px;
+  line-height: 1.4rem;
 }
 .howToPlayContainer ol {
   display: grid;
   margin: 0px;
-  padding-left: 20px;
+  padding-left: 22px;
   gap: 5px;
+  margin-bottom: 10px;
 }
 .howToPlayContainer p:focus-visible {
   outline: none;
@@ -29,4 +48,10 @@
 
 .howToPlayContainer button {
   height: fit-content;
+}
+
+@media (max-width: 400px) {
+  .howToPlayContainer {
+    padding-right: 15px;
+  }
 }

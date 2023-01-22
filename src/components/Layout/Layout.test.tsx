@@ -13,7 +13,9 @@ import { useUserProfileStore } from "@components/store";
 jest.mock("next/router", () => require("next-router-mock"));
 
 jest.mock("@supabase/auth-helpers-react", () => ({
-  useSession: jest.fn(() => mockSession),
+  useSessionContext: jest.fn(() => ({
+    session: () => mockSession,
+  })),
   useUser: jest.fn(() => mockUser),
   useSupabaseClient: jest.fn(() => mockSB),
 }));

@@ -13,7 +13,7 @@ export const useCropPhoto = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [displayCropperDialog, setDisplayCropperDialog] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [filePath, setFilepath] = useState("");
+  const [filePath, setFilepath] = useState<string | null>(null);
 
   const supabaseDB = useSupabaseClient<Database>();
   const supabase = useSupabaseClient();
@@ -119,7 +119,7 @@ export const useCropPhoto = () => {
     });
   }
 
-  const savePhotoAndUpload = async (userID: string) => {
+  const setUpImageForStorage = async (userID: string) => {
     getCroppedImg(
       photo,
       croppedAreaPixels,
@@ -131,40 +131,49 @@ export const useCropPhoto = () => {
 
       setPhotoFile(cropped);
       const fileExt = photoFile?.name.split(".").pop();
-      const fileName = `${userID}.${fileExt}`;
-      setFilepath(fileName);
+      setFilepath(`${userID}.${fileExt}`);
       setDisplayCropperDialog(false);
     });
   };
 
-  const upload = async (userID: string) => {
-    if (!photoFile) return;
-    let { data, error } = await supabaseDB.storage
-      .from("avatars")
-      .upload(filePath, photoFile, { upsert: true });
-    if (data) {
-      const updates = {
-        id: userID,
-        updated_at: new Date().toISOString(),
-        full_name: name,
-        avatar_url: filePath,
-      };
-      const { data: uploadData, error: uploadError } = await supabase
-        .from("profiles")
-        .upsert(updates)
-        .select();
-
-      if (uploadData) {
-        setUserProfile(uploadData[0] as Profiles);
-      }
-
-      if (uploadError) {
-        console.error(uploadError);
+  const upload = async (
+    userID: string
+  ): Promise<"success" | "fail" | undefined> => {
+    if (photoFile && filePath) {
+      let { data, error } = await supabaseDB.storage
+        .from("avatars")
+        .upload(filePath, photoFile, { upsert: true });
+      if (error) {
+        console.error("uploading error");
+        console.error(error);
+        return "fail";
       }
     }
-    if (error) {
-      console.error("uploading error");
-      console.error(error);
+    const nameUpdate = {
+      id: userID,
+      updated_at: new Date().toISOString(),
+      full_name: name,
+    };
+
+    const photoUpdates = {
+      id: userID,
+      updated_at: new Date().toISOString(),
+      full_name: name,
+      avatar_url: filePath,
+    };
+    const { data: uploadData, error: uploadError } = await supabase
+      .from("profiles")
+      .upsert(filePath ? photoUpdates : nameUpdate)
+      .select();
+
+    if (uploadData) {
+      setUserProfile(uploadData[0] as Profiles);
+      return "success";
+    }
+
+    if (uploadError) {
+      console.error(uploadError);
+      return "fail";
     }
   };
   return {
@@ -182,7 +191,7 @@ export const useCropPhoto = () => {
     setDisplayCropperDialog,
     photo,
     setPhoto,
-    savePhotoAndUpload,
+    setUpImageForStorage,
     setPhotoFile,
     name,
     setName,

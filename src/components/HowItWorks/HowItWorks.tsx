@@ -3,19 +3,19 @@ import React from "react";
 import styles from "./HowItWorks.module.css";
 
 export type HowItWorksProps = {
-  closeDialog: () => void;
+  closeDialog?: () => void;
 };
 const HowItWorks = ({ closeDialog }: HowItWorksProps) => {
   return (
     <div className={styles.howToPlayContainer} data-testid="HowItWorks-wrapper">
-      <p tabIndex={0}>
-        Welcome to Alphabattle! Are you ready to test your spelling skills and
-        outsmart your opponents? This game is perfect for word enthusiasts and
-        tricksters alike. Whether you&#39;re playing against the computer, with
-        friends locally, or with players from all over the world, you&#39;re in
-        for a treat.
+      <p tabIndex={0}>Welcome to Word Dual!</p>
+      <p>
+        Are you ready to test your spelling skills and outsmart your opponents?
+        This game is perfect for word enthusiasts and tricksters alike. Whether
+        you&#39;re playing against the computer, with friends locally, or with
+        players from all over the world, you&#39;re in for a treat.
       </p>
-      <p>Here&#39;s how to play:</p>
+      <p>How to play:</p>
       <ol>
         <li>Each round is dedicated to a different letter of the alphabet.</li>
         <li>
@@ -27,25 +27,17 @@ const HowItWorks = ({ closeDialog }: HowItWorksProps) => {
           the round).
         </li>
         <li>
-          The goal is to outsmart your opponent and make them spell a word.
-          Challenge your opponents and be tricky!
-        </li>
-        <li>
           Play through all 26 rounds, and the player with the most points wins
           the game.
         </li>
         <li>
           Want to play with friends online? No problem! Just log in with
-          Facebook or Google and share the invite link within the game. Want to
-          play with friends online? No problem! Just log in with Facebook or
-          Google and share the invite link within the game.
-        </li>
-        <li>
-          Get ready to sharpen your spelling skills, put on your thinking cap,
-          and let&#39;s have some fun!
+          Facebook or Google and share the invite link within the game.
         </li>
       </ol>
-      <Button text="Got it!" action={() => closeDialog()} type="primary" />
+      {closeDialog && (
+        <Button text="Got it!" action={() => closeDialog()} type="primary" />
+      )}
     </div>
   );
 };

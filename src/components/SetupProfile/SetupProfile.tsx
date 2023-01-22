@@ -8,31 +8,20 @@ import styles from "./SetupProfile.module.css";
 import Cropper from "react-easy-crop";
 import { Dialog } from "@components/Dialog";
 import { useCropPhoto } from "@hooks/useCropPhoto";
+import Image from "next/image";
 
 export type SetupProfileProps = {
-  photoFromParent?: string;
-  nameFromParent?: string;
+  photoFromUserProfile?: string;
+  nameFromUserProfile?: string;
 };
 const SetupProfile = ({
-  photoFromParent,
-  nameFromParent,
+  photoFromUserProfile,
+  nameFromUserProfile,
 }: SetupProfileProps) => {
   const user = useUser();
   const { setImage } = useDownloadImages();
-
-  useEffect(() => {
-    if (nameFromParent) {
-      setName(nameFromParent);
-    } else {
-      setName(user?.user_metadata.name.split(" ")[0] ?? "");
-    }
-    if (photoFromParent) {
-      setImage(photoFromParent).then((i) => setPhoto(i));
-    } else {
-      setPhoto(user?.user_metadata?.picture ?? default_avatar);
-    }
-  }, []);
-
+  const [buttonTitle, setButtonTitle] = useState("");
+  const [saving, setSaving] = useState(false);
   const {
     crop,
     rotation,
@@ -45,15 +34,31 @@ const SetupProfile = ({
     setDisplayCropperDialog,
     photo,
     setPhoto,
-    savePhotoAndUpload,
+    setUpImageForStorage,
     setPhotoFile,
     name,
     setName,
     upload,
   } = useCropPhoto();
 
+  useEffect(() => {
+    setButtonTitle(nameFromUserProfile ? "Update" : "Save");
+    if (nameFromUserProfile) {
+      setName(nameFromUserProfile);
+    } else {
+      setName(user?.user_metadata.name.split(" ")[0] ?? "");
+    }
+    if (photoFromUserProfile) {
+      setImage(photoFromUserProfile).then((i) => setPhoto(i));
+    } else {
+      setPhoto(user?.user_metadata.avatar_url);
+    }
+  }, [photoFromUserProfile]);
+
+  // default userprofile name to splitting out first name from user profile
+  // if user doesnt select to upload photo save their userprofile avatar as the detail
+
   const selectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
     if (!e.target.files || e === undefined) return;
     const photo = e.target.files[0];
     if (photo) {
@@ -65,7 +70,12 @@ const SetupProfile = ({
   };
 
   const cancelPhoto = () => {
-    setPhoto(photo ?? default_avatar);
+    if (photoFromUserProfile) {
+      setImage(photoFromUserProfile).then((i) => setPhoto(i));
+    } else {
+      setPhoto(photo ?? default_avatar);
+    }
+
     setDisplayCropperDialog(false);
   };
 
@@ -85,7 +95,7 @@ const SetupProfile = ({
             className={styles.SetupProfile}
           >
             <div className={styles.central}>
-              {!photoFromParent && (
+              {!photoFromUserProfile && (
                 <>
                   <OutlineText
                     text={"Welcome"}
@@ -101,19 +111,6 @@ const SetupProfile = ({
                   />
                 </>
               )}
-              <label htmlFor="">
-                <div className={styles.smallText}>
-                  Enter your name (max 12 characters)
-                </div>
-                <input
-                  className={styles.input}
-                  maxLength={12}
-                  type="text"
-                  name="userName"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </label>
               <label className={styles.profileButton}>
                 <input
                   tabIndex={0}
@@ -122,11 +119,15 @@ const SetupProfile = ({
                   accept="image/*"
                   onChange={selectPhoto}
                 />
-                <img
-                  src={photo}
-                  alt="user profile"
-                  className={styles.imageFromSocial}
-                />
+                {photo && (
+                  <Image
+                    src={photo}
+                    alt="user profile"
+                    className={styles.imageFromSocial}
+                    width={200}
+                    height={200}
+                  />
+                )}
                 <div className={styles.iconWrapper}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -142,15 +143,45 @@ const SetupProfile = ({
                   </svg>
                 </div>
               </label>
+              <label className={styles.nameInput}>
+                <OutlineText
+                  text={"Enter a name"}
+                  sizeInRem={1}
+                  upperCase={false}
+                  alignment={"left"}
+                />
+                <input
+                  className={styles.input}
+                  maxLength={12}
+                  type="text"
+                  name="userName"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
 
               {photo !== null && name !== "" && (
                 <>
                   <Button
                     type={"primary"}
-                    text={"Save"}
+                    text={buttonTitle}
+                    disabled={saving}
                     action={() => {
-                      savePhotoAndUpload(user.id).then(() => {
-                        upload(user.id);
+                      setSaving(true);
+                      setButtonTitle("Saving...");
+                      upload(user.id).then((res) => {
+                        if (res === "success") {
+                          setButtonTitle("Updated!");
+                        }
+                        if (res === "fail") {
+                          setButtonTitle("Error, try again!");
+                        }
+                        setTimeout(() => {
+                          setButtonTitle(
+                            nameFromUserProfile ? "Update" : "Save"
+                          );
+                          setSaving(false);
+                        }, 1500);
                       });
                     }}
                   />
@@ -181,7 +212,7 @@ const SetupProfile = ({
                 type={"primary"}
                 text={"Select Photo"}
                 action={() => {
-                  setDisplayCropperDialog(false);
+                  setUpImageForStorage(user.id);
                 }}
               />
               <Button

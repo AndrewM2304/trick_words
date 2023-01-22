@@ -23,6 +23,7 @@ const ProfileImage = ({
           {notification && <NotificationBadge text={notification.toString()} />}
         </div>
         <Image
+          priority
           className={styles.profilePicture}
           src={url}
           alt={"profile picture"}

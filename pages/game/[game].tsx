@@ -39,7 +39,12 @@ export default function Game() {
   const { setImage } = useDownloadImages();
   const { userProfile } = useUserProfileStore();
   const [displayKeyboard, setDisplayKeyboard] = useState(false);
-  const { gameData, status, error, loading } = useGetGameData(userProfile);
+  const {
+    gameData,
+    status,
+    error: gameError,
+    loading,
+  } = useGetGameData(userProfile);
   const router = useRouter();
   const [p1image, setp1Image] = useState<string | null>(null);
   const [p2image, setp2Image] = useState<string | null>(null);
@@ -56,6 +61,7 @@ export default function Game() {
     dialogMessage,
     showDialog,
     setDialogMessage,
+    error: turnError,
   } = usePlayerTurn();
   const supabasedefault = useSupabaseClient();
 
@@ -105,14 +111,9 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (error) {
-      setDialogMessage(error.message.toString());
-      setDisplayHomeLink(true);
-    }
-
     setGame(gameData);
 
-    if (gameData && !error) {
+    if (gameData && !gameError) {
       setDisplayHomeLink(false);
       setImage(gameData.player_one_avatar).then((i) => setp1Image(i));
       setImage(gameData.player_two_avatar).then((i) => setp2Image(i));
@@ -123,7 +124,18 @@ export default function Game() {
       setDialogMessage(`winner is ${gameData.winner}`);
       setDisplayHomeLink(true);
     }
-  }, [gameData, userProfile, error]);
+  }, [gameData, userProfile, gameError]);
+
+  useEffect(() => {
+    if (gameError) {
+      setDialogMessage("game error " + gameError.message);
+      setDisplayHomeLink(true);
+    }
+    if (turnError) {
+      setDialogMessage("turn error " + turnError.message);
+      setDisplayHomeLink(true);
+    }
+  }, [gameError, turnError]);
 
   useEffect(() => {
     if (!gameData) return;
@@ -337,8 +349,12 @@ export default function Game() {
                   <>
                     <br />
                     <Button
-                      text="Go Home"
-                      action={() => router.push("/")}
+                      text={gameError || turnError ? "Reload Game" : "Go Home"}
+                      action={() =>
+                        gameError || turnError
+                          ? router.reload()
+                          : router.push("/")
+                      }
                       type="primary"
                     />{" "}
                   </>
@@ -401,24 +417,23 @@ export default function Game() {
           </div>
         </div>
       )}
-      {gameData?.winner !== null ||
-        (gameData !== undefined && (
-          <div className={styles.gameWrapper} data-testid="Game-wrapper">
-            <div className={styles.auth}>
-              <OutlineText
-                text={`Winner is ${gameData.winner}`}
-                sizeInRem={2}
-                upperCase={false}
-                alignment={"center"}
-              />{" "}
-              <Button
-                text="Go Home"
-                action={() => router.push("/")}
-                type="primary"
-              />
-            </div>
+      {gameData && gameData?.winner !== null && (
+        <div className={styles.gameWrapper} data-testid="Game-wrapper">
+          <div className={styles.auth}>
+            <OutlineText
+              text={`Winner is ${gameData?.winner}`}
+              sizeInRem={2}
+              upperCase={false}
+              alignment={"center"}
+            />{" "}
+            <Button
+              text="Go Home"
+              action={() => router.push("/")}
+              type="primary"
+            />
           </div>
-        ))}
+        </div>
+      )}
     </>
   );
 }
@@ -435,6 +450,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       data-testid="player-score-wrapper"
     >
       <Image
+        priority
         className={styles.playerOneImage}
         src={playerOneAvatar}
         height={38}
@@ -459,6 +475,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
         />
       </div>
       <Image
+        priority
         className={styles.playerTwoImage}
         src={playerTwoAvatar}
         height={38}
