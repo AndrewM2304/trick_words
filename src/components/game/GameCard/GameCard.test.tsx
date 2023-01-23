@@ -44,6 +44,6 @@ describe("GameCard Component", () => {
       expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument()
     );
     expect(screen.getByTestId("waiting-overlay")).toBeInTheDocument();
-    expect(screen.getAllByRole("button").length).toBe(2);
+    expect(screen.getAllByRole("button").length).toBe(3);
   });
 });

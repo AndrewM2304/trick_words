@@ -112,7 +112,6 @@ export default function Game() {
 
   useEffect(() => {
     setGame(gameData);
-
     if (gameData && !gameError) {
       setDisplayHomeLink(false);
       setImage(gameData.player_one_avatar).then((i) => setp1Image(i));
@@ -405,23 +404,6 @@ export default function Game() {
           <div className={styles.auth}>
             <OutlineText
               text={"No game found, return home"}
-              sizeInRem={2}
-              upperCase={false}
-              alignment={"center"}
-            />{" "}
-            <Button
-              text="Go Home"
-              action={() => router.push("/")}
-              type="primary"
-            />
-          </div>
-        </div>
-      )}
-      {gameData && gameData?.winner !== null && (
-        <div className={styles.gameWrapper} data-testid="Game-wrapper">
-          <div className={styles.auth}>
-            <OutlineText
-              text={`Winner is ${gameData?.winner}`}
               sizeInRem={2}
               upperCase={false}
               alignment={"center"}

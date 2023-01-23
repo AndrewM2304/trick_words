@@ -15,20 +15,21 @@ export const useDownloadImages = () => {
     if (image.includes("default_computer_avatar.svg")) {
       return Promise.resolve(computer);
     }
-    if (image.includes(user?.id)) {
-      return await downloadImage(image);
-    } else {
+    const im = await downloadImage(image);
+    if (!im) {
       return user?.user_metadata.picture;
+    } else {
+      return im;
     }
   };
 
-  async function downloadImage(path: string): Promise<string> {
+  async function downloadImage(path: string): Promise<string | null> {
     try {
       const { data, error } = await supabase.storage
         .from("avatars")
         .download(path);
       if (error) {
-        throw error;
+        return null;
       }
       const url = URL.createObjectURL(data);
       return url;

@@ -41,7 +41,7 @@
   background: rgb(5 22 42 / 90%);
   display: grid;
   text-align: center;
-  padding: 8px 15px;
+  padding: 10px 20px;
   gap: 10px;
 }
 
@@ -55,9 +55,44 @@
 .cardContent {
   grid-column: 2/3;
   grid-row: 1/-1;
-  margin-left: 20px;
+  display: grid;
+  grid-template-columns: 30px auto;
+  grid-template-rows: 35px 30px;
+  grid-gap: 5px;
+  grid-gap: 10px 5px;
+  gap: 10px 5px;
+  align-content: center;
+  padding-bottom: 10px;
+  margin-left: 10px;
+}
+
+.cardContent svg {
+  grid-column: 1/2;
+  grid-row: 1/2;
+  margin-top: 5px;
+}
+
+.cardContent [data-testid="OutlineText-wrapper"] {
+  grid-column: 2/3;
+  grid-row: 1/2;
 }
 
 .cardContent [data-uppercase="true"] {
   text-align: left !important;
+}
+
+.tiles {
+  display: flex;
+  gap: 5px;
+  width: fit-content;
+  margin-left: 0px !important;
+}
+
+.tiles > li > * {
+  height: 30px !important;
+  box-shadow: none;
+}
+
+.lightBlend {
+  mix-blend-mode: soft-light;
 }

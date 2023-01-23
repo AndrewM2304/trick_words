@@ -122,7 +122,7 @@ export const usePlayerTurn = () => {
         const games: Game[] = JSON.parse(gamesFromLocalStorage);
         const updatedGames = games.map((g: Game) => {
           if (g.id === result.gameToReturn.id) {
-            return game;
+            return result.gameToReturn;
           }
           return g;
         });

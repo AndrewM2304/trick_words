@@ -1,8 +1,10 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import React, { useState } from "react";
 import { Database } from "@utilities/supabase";
-import { useUserProfileStore } from "@components/store";
+import { useGamesStore, useUserProfileStore } from "@components/store";
+import { local_game } from "@utilities/constants";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
+type GameDB = Database["public"]["Tables"]["games"]["Row"];
 
 export const useCropPhoto = () => {
   const [name, setName] = useState("");
@@ -14,9 +16,13 @@ export const useCropPhoto = () => {
   const [displayCropperDialog, setDisplayCropperDialog] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [filePath, setFilepath] = useState<string | null>(null);
+  const user = useUser();
+  const { games } = useGamesStore();
 
   const supabaseDB = useSupabaseClient<Database>();
   const supabase = useSupabaseClient();
+  const supabaseGame = useSupabaseClient<GameDB>();
+
   const { setUserProfile } = useUserProfileStore();
 
   const createImage = (url: string) =>
@@ -168,6 +174,58 @@ export const useCropPhoto = () => {
 
     if (uploadData) {
       setUserProfile(uploadData[0] as Profiles);
+      filePath
+        ? updateLocalStoreWithNewDetails(
+            photoUpdates.full_name,
+            photoUpdates.avatar_url
+          )
+        : updateLocalStoreWithNewDetails(nameUpdate.full_name, null);
+      if (user && games) {
+        const p1WithPhoto = {
+          player_one_name: photoUpdates.full_name,
+          player_one_avatar: photoUpdates.avatar_url,
+        };
+        const p2WithPhoto = {
+          player_two_name: photoUpdates.full_name,
+          player_two_avatar: photoUpdates.avatar_url,
+        };
+        const p1WithOutPhoto = {
+          player_one_name: nameUpdate.full_name,
+        };
+        const p2WithOutPhoto = {
+          player_two_name: nameUpdate.full_name,
+        };
+
+        const { data: p1data, error: p1error } = await supabaseGame
+          .from("games")
+          .update(filePath ? p1WithPhoto : p1WithOutPhoto)
+          .eq("player_one_id", user.id)
+          .select();
+        if (p1data?.length !== 0) {
+          console.log("p1d");
+          console.log(filePath ? p1WithPhoto : p1WithOutPhoto);
+          console.log(p1data);
+        }
+        if (p1error) {
+          console.log(p1error);
+        }
+
+        const { data: p2data, error: p2error } = await supabaseGame
+          .from("games")
+          .update(filePath ? p2WithPhoto : p2WithOutPhoto)
+          .eq("player_two_id", user.id)
+          .select();
+        if (p2data?.length !== 0) {
+          console.log(filePath ? p2WithPhoto : p2WithOutPhoto);
+          console.log("p2d");
+
+          console.log(p2data);
+        }
+        if (p2error) {
+          console.log(p2error);
+        }
+      }
+
       return "success";
     }
 
@@ -176,6 +234,23 @@ export const useCropPhoto = () => {
       return "fail";
     }
   };
+
+  const updateLocalStoreWithNewDetails = (
+    name: string,
+    avatar: string | null
+  ) => {
+    const gamesFromLocalStorage = window.localStorage.getItem(local_game);
+    if (gamesFromLocalStorage) {
+      const games: GameDB[] = JSON.parse(gamesFromLocalStorage);
+      const updatedGames = games.map((g: GameDB) => {
+        return avatar
+          ? { ...g, player_one_name: name, player_one_avatar: avatar }
+          : { ...g, player_one_name: name };
+      });
+      window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
+    }
+  };
+
   return {
     getCroppedImg,
     crop,
