@@ -82,8 +82,8 @@
 }
 
 .tiles {
-  display: flex;
-  gap: 5px;
+  display: flex !important;
+  gap: 5px !important;
   width: fit-content;
   margin-left: 0px !important;
 }

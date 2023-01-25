@@ -137,7 +137,7 @@ export default function Game() {
   }, [gameError, turnError]);
 
   useEffect(() => {
-    if (!gameData) return;
+    if (!gameData || !game) return;
     if (gameData?.current_player_index === 0 && !userProfile) {
       setPlayerTurnName("Your turn");
     } else {
@@ -148,7 +148,7 @@ export default function Game() {
     if (gameData?.game_type !== GameType.ONLINE_MULTIPLAYER) {
       setDisplayKeyboard(true);
     } else {
-      gameData?.current_player_id === userProfile?.id
+      game?.current_player_id === userProfile?.id
         ? setDisplayKeyboard(true)
         : setDisplayKeyboard(false);
     }
@@ -431,14 +431,16 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       className={styles.playerScoreWrapper}
       data-testid="player-score-wrapper"
     >
-      <Image
-        priority
-        className={styles.playerOneImage}
-        src={playerOneAvatar}
-        height={38}
-        width={38}
-        alt={`${game.player_one_name} avatar`}
-      />
+      {playerOneAvatar && (
+        <Image
+          priority
+          className={styles.playerOneImage}
+          src={playerOneAvatar}
+          height={38}
+          width={38}
+          alt={`${game.player_one_name} avatar`}
+        />
+      )}
 
       <div className={styles.playerOneName} data-testid="player-one-name">
         <OutlineText
@@ -456,15 +458,16 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
           alignment="left"
         />
       </div>
-      <Image
-        priority
-        className={styles.playerTwoImage}
-        src={playerTwoAvatar}
-        height={38}
-        width={38}
-        alt={`${game.player_two_name} avatar`}
-      />
-
+      {playerTwoAvatar && (
+        <Image
+          priority
+          className={styles.playerTwoImage}
+          src={playerTwoAvatar}
+          height={38}
+          width={38}
+          alt={`${game.player_two_name} avatar`}
+        />
+      )}
       <div className={styles.playerTwoName}>
         <OutlineText
           text={game.player_two_name}

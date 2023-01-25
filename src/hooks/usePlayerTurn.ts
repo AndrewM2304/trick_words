@@ -74,10 +74,8 @@ export const usePlayerTurn = () => {
         successfulResult(res);
       }
       if (!res.update || forfeit) {
-        setTimeout(() => {
-          setDialogMessage(res.message);
-        }, 1000);
-        closeModal();
+        setDialogMessage(res.message);
+        closeModal(res.message);
       }
     } catch (error) {
       console.error(error);
@@ -98,24 +96,21 @@ export const usePlayerTurn = () => {
 
       if (data) {
         setGame(data[0]);
-        setTimeout(() => {
-          setDialogMessage(result.message);
-          closeModal();
-        }, 1000);
+
+        setDialogMessage(result.message);
+        closeModal(result.message);
       }
       if (error) {
         setError(error);
         setDialogMessage(error.message);
-        console.error(error);
       }
     }
     if (
       result.gameToReturn.game_type === GameType.COMPUTER ||
       result.gameToReturn.game_type === GameType.LOCAL_MULTIPLAYER
     ) {
-      setTimeout(() => {
-        setDialogMessage(result.message);
-      }, 1000);
+      setDialogMessage(result.message);
+
       setGame(result.gameToReturn);
       const gamesFromLocalStorage = window.localStorage.getItem(local_game);
       if (gamesFromLocalStorage) {
@@ -128,15 +123,18 @@ export const usePlayerTurn = () => {
         });
         window.localStorage.setItem(local_game, JSON.stringify(updatedGames));
       }
-      closeModal();
+      closeModal(result.message);
     }
   };
 
-  const closeModal = () => {
-    setTimeout(() => {
-      setShowDialog(false);
-      setDialogMessage("Checking word...");
-    }, 2000);
+  const closeModal = (message: string) => {
+    setTimeout(
+      () => {
+        setShowDialog(false);
+        setDialogMessage("Checking word...");
+      },
+      message === "Next player" ? 1000 : 2500
+    );
   };
 
   const forfeitGame = () => {

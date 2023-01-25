@@ -201,13 +201,9 @@ export const useCropPhoto = () => {
           .update(filePath ? p1WithPhoto : p1WithOutPhoto)
           .eq("player_one_id", user.id)
           .select();
-        if (p1data?.length !== 0) {
-          console.log("p1d");
-          console.log(filePath ? p1WithPhoto : p1WithOutPhoto);
-          console.log(p1data);
-        }
+
         if (p1error) {
-          console.log(p1error);
+          console.error(p1error);
         }
 
         const { data: p2data, error: p2error } = await supabaseGame
@@ -216,13 +212,9 @@ export const useCropPhoto = () => {
           .eq("player_two_id", user.id)
           .select();
         if (p2data?.length !== 0) {
-          console.log(filePath ? p2WithPhoto : p2WithOutPhoto);
-          console.log("p2d");
-
-          console.log(p2data);
         }
         if (p2error) {
-          console.log(p2error);
+          console.error(p2error);
         }
       }
 

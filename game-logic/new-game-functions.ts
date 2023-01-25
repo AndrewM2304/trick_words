@@ -6,48 +6,51 @@ type GameDBType = Database["public"]["Tables"]["games"]["Row"];
 
 export const identifyIfWordInList = (
   word: string,
-  difficulty: string,
-  player: boolean
+  difficulty: string
 ): GameReturnValue => {
   let value: GameReturnValue = {
     inList: false,
     exactMatch: false,
-    computerWords: null,
+    computerWord: { word: null, exactMatch: false },
   };
 
-  const computerWords: { index: number; word: string }[] = [];
+  const computerWords: { index: number; word: string; exact: boolean }[] = [];
 
-  // iterate and build player matching words
+  // iterate and build player matching words and array to check computer words against
   for (let i = 0; i < wordlist.length; i++) {
     if (wordlist[i].includes(word)) {
       value.inList = true;
-      computerWords.push({ index: i, word: wordlist[i] });
-    }
-    if (wordlist[i].includes(word) && wordlist[i] === word) {
-      value.exactMatch = true;
-      value.inList = true;
-      break;
+      value.exactMatch = wordlist[i] === word ? true : false;
+      if (wordlist[i].length <= difficultyFilter(difficulty)) {
+        computerWords.push({
+          index: i,
+          word: wordlist[i],
+          exact: wordlist[i] === word ? true : false,
+        });
+      }
+      if (wordlist[i] === word) break;
     }
   }
-  // build computer words based on slicing wordlist into easy, medium or normal length words
-  if (player && computerWords.length > 0) {
-    const wordsWithinDifficulty = computerWords.filter(
-      (c) => c.word.length <= difficultyFilter(difficulty)
+
+  for (let i = 0; i < 3; i++) {
+    const compTurn = computerWordGenerate(
+      word,
+      computerWords[Math.floor(Math.random() * computerWords.length)]?.word ??
+        ""
     );
-    if (wordsWithinDifficulty.length > 0) {
-      value.computerWords = [
-        wordsWithinDifficulty[
-          Math.floor(Math.random() * wordsWithinDifficulty.length)
-        ]?.word ?? "",
-        wordsWithinDifficulty[
-          Math.floor(Math.random() * wordsWithinDifficulty.length)
-        ]?.word ?? "",
-        wordsWithinDifficulty[
-          Math.floor(Math.random() * wordsWithinDifficulty.length)
-        ]?.word ?? "",
-      ];
+    // if there is a word check if its an exact match
+    if (compTurn) {
+      value.computerWord.exactMatch = wordlist.includes(compTurn);
+      value.computerWord.word = compTurn;
+      // exit loop if word would pass
+      if (!wordlist.includes(compTurn)) break;
+    }
+    if (!compTurn) {
+      value.computerWord.exactMatch = false;
+      value.computerWord.word = null;
     }
   }
+
   return value;
 };
 
@@ -93,47 +96,6 @@ export const computerWordGenerate = (
   return response;
 };
 
-export const checkPlayerWordAndReturnComputerWord = (
-  playerGuess: string,
-  difficulty: string
-): { inList: boolean; exactMatch: boolean; computerWord: string | null } => {
-  const playerResponse = identifyIfWordInList(playerGuess, difficulty, true);
-
-  let compWord: string | null = null;
-
-  if (playerResponse.computerWords) {
-    for (let i = 0; i < playerResponse.computerWords.length; i++) {
-      const computerWordToAttempt = computerWordGenerate(
-        playerGuess,
-        playerResponse.computerWords[i]
-      );
-      if (!computerWordToAttempt) {
-        compWord = null;
-      }
-      // check if generated words match the dictionary
-      if (computerWordToAttempt) {
-        const checkComputerWordAgainstList = identifyIfWordInList(
-          computerWordToAttempt,
-          difficulty,
-          false
-        );
-        if (
-          !checkComputerWordAgainstList.exactMatch &&
-          checkComputerWordAgainstList.inList
-        ) {
-          compWord = computerWordToAttempt;
-          break;
-        }
-      }
-    }
-  }
-  return {
-    inList: playerResponse.inList,
-    exactMatch: playerResponse.exactMatch,
-    computerWord: compWord,
-  };
-};
-
 export const updateGameBasedOnPlayerTurn = (
   playerGuess: string,
   difficulty: string,
@@ -152,8 +114,10 @@ export const updateGameBasedOnPlayerTurn = (
     return { update: true, gameToReturn: updatedGame, message: message };
   }
 
-  const { inList, exactMatch, computerWord } =
-    checkPlayerWordAndReturnComputerWord(playerGuess, difficulty);
+  const { inList, exactMatch, computerWord } = identifyIfWordInList(
+    playerGuess,
+    difficulty
+  );
   if (exactMatch) {
     // switch player
     // increment other players score
@@ -289,7 +253,7 @@ export const exactMatchLogic = (
 export const nextPlayerLogic = (
   g: GameDBType,
   playerGuess: string,
-  computerWord: string | null
+  computerWord: { word: string | null; exactMatch: boolean }
 ): { updatedGame: GameDBType; message: string } => {
   if (g.game_type !== GameType.COMPUTER) {
     g.current_word = playerGuess;
@@ -298,7 +262,10 @@ export const nextPlayerLogic = (
     return { updatedGame: g, message: "Next player" };
   }
 
-  if (g.game_type === GameType.COMPUTER && !computerWord) {
+  if (
+    g.game_type === GameType.COMPUTER &&
+    (!computerWord.word || computerWord.exactMatch === true)
+  ) {
     g.player_one_score++;
     g.current_letter_index = incrementLetter(g.current_letter_index);
     g.current_word = computerReturnedWords[g.current_letter_index];
@@ -313,15 +280,17 @@ export const nextPlayerLogic = (
       updatedGame: g,
       message: setMessage(
         g,
-        `Computer could not find a word, you win this round!`
+        computerWord.word
+          ? `Computer played ${computerWord.word}, but it is a match. You win this round!`
+          : `Computer could not find a word, you win this round!`
       ),
     };
   }
 
-  g.current_word = computerWord!;
+  g.current_word = computerWord.word!;
 
   return {
     updatedGame: g,
-    message: setMessage(g, `Computer played ${computerWord}, your turn`),
+    message: setMessage(g, `Computer played ${computerWord.word}, your turn`),
   };
 };

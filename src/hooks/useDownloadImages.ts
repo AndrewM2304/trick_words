@@ -6,7 +6,6 @@ import computer from "../../public/default_computer_avatar.svg";
 
 export const useDownloadImages = () => {
   const supabase = useSupabaseClient<Database>();
-  const user = useUser();
 
   const setImage = async (image: any): Promise<string> => {
     if (image.includes("default_user_avatar.svg")) {
@@ -17,7 +16,7 @@ export const useDownloadImages = () => {
     }
     const im = await downloadImage(image);
     if (!im) {
-      return user?.user_metadata.picture;
+      return image;
     } else {
       return im;
     }

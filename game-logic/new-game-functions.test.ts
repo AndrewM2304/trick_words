@@ -1,5 +1,4 @@
 import {
-  checkPlayerWordAndReturnComputerWord,
   updateGameBasedOnPlayerTurn,
   setMessage,
   setWinner,
@@ -27,34 +26,34 @@ beforeEach(() => {
 
 describe("identifyIfWordInList", () => {
   it("checks if a word is in a list, an exact match and sets computerwords to null if player is false", () => {
-    const exactMatch = identifyIfWordInList("boy", "hard", false);
+    const exactMatch = identifyIfWordInList("boy", "hard");
     expect(exactMatch.exactMatch).toBe(true);
     expect(exactMatch.inList).toBe(true);
-    expect(exactMatch.computerWords).toBe(null);
-    const partialMatch = identifyIfWordInList("he", "hard", false);
+    expect(exactMatch.computerWord.word).not.toBe(null);
+    const partialMatch = identifyIfWordInList("he", "hard");
     expect(partialMatch.inList).toBeTruthy();
     expect(partialMatch.exactMatch).toBeFalsy();
-    expect(partialMatch.computerWords).toBe(null);
+    expect(exactMatch.computerWord.word).not.toBe(null);
 
-    const notMatch = identifyIfWordInList("ztys", "hard", false);
+    const notMatch = identifyIfWordInList("ztys", "hard");
     expect(notMatch.inList).toBeFalsy();
     expect(notMatch.exactMatch).toBeFalsy();
-    expect(notMatch.computerWords).toBe(null);
+    expect(notMatch.computerWord.word).toBe(null);
   });
 
   it("checks if a word is in a list, an exact match and sets computerwords to an array of strings if player is true", () => {
-    const exactMatch = identifyIfWordInList("hello", "normal", true);
+    const exactMatch = identifyIfWordInList("hello", "normal");
     expect(exactMatch.exactMatch).toBe(true);
     expect(exactMatch.inList).toBe(true);
-    expect(exactMatch.computerWords?.length).toBe(3);
-    const partialMatch = identifyIfWordInList("he", "normal", true);
+    expect(exactMatch.computerWord.word).not.toBe(null);
+    const partialMatch = identifyIfWordInList("he", "normal");
     expect(partialMatch.inList).toBeTruthy();
     expect(partialMatch.exactMatch).toBeFalsy();
-    expect(partialMatch.computerWords?.length).toBe(3);
-    const notMatch = identifyIfWordInList("ztys", "normal", true);
+    expect(exactMatch.computerWord.word).not.toBe(null);
+    const notMatch = identifyIfWordInList("ztys", "normal");
     expect(notMatch.inList).toBeFalsy();
     expect(notMatch.exactMatch).toBeFalsy();
-    expect(notMatch.computerWords).toBeNull();
+    expect(notMatch.computerWord.word).toBeNull();
   });
 });
 
@@ -71,13 +70,13 @@ describe("array slicer", () => {
   });
 });
 
-describe("checkPlayerWordAndReturnComputerWord", () =>
-  it("runs a function to create player and computer guesses, then generates a computer turn", () => {
-    const { inList, exactMatch, computerWord } =
-      checkPlayerWordAndReturnComputerWord("ally", "normal");
-    expect(inList).toBeTruthy();
-    expect(exactMatch).toBeTruthy();
-  }));
+// describe("checkPlayerWordAndReturnComputerWord", () =>
+//   it("runs a function to create player and computer guesses, then generates a computer turn", () => {
+//     const { inList, exactMatch, computerWord } =
+//       checkPlayerWordAndReturnComputerWord("ally", "normal");
+//     expect(inList).toBeTruthy();
+//     expect(exactMatch).toBeTruthy();
+//   }));
 
 describe("computerwordgenerate", () => {
   it("takes in a player word, potential word and adds a letter to the front or end of the player word", () => {
@@ -204,14 +203,20 @@ describe("exactmatch logic", () => {
 describe("next player turn", () => {
   it("sets the current word as the player attempt and switches players if not a computer game", () => {
     expect(tempGame.current_player_index).toBe(0);
-    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", "rol");
+    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", {
+      word: "rol",
+      exactMatch: false,
+    });
     expect(updatedGame.current_word).toBe("ol");
     expect(updatedGame.current_player_index).toBe(1);
     expect(message).toBe("Next player");
   });
   it("increases the current players score and keeps it to player one if its a computer gametype and there is no computer word", () => {
     tempGame.game_type = GameType.COMPUTER;
-    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", null);
+    const { updatedGame, message } = nextPlayerLogic(tempGame, "ol", {
+      word: null,
+      exactMatch: false,
+    });
     expect(updatedGame.current_word).toBe("bl");
     expect(updatedGame.current_player_index).toBe(0);
     expect(message).toBe("Computer could not find a word, you win this round!");

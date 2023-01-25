@@ -22,14 +22,16 @@ const ProfileImage = ({
         <div className={styles.notificationWrapper}>
           {notification && <NotificationBadge text={notification.toString()} />}
         </div>
-        <Image
-          priority
-          className={styles.profilePicture}
-          src={url}
-          alt={"profile picture"}
-          height={80}
-          width={80}
-        />
+        {url && (
+          <Image
+            priority
+            className={styles.profilePicture}
+            src={url}
+            alt={"profile picture"}
+            height={80}
+            width={80}
+          />
+        )}
         <div className={styles.circleOffset}></div>
         <svg
           className={styles.background}
