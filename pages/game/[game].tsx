@@ -270,9 +270,7 @@ export default function Game() {
                               text="End Game"
                               type={"delete"}
                               action={() => {
-                                deleteGame(game).then(() =>
-                                  router.push("/games")
-                                );
+                                deleteGame(game);
                               }}
                             />
                           </div>

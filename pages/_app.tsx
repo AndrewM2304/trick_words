@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import { Layout } from "@components/Layout";
+import { Analytics } from "@vercel/analytics/react";
 
 function MyApp({
   Component,
@@ -20,6 +21,7 @@ function MyApp({
       <Layout>
         <Component {...pageProps} />
       </Layout>
+      <Analytics />
     </SessionContextProvider>
   );
 }
