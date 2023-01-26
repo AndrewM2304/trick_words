@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useGetGameData } from "./useGetGameData";
+import { useGetGameData } from ".././useGetGameData";
 import {
   mockGame,
   mockUser,

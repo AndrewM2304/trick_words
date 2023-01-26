@@ -118,6 +118,26 @@ export const mockGame: Game = {
   difficulty: "easy",
   current_player_id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
 };
+export const mockOnlineGame: Game = {
+  id: 2,
+  created_at: "",
+  current_word: "a",
+  current_letter_index: 0,
+  game_type: GameType.ONLINE_MULTIPLAYER,
+  secret_key: "",
+  current_player_index: 0,
+  player_one_score: 0,
+  player_two_score: 0,
+  player_one_id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
+  player_two_id: "test 2",
+  player_one_name: "p1",
+  player_two_name: "p2",
+  player_one_avatar: "",
+  player_two_avatar: "",
+  winner: null,
+  difficulty: "easy",
+  current_player_id: "d5bcd50f-4595-4d20-b940-1ac6f800dc13",
+};
 
 export const supabaseMockGame: Game = {
   id: 1,

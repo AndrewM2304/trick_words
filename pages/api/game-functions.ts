@@ -22,15 +22,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<GameResponse | { message: string }>
 ) {
-  // const body: GameBody = JSON.parse(req.body);
-  // const { word, difficulty, game, forfeit } = body;
-
-  if (req.method !== "POST") {
-    res.status(405).send({ message: "Only POST requests allowed" });
-    return;
-  }
-
-  // not needed in NextJS v12+
   const body = req.body;
   const { word, difficulty, game, forfeit } = body;
   const { update, gameToReturn, message } = updateGameBasedOnPlayerTurn(

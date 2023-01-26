@@ -10,6 +10,7 @@ import {
 import { Database } from "@utilities/supabase";
 import { useRouter } from "next/router";
 import { SetupProfile } from "@components/SetupProfile";
+import { useWindowVisibilityState } from "@hooks/useWindowVisibilityState";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -25,6 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
   const supabaseGames = useSupabaseClient<Games>();
   const { session, isLoading } = useSessionContext();
   const [localLoad, setLocalLoad] = useState(false);
+  const { visible } = useWindowVisibilityState();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -119,7 +121,7 @@ const Layout = ({ children }: LayoutProps) => {
     return () => {
       gamesData.unsubscribe();
     };
-  }, [user]);
+  }, [user, visible]);
 
   useEffect(() => {
     if (!user || games.length > 0) return;
@@ -138,7 +140,7 @@ const Layout = ({ children }: LayoutProps) => {
     };
 
     retrieveAllGames();
-  }, [user]);
+  }, [user, visible]);
 
   const setUpProfile = (): boolean => {
     return !userProfile?.avatar_url && session ? true : false;

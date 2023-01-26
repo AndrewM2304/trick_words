@@ -49,3 +49,9 @@ global.localStorage;
 
 Object.defineProperty(URL, "createObjectURL", { value: createObjectMock });
 global.URL;
+
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => "12344",
+  },
+});

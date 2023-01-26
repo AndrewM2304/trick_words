@@ -113,6 +113,7 @@ const SetupProfile = ({
               )}
               <label className={styles.profileButton}>
                 <input
+                  data-testid="file-upload"
                   tabIndex={0}
                   type="file"
                   id="single"
@@ -122,7 +123,7 @@ const SetupProfile = ({
                 {photo && (
                   <Image
                     src={photo}
-                    alt="user profile"
+                    alt={`${name} user profile`}
                     className={styles.imageFromSocial}
                     width={200}
                     height={200}

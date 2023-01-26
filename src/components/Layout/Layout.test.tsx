@@ -53,8 +53,9 @@ const MockWrapper = () => {
 };
 
 describe("Layout Component", () => {
-  test("it should exist", () => {
+  test("it should exist", async () => {
     act(() => render(<MockWrapper />));
-    expect(screen.getByTestId("Layout-wrapper")).toBeInTheDocument();
+    expect(await screen.findByTestId("Layout-wrapper")).toBeInTheDocument();
+    expect(await screen.findByText("hello test")).toBeInTheDocument();
   });
 });

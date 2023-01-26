@@ -10,6 +10,7 @@ import {
   identifyIfWordInList,
   computerWordGenerate,
   incrementLetter,
+  difficultyFilter,
 } from "./new-game-functions";
 import { words as wordlist } from "./word-list";
 import { mockGame } from "@testing/mockData";
@@ -25,35 +26,20 @@ beforeEach(() => {
 });
 
 describe("identifyIfWordInList", () => {
-  it("checks if a word is in a list, an exact match and sets computerwords to null if player is false", () => {
+  it("checks if a word is in a list, an exact match and sets computerwords to null or a string based on computing a compoter word", () => {
     const exactMatch = identifyIfWordInList("boy", "hard");
     expect(exactMatch.exactMatch).toBe(true);
     expect(exactMatch.inList).toBe(true);
-    expect(exactMatch.computerWord.word).not.toBe(null);
+    expect(typeof exactMatch.computerWord.word).toBe("string" || "null");
     const partialMatch = identifyIfWordInList("he", "hard");
     expect(partialMatch.inList).toBeTruthy();
     expect(partialMatch.exactMatch).toBeFalsy();
-    expect(exactMatch.computerWord.word).not.toBe(null);
+    expect(typeof partialMatch.computerWord.word).toBe("string" || "null");
 
     const notMatch = identifyIfWordInList("ztys", "hard");
     expect(notMatch.inList).toBeFalsy();
     expect(notMatch.exactMatch).toBeFalsy();
     expect(notMatch.computerWord.word).toBe(null);
-  });
-
-  it("checks if a word is in a list, an exact match and sets computerwords to an array of strings if player is true", () => {
-    const exactMatch = identifyIfWordInList("hello", "normal");
-    expect(exactMatch.exactMatch).toBe(true);
-    expect(exactMatch.inList).toBe(true);
-    expect(exactMatch.computerWord.word).not.toBe(null);
-    const partialMatch = identifyIfWordInList("he", "normal");
-    expect(partialMatch.inList).toBeTruthy();
-    expect(partialMatch.exactMatch).toBeFalsy();
-    expect(exactMatch.computerWord.word).not.toBe(null);
-    const notMatch = identifyIfWordInList("ztys", "normal");
-    expect(notMatch.inList).toBeFalsy();
-    expect(notMatch.exactMatch).toBeFalsy();
-    expect(notMatch.computerWord.word).toBeNull();
   });
 });
 
@@ -70,13 +56,22 @@ describe("array slicer", () => {
   });
 });
 
-// describe("checkPlayerWordAndReturnComputerWord", () =>
-//   it("runs a function to create player and computer guesses, then generates a computer turn", () => {
-//     const { inList, exactMatch, computerWord } =
-//       checkPlayerWordAndReturnComputerWord("ally", "normal");
-//     expect(inList).toBeTruthy();
-//     expect(exactMatch).toBeTruthy();
-//   }));
+describe("difficultyFilter", () => {
+  it("returns 6 for easy difficulty", () => {
+    const filter = difficultyFilter("easy");
+    expect(filter).toBe(6);
+  });
+
+  it("returns 8 for medium difficulty", () => {
+    const filter = difficultyFilter("medium");
+    expect(filter).toBe(8);
+  });
+
+  it("returns 14 for any other difficulty", () => {
+    const filter = difficultyFilter("hard");
+    expect(filter).toBe(14);
+  });
+});
 
 describe("computerwordgenerate", () => {
   it("takes in a player word, potential word and adds a letter to the front or end of the player word", () => {

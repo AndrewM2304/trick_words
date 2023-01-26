@@ -102,13 +102,6 @@ export const updateGameBasedOnPlayerTurn = (
   game: GameDBType,
   forfeit: boolean
 ): { update: boolean; gameToReturn: GameDBType; message: string } => {
-  // if its multiplayers do this once
-  // if its computer, do it twice
-
-  // first time user goes through it
-  // if forfeit or not a match still their go
-  // if exact match switch to other player
-
   if (forfeit) {
     const { message, updatedGame } = forfeitRoundLogic(game);
     return { update: true, gameToReturn: updatedGame, message: message };
@@ -118,20 +111,13 @@ export const updateGameBasedOnPlayerTurn = (
     playerGuess,
     difficulty
   );
+
   if (exactMatch) {
-    // switch player
-    // increment other players score
-    // increment letter
-    // if letter is z set other player winner
-    // message about match
     const { message, updatedGame } = exactMatchLogic(game, playerGuess);
     return { update: true, gameToReturn: updatedGame, message: message };
   }
 
   if (!exactMatch && inList) {
-    // switch player
-    // add to word
-    // message about okay next player
     const { message, updatedGame } = nextPlayerLogic(
       game,
       playerGuess,
@@ -140,7 +126,6 @@ export const updateGameBasedOnPlayerTurn = (
     return { update: true, gameToReturn: updatedGame, message: message };
   }
 
-  // message try again
   return {
     update: false,
     gameToReturn: game,

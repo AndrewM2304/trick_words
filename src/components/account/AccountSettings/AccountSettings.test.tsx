@@ -42,8 +42,10 @@ jest.mock("@hooks/useDownloadImages", () => ({
 describe("AccountSettings Component", () => {
   test("it should exist", async () => {
     render(<AccountSettings />);
-    await waitFor(() =>
-      expect(screen.getByTestId("AccountSettings-wrapper")).toBeInTheDocument()
-    );
+    await waitFor(async () => {
+      expect(screen.getByTestId("AccountSettings-wrapper")).toBeInTheDocument();
+      const rules = await screen.findAllByText("Rules");
+      expect(rules.length).toBe(2);
+    });
   });
 });

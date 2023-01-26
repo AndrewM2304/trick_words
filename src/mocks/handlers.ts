@@ -20,34 +20,23 @@ interface RequestParams {
   postId: string;
 }
 
+const updatedGame = { ...mockGame };
+updatedGame.current_player_index = 1;
+updatedGame.current_word = "ar";
+updatedGame.current_player_id = updatedGame.player_two_id;
+
 export const handlers = [
-  // failling value
   rest.post<RequestBody, RequestParams, GameResponse | { message: string }>(
     `${game_functions_url}`,
     (req, res, ctx) => {
-      const { word, difficulty, game, forfeit } = req.json() as any;
-
       return res(
         ctx.status(200),
         ctx.json({
-          gameToReturn: mockGame,
+          gameToReturn: updatedGame,
           update: true,
-          message: "passed",
+          message: "Next player",
         })
       );
     }
   ),
-
-  // supabase mocks
-  // rest.get(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/avatars/default_user_avatar.svg`, (_req, res, ctx) => {
-
-  //   const mockBlob:Blob = {size: 588, type: 'image/svg+xml', arrayBuffer:Buffer.from('abc')}
-  //   return res(
-  //     ctx.status(200),
-  //     ctx.json({
-  //       inList: true,
-  //       exactMatch: true,
-  //     })
-  //   );
-  // }),
 ];

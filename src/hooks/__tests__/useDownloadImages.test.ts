@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useDownloadImages } from "./useDownloadImages";
+import { useDownloadImages } from ".././useDownloadImages";
 import userAvatar from "../../public/default_user_avatar.svg";
 import computer from "../../public/default_computer_avatar.svg";
 import { mockUser } from "@testing/mockData";

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "gc": "node .generate_component $1",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.6",

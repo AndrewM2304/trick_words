@@ -260,6 +260,7 @@ export const useCropPhoto = () => {
     setPhoto,
     setUpImageForStorage,
     setPhotoFile,
+    photoFile,
     name,
     setName,
     upload,
