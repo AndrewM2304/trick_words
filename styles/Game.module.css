@@ -213,16 +213,16 @@
   max-width: 800px;
 }
 
-@keyframes flip-vertical-left {
+/* @keyframes flip-vertical-left {
   0% {
-    -webkit-transform: rotateY(0);
-    transform: rotateY(0);
-  }
-  100% {
     -webkit-transform: rotateY(-360deg);
     transform: rotateY(-360deg);
   }
-}
+  100% {
+    -webkit-transform: rotateY(0);
+    transform: rotateY(0);
+  }
+} */
 
 @media screen and (max-width: 900px) and (orientation: landscape) and (max-height: 400px) {
   .landscape {

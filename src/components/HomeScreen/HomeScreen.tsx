@@ -56,22 +56,19 @@ const HomeScreen = () => {
   const central: Variants = {
     initialState: {
       opacity: 0,
-      translateY: 50,
     },
     animateState: {
       opacity: 1,
-      translateY: 0,
     },
     exitState: {
       opacity: 0,
-      translateY: 50,
     },
   };
 
   const trans: Transition = {
-    type: "spring",
-    bounce: 0.4,
-    duration: 0.8,
+    type: "tween",
+    ease: "backInOut",
+    duration: 0.4,
   };
 
   return (
@@ -83,6 +80,7 @@ const HomeScreen = () => {
         animate="animateState"
         exit="exitState"
         transition={trans}
+        key={"homescreen"}
       >
         <OutlineText
           text={"Trick Words"}

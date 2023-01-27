@@ -52,21 +52,18 @@ const Dialog = ({
   const infoDialog: Variants = {
     initialState: {
       opacity: 0,
-      translateY: 80,
+      translateY: 50,
       scale: 0.8,
-      transformOrigin: "50% 100%",
     },
     animateState: {
       opacity: 1,
       translateY: 0,
-      transformOrigin: "50% 1400px",
       scale: 1,
     },
     exitState: {
       opacity: 0,
       scale: 0.8,
-
-      translateY: 80,
+      translateY: 50,
     },
   };
   const backdropVariants: Variants = {
@@ -82,9 +79,9 @@ const Dialog = ({
   };
 
   const trans: Transition = {
-    type: "spring",
+    type: animate ? "tween" : "spring",
     bounce: animate ? 0.3 : 0.4,
-    duration: 0.6,
+    duration: animate ? 0.4 : 0.6,
   };
 
   return (
@@ -98,6 +95,7 @@ const Dialog = ({
           transition={{
             duration: 0.2,
           }}
+          key={"dialog-backdrop"}
           variants={backdropVariants}
         >
           <motion.dialog
@@ -111,6 +109,7 @@ const Dialog = ({
             data-testid="Dialog-wrapper"
             className={styles.Dialog}
             ref={dialogRef}
+            key={"dialog"}
           >
             {children}
           </motion.dialog>

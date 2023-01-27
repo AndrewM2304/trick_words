@@ -328,6 +328,7 @@ export default function Game() {
                             {displayKeyboard && (
                               <motion.div
                                 variants={keyboardVariations}
+                                key={"keyboard"}
                                 initial="initialState"
                                 animate="animateState"
                                 exit="exitState"
@@ -367,7 +368,7 @@ export default function Game() {
                                     letter={w}
                                     key={idx}
                                     disabled={true}
-                                    animateDelay={`${idx * 0.1 + 0}s`}
+                                    animateDelay={`${idx * 0.1}s`}
                                   />
                                 );
                               })}

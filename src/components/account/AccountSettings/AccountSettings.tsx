@@ -52,8 +52,8 @@ const AccountSettings = () => {
 
   const trans: Transition = {
     type: "tween",
-    duration: 0.3,
-    ease: "easeInOut",
+    ease: "backInOut",
+    duration: 0.4,
   };
 
   return (
