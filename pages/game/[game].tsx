@@ -21,7 +21,7 @@ import { OutlineText } from "@components/OutlineText";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
 import { Dialog } from "@components/Dialog";
 import { GameType } from "@utilities/game";
-
+import { motion, Variants } from "framer-motion";
 import { useGetGameData } from "@hooks/useGetGameData";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUserProfileStore } from "@components/store";
@@ -173,10 +173,43 @@ export default function Game() {
     }
   };
 
+  const keyboardVariations: Variants = {
+    initialState: {
+      opacity: 0,
+      translateY: "600px",
+    },
+    animateState: {
+      opacity: 1,
+      translateY: "0px",
+    },
+    exitState: {
+      opacity: 0,
+      translateY: "600px",
+    },
+  };
+
+  const wrapperVariants = {
+    initial: {
+      clipPath: "polygon(52% 0%, 52% 0%, 53% 100%, 53% 100%)",
+      transition: { duration: 0.3 },
+    },
+    animate: {
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      transition: { duration: 0.3 },
+    },
+  };
+
   return (
     <>
       {!displayAuth() && !loading && gameData && (
-        <div className={styles.gameWrapper} data-testid="Game-wrapper">
+        <motion.div
+          className={styles.gameWrapper}
+          data-testid="Game-wrapper"
+          key={router.route}
+          variants={wrapperVariants}
+          initial="initial"
+          animate="animate"
+        >
           {displayGame() && (
             <div className="central-width-container " data-central>
               <div className={styles.landscape}>
@@ -292,7 +325,22 @@ export default function Game() {
                                 word={`${game.current_word}${selectedLetter}`}
                               />
                             </div>
-                            {displayKeyboard && <Keyboard />}
+                            {displayKeyboard && (
+                              <motion.div
+                                variants={keyboardVariations}
+                                initial="initialState"
+                                animate="animateState"
+                                exit="exitState"
+                                transition={{
+                                  type: "spring",
+                                  bounce: 0.2,
+                                  duration: 0.6,
+                                  delay: 0.2,
+                                }}
+                              >
+                                <Keyboard />
+                              </motion.div>
+                            )}
                             {!displayKeyboard && (
                               <div className={styles.noKeyboard}>
                                 <OutlineText
@@ -319,6 +367,7 @@ export default function Game() {
                                     letter={w}
                                     key={idx}
                                     disabled={true}
+                                    animateDelay={`${idx * 0.1 + 0}s`}
                                   />
                                 );
                               })}
@@ -362,7 +411,7 @@ export default function Game() {
               </Dialog>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
       {displayAuth() && !loading && (
         <div className={styles.gameWrapper}>

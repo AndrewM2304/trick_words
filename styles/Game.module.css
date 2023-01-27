@@ -97,13 +97,13 @@
 .wordWrapper {
   margin: 0px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 
 .wordWrapper li {
   flex: inherit;
-  width: 35px;
+  width: 30px;
   box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
   border-radius: 5px;
   height: 54px;
@@ -159,11 +159,16 @@
 .emptyTile {
   list-style: none;
   height: 54px;
-  width: 35px !important;
+  width: 30px !important;
   border-radius: 5px;
   background: var(--background-blue);
   border: 2px solid black;
   box-shadow: 0 0 0 3px #336d87, 0 0 0 5px black;
+}
+
+.wordWrapper li:not(.emptyTile) {
+  animation: flip-vertical-left 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955)
+    both;
 }
 
 .landscape {
@@ -206,6 +211,17 @@
   padding: 20px;
   width: 100%;
   max-width: 800px;
+}
+
+@keyframes flip-vertical-left {
+  0% {
+    -webkit-transform: rotateY(0);
+    transform: rotateY(0);
+  }
+  100% {
+    -webkit-transform: rotateY(-360deg);
+    transform: rotateY(-360deg);
+  }
 }
 
 @media screen and (max-width: 900px) and (orientation: landscape) and (max-height: 400px) {

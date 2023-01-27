@@ -16,8 +16,9 @@ type Games = Database["public"]["Tables"]["games"]["Row"];
 
 export type GameCardProps = {
   game: Games;
+  id: number;
 };
-const GameCard = ({ game }: GameCardProps) => {
+const GameCard = ({ game, id }: GameCardProps) => {
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
   const [playerImage, setPlayerImage] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>("");
@@ -104,7 +105,11 @@ const GameCard = ({ game }: GameCardProps) => {
   return (
     <>
       {playerImage && (
-        <div data-testid="GameCard-wrapper" className={styles.gameCardWrapper}>
+        <div
+          data-testid="GameCard-wrapper"
+          className={styles.gameCardWrapper}
+          style={{ animationDelay: `${id * 0.2}s` }}
+        >
           <div className={styles.gradient}></div>
           <div
             className={styles.profileWrapper}
@@ -125,6 +130,7 @@ const GameCard = ({ game }: GameCardProps) => {
               viewBox="0 0 27 27"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              style={{ animationDelay: `${id * 0.3}s` }}
             >
               <path
                 opacity="0.2"
@@ -162,7 +168,14 @@ const GameCard = ({ game }: GameCardProps) => {
 
             <ul className={styles.tiles}>
               {game.current_word.split("").map((w, idx) => {
-                return <KeyboardTile letter={w} key={idx} disabled={true} />;
+                return (
+                  <KeyboardTile
+                    letter={w}
+                    key={idx}
+                    disabled={true}
+                    animateDelay={`${idx * 0.1}s`}
+                  />
+                );
               })}
             </ul>
           </div>

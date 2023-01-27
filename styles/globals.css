@@ -29,7 +29,7 @@ a:focus-visible {
   outline: none;
 }
 
-a:focus-visible li {
+a:focus-visible li:not([data-testid="KeyboardTile-wrapper"]) {
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px black;
 }
 :root {

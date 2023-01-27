@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styles from "./TabWrapper.module.css";
+import { motion } from "framer-motion";
 
 export type TabWrapperProps = {
   children: React.ReactNode;

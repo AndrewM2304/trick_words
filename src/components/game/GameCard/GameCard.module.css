@@ -13,6 +13,13 @@
   background-blend-mode: soft-light;
   height: 100%;
   transition: 0.2s ease-in-out;
+  animation: slide-in-left 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+.gameCardWrapper:is(:hover) .tiles li {
+  animation: flip-vertical-left 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955)
+    both;
+  box-shadow: none;
 }
 
 .gradient {
@@ -57,7 +64,7 @@
   grid-row: 1/-1;
   display: grid;
   grid-template-columns: 30px auto;
-  grid-template-rows: 35px 30px;
+  grid-template-rows: 35px auto;
   grid-gap: 5px;
   grid-gap: 10px 5px;
   gap: 10px 5px;
@@ -70,6 +77,7 @@
   grid-column: 1/2;
   grid-row: 1/2;
   margin-top: 5px;
+  animation: rotate-in-center 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .cardContent [data-testid="OutlineText-wrapper"] {
@@ -86,13 +94,62 @@
   gap: 5px !important;
   width: fit-content;
   margin-left: 0px !important;
+  grid-column: 1/-1;
+  flex-wrap: wrap;
+  padding-right: 15px;
 }
 
 .tiles > li > * {
   height: 30px !important;
   box-shadow: none;
+  width: fit-content;
 }
 
 .lightBlend {
   mix-blend-mode: soft-light;
+}
+
+.flip-vertical-left {
+  -webkit-animation: flip-vertical-left 0.4s
+    cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+  animation: flip-vertical-left 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955)
+    both;
+}
+
+@keyframes slide-in-left {
+  0% {
+    -webkit-transform: translateX(-200px);
+    transform: translateX(-200px);
+    opacity: 0;
+  }
+  80% {
+    opacity: 20;
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate-in-center {
+  0% {
+    -webkit-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+  100% {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+}
+
+@keyframes flip-vertical-left {
+  0% {
+    -webkit-transform: rotateY(0);
+    transform: rotateY(0);
+  }
+  100% {
+    -webkit-transform: rotateY(-360deg);
+    transform: rotateY(-360deg);
+  }
 }

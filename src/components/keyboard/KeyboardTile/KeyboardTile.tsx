@@ -6,8 +6,13 @@ import { OutlineText } from "@components/OutlineText";
 export type KeyboardTileProps = {
   letter: string;
   disabled?: boolean;
+  animateDelay?: string;
 };
-const KeyboardTile = ({ letter, disabled = false }: KeyboardTileProps) => {
+const KeyboardTile = ({
+  letter,
+  disabled = false,
+  animateDelay,
+}: KeyboardTileProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging, active } =
     useDraggable({
       id: letter,
@@ -28,6 +33,7 @@ const KeyboardTile = ({ letter, disabled = false }: KeyboardTileProps) => {
       data-testid="KeyboardTile-wrapper"
       className={styles.keyboardTileWrapper}
       tabIndex={-1}
+      style={{ animationDelay: animateDelay ?? "0s" }}
     >
       <div
         className={styles.keyboardTileBottom}

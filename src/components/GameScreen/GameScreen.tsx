@@ -49,7 +49,7 @@ const GameScreen = () => {
                   href={`/game/${localGame.id}?gametype=local`}
                   data-id={`${localGame.id}-local`}
                 >
-                  <GameCard game={localGame} />
+                  <GameCard id={idx} game={localGame} />
                 </Link>
               </li>
             );
@@ -71,11 +71,12 @@ const GameScreen = () => {
                         : 0
                     }
                   >
-                    <GameCard game={game} />
+                    <GameCard id={idx} game={game} />
                   </Link>
                 )}
                 {disableLink(game) && (
                   <GameCard
+                    id={idx}
                     game={game}
                     key={`${game.id}-local-${idx}-nolink`}
                   />

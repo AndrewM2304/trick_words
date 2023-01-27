@@ -5,6 +5,7 @@ import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import { Layout } from "@components/Layout";
 import { Analytics } from "@vercel/analytics/react";
+import { AnimatePresence } from "framer-motion";
 
 function MyApp({
   Component,
@@ -12,15 +13,20 @@ function MyApp({
 }: AppProps<{
   initialSession: Session;
 }>) {
-  const [supabase] = useState(() => createBrowserSupabaseClient());
+  const [supabase] = useState(() =>
+    createBrowserSupabaseClient({ cookieOptions: { maxAge: 259200 } })
+  );
+
   return (
     <SessionContextProvider
       supabaseClient={supabase}
       initialSession={pageProps.initialSession}
     >
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <AnimatePresence mode="wait" initial={false}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </AnimatePresence>
       <Analytics />
     </SessionContextProvider>
   );

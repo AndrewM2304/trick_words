@@ -14,6 +14,7 @@ import { local_game } from "@utilities/constants";
 import { useRouter } from "next/router";
 import { HowItWorks } from "@components/HowItWorks";
 import { OutlineText } from "@components/OutlineText";
+import { motion, Transition, Variants } from "framer-motion";
 
 const AccountSettings = () => {
   const supabase = useSupabaseClient<Database>();
@@ -37,8 +38,35 @@ const AccountSettings = () => {
     }
   };
 
+  const central: Variants = {
+    initialState: {
+      opacity: 0,
+    },
+    animateState: {
+      opacity: 1,
+    },
+    exitState: {
+      opacity: 0,
+    },
+  };
+
+  const trans: Transition = {
+    type: "tween",
+    duration: 0.3,
+    ease: "easeInOut",
+  };
+
   return (
-    <div data-testid="AccountSettings-wrapper" className={styles.central}>
+    <motion.div
+      data-testid="AccountSettings-wrapper"
+      className={styles.central}
+      variants={central}
+      initial="initialState"
+      animate="animateState"
+      exit="exitState"
+      transition={trans}
+      key={router.route}
+    >
       {userProfile?.avatar_url && userProfile?.full_name && session && (
         <details>
           <summary>
@@ -149,7 +177,7 @@ const AccountSettings = () => {
           action={() => deleteGames()}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 export default AccountSettings;

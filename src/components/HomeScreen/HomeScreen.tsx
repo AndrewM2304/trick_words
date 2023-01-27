@@ -8,9 +8,9 @@ import { OutlineText } from "@components/OutlineText";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useCreateGame } from "@hooks/useCreateGame";
 import { HowItWorks } from "@components/HowItWorks";
+import { motion, Transition, Variants } from "framer-motion";
 
-export type HomeScreenProps = {};
-const HomeScreen = ({}: HomeScreenProps) => {
+const HomeScreen = () => {
   const {
     gameType,
     setGameType,
@@ -53,11 +53,39 @@ const HomeScreen = ({}: HomeScreenProps) => {
     setGameDifficulty(option);
   };
 
+  const central: Variants = {
+    initialState: {
+      opacity: 0,
+      translateY: 50,
+    },
+    animateState: {
+      opacity: 1,
+      translateY: 0,
+    },
+    exitState: {
+      opacity: 0,
+      translateY: 50,
+    },
+  };
+
+  const trans: Transition = {
+    type: "spring",
+    bounce: 0.4,
+    duration: 0.8,
+  };
+
   return (
     <div data-testid="HomeScreen-wrapper" className={styles.homeScreenWrapper}>
-      <div className={styles.central}>
+      <motion.div
+        className={styles.central}
+        variants={central}
+        initial="initialState"
+        animate="animateState"
+        exit="exitState"
+        transition={trans}
+      >
         <OutlineText
-          text={"Word Duel"}
+          text={"Trick Words"}
           sizeInRem={2}
           upperCase={true}
           alignment={"center"}
@@ -104,7 +132,7 @@ const HomeScreen = ({}: HomeScreenProps) => {
             </div>
           </>
         )}
-      </div>
+      </motion.div>
 
       <Dialog
         display={showDialog}

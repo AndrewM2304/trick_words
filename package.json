@@ -23,6 +23,7 @@
     "@types/react-dom": "18.0.9",
     "@vercel/analytics": "^0.1.8",
     "eslint-config-next": "^13.1.4",
+    "framer-motion": "^8.5.3",
     "next": "13.1.4",
     "next-router-mock": "^0.8.0",
     "popular-english-words": "^1.0.2",

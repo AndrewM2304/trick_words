@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Dialog.module.css";
+import { motion, AnimatePresence, Variants, Transition } from "framer-motion";
 
 export type DialogProps = {
   children: React.ReactNode;
@@ -15,28 +16,107 @@ const Dialog = ({
 }: DialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const [exitAnimation, setExitAnimation] = useState(false);
   useEffect(() => {
     if (!dialogRef.current) return;
     dialogRef.current.removeAttribute("open");
     if (display && !dialogRef.current.open) dialogRef.current.showModal();
   }, [display]);
 
+  const dialogVariants: Variants = {
+    initialState: {
+      opacity: 0,
+      transformOrigin: "50% 100%",
+      translateY: "-600px",
+      rotateX: "-30deg",
+      scale: 0,
+    },
+    animateState: {
+      opacity: 1,
+      transformOrigin: "50% 1400px",
+      translateY: "0px",
+      rotateX: "0deg",
+      scale: 1,
+    },
+    exitState: {
+      opacity: 0,
+      transformOrigin: "10% 50%",
+      translateY: "600px",
+      rotateX: "30deg",
+      scale: 0,
+      transition: {
+        type: "tween",
+      },
+    },
+  };
+
+  const infoDialog: Variants = {
+    initialState: {
+      opacity: 0,
+      translateY: 80,
+      scale: 0.8,
+      transformOrigin: "50% 100%",
+    },
+    animateState: {
+      opacity: 1,
+      translateY: 0,
+      transformOrigin: "50% 1400px",
+      scale: 1,
+    },
+    exitState: {
+      opacity: 0,
+      scale: 0.8,
+
+      translateY: 80,
+    },
+  };
+  const backdropVariants: Variants = {
+    initialState: {
+      opacity: 0,
+    },
+    animateState: {
+      opacity: 1,
+    },
+    exitState: {
+      opacity: 0,
+    },
+  };
+
+  const trans: Transition = {
+    type: "spring",
+    bounce: animate ? 0.3 : 0.4,
+    duration: 0.6,
+  };
+
   return (
-    <>
+    <AnimatePresence>
       {display && (
-        <dialog
-          data-animate={animate}
-          data-exit={exitAnimation}
-          onClose={() => setDisplay()}
-          data-testid="Dialog-wrapper"
-          className={styles.Dialog}
-          ref={dialogRef}
+        <motion.div
+          className={styles.backdrop}
+          initial="initialState"
+          animate="animateState"
+          exit="exitState"
+          transition={{
+            duration: 0.2,
+          }}
+          variants={backdropVariants}
         >
-          {children}
-        </dialog>
+          <motion.dialog
+            initial="initialState"
+            animate="animateState"
+            exit="exitState"
+            transition={trans}
+            data-display={display}
+            variants={animate ? dialogVariants : infoDialog}
+            onClose={() => setDisplay()}
+            data-testid="Dialog-wrapper"
+            className={styles.Dialog}
+            ref={dialogRef}
+          >
+            {children}
+          </motion.dialog>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 export default Dialog;

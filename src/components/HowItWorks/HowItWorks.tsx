@@ -8,7 +8,7 @@ export type HowItWorksProps = {
 const HowItWorks = ({ closeDialog }: HowItWorksProps) => {
   return (
     <div className={styles.howToPlayContainer} data-testid="HowItWorks-wrapper">
-      <p tabIndex={0}>Welcome to Word Dual!</p>
+      <p tabIndex={0}>Welcome to Trick Words!</p>
       <p>
         Are you ready to test your spelling skills and outsmart your opponents?
         This game is perfect for word enthusiasts and tricksters alike. Whether
