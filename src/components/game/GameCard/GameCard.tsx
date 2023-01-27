@@ -36,8 +36,16 @@ const GameCard = ({ game, id }: GameCardProps) => {
       user?.id === game.player_one_id
         ? game.player_two_name
         : game.player_one_name;
-    setImage(playerToDisplayImage).then((i) => setPlayerImage(i));
-    setPlayerName(playerToDisplayName);
+    setImage(
+      game.game_type === GameType.ONLINE_MULTIPLAYER
+        ? playerToDisplayImage
+        : game.player_two_avatar
+    ).then((i) => setPlayerImage(i));
+    setPlayerName(
+      game.game_type === GameType.ONLINE_MULTIPLAYER
+        ? playerToDisplayName
+        : game.player_two_name
+    );
   }, []);
 
   const setColor = () => {

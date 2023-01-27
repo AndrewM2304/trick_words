@@ -69,6 +69,24 @@
   margin: 15px;
 }
 
+.tandc {
+  font-size: 0.875rem;
+  grid-column: 2/3;
+  grid-row: 2/3;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-size: 0.875rem;
+  line-height: 1.1rem;
+  color: #fff;
+  padding: 0px 15px;
+}
+
+.tandc a,
+.tandc a:visited {
+  color: #fff;
+  text-decoration: underline;
+}
+
 @media (min-width: 800px) {
   .buttons {
     display: grid;

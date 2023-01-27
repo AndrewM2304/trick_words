@@ -7,18 +7,19 @@ import { useGamesStore } from "@components/store";
 import { local_game } from "@utilities/constants";
 import { GameType } from "@utilities/game";
 import { OutlineText } from "@components/OutlineText";
+import { motion, Transition, Variants } from "framer-motion";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 const GameScreen = () => {
   const { games } = useGamesStore();
 
-  const [localGames, setLocalGames] = useState<Games[]>([]);
+  const [gamesToDisplay, setGamesToDisplay] = useState<Games[]>([]);
 
   useEffect(() => {
     const gamesFromLocalStorage = window.localStorage.getItem(local_game);
     if (gamesFromLocalStorage) {
       const game: Games[] = JSON.parse(gamesFromLocalStorage);
-      setLocalGames(game);
+      setGamesToDisplay([...game, ...games]);
     }
   }, []);
 
@@ -35,32 +36,38 @@ const GameScreen = () => {
     );
   };
 
+  const central: Variants = {
+    initialState: {
+      opacity: 0,
+    },
+    animateState: {
+      opacity: 1,
+    },
+    exitState: {
+      opacity: 0,
+    },
+  };
+
+  const trans: Transition = {
+    type: "tween",
+    ease: "backInOut",
+    duration: 0.4,
+  };
+
   return (
     <div data-testid="GameScreen-wrapper" className={styles.GameScreenWrapper}>
       <ul className="central-width-container">
-        {localGames &&
-          localGames.map((localGame: Games, idx: number) => {
-            return (
-              <li
-                key={`${localGame.id}-local-${idx}`}
-                className={styles.gameLink}
-              >
-                <Link
-                  href={`/game/${localGame.id}?gametype=local`}
-                  data-id={`${localGame.id}-local`}
-                >
-                  <GameCard id={idx} game={localGame} />
-                </Link>
-              </li>
-            );
-          })}
-        {games &&
-          games.map((game: Games, idx: number) => {
+        {gamesToDisplay &&
+          gamesToDisplay.map((game: Games, idx: number) => {
             return (
               <li key={`${game.id}-local-${idx}`} className={styles.gameLink}>
                 {!disableLink(game) && (
                   <Link
-                    href={`/game/${game.id}?gametype=online`}
+                    href={`/game/${game.id}?gametype=${
+                      game.game_type === GameType.ONLINE_MULTIPLAYER
+                        ? "online"
+                        : "local"
+                    }`}
                     onClick={(e) =>
                       linkSetting(e, game.game_type, game.player_two_id)
                     }
@@ -84,15 +91,23 @@ const GameScreen = () => {
               </li>
             );
           })}
-        {localGames?.length === 0 && games?.length === 0 && (
-          <li className={styles.noGame}>
+        {gamesToDisplay?.length === 0 && (
+          <motion.li
+            className={styles.noGame}
+            variants={central}
+            initial="initialState"
+            animate="animateState"
+            exit="exitState"
+            transition={trans}
+            key={"no-display"}
+          >
             <OutlineText
               text={"No games in progress"}
               sizeInRem={2}
               upperCase={false}
               alignment={"center"}
             />
-          </li>
+          </motion.li>
         )}
       </ul>
     </div>
