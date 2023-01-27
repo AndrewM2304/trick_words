@@ -227,7 +227,7 @@ const TandC = () => {
     <div className={styles.tandc}>
       <p>
         These terms and conditions outline the rules and regulations for the use
-        of www.trickwords.com's Website, located at www.trickwords.com.
+        of www.trickwords.com&quot;s Website, located at www.trickwords.com.
       </p>
 
       <p>
@@ -238,19 +238,20 @@ const TandC = () => {
 
       <p>
         The following terminology applies to these Terms and Conditions, Privacy
-        Statement and Disclaimer Notice and all Agreements: "Client", "You" and
-        "Your" refers to you, the person log on this website and compliant to
-        the Company’s terms and conditions. "The Company", "Ourselves", "We",
-        "Our" and "Us", refers to our Company. "Party", "Parties", or "Us",
-        refers to both the Client and ourselves. All terms refer to the offer,
-        acceptance and consideration of payment necessary to undertake the
-        process of our assistance to the Client in the most appropriate manner
-        for the express purpose of meeting the Client’s needs in respect of
-        provision of the Company’s stated services, in accordance with and
-        subject to, prevailing law of Netherlands. Any use of the above
-        terminology or other words in the singular, plural, capitalization
-        and/or he/she or they, are taken as interchangeable and therefore as
-        referring to same.
+        Statement and Disclaimer Notice and all Agreements: &quot;Client&quot;,
+        &quot;You&quot; and &quot;Your&quot; refers to you, the person log on
+        this website and compliant to the Company&quot;s terms and conditions.
+        &quot;The Company&quot;, &quot;Ourselves&quot;, &quot;We&quot;,
+        &quot;Our&quot; and &quot;Us&quot;, refers to our Company.
+        &quot;Party&quot;, &quot;Parties&quot;, or &quot;Us&quot;, refers to
+        both the Client and ourselves. All terms refer to the offer, acceptance
+        and consideration of payment necessary to undertake the process of our
+        assistance to the Client in the most appropriate manner for the express
+        purpose of meeting the Client&quot;s needs in respect of provision of
+        the Company&quot;s stated services, in accordance with and subject to,
+        prevailing law of Netherlands. Any use of the above terminology or other
+        words in the singular, plural, capitalization and/or he/she or they, are
+        taken as interchangeable and therefore as referring to same.
       </p>
 
       <h3>
@@ -259,12 +260,12 @@ const TandC = () => {
 
       <p>
         We employ the use of cookies. By accessing www.trickwords.com, you
-        agreed to use cookies in agreement with the www.trickwords.com's Privacy
-        Policy.{" "}
+        agreed to use cookies in agreement with the www.trickwords.com&quot;s
+        Privacy Policy.
       </p>
 
       <p>
-        Most interactive websites use cookies to let us retrieve the user’s
+        Most interactive websites use cookies to let us retrieve the user&quot;s
         details for each visit. Cookies are used by our website to enable the
         functionality of certain areas to make it easier for people visiting our
         website. Some of our affiliate/advertising partners may also use
@@ -293,7 +294,7 @@ const TandC = () => {
 
       <p>
         This Agreement shall begin on the date hereof. Our Terms and Conditions
-        were created with the help of the{" "}
+        were created with the help of the
         <a href="https://www.termsandconditionsgenerator.com/">
           Free Terms and Conditions Generator
         </a>
@@ -435,8 +436,8 @@ const TandC = () => {
       </ul>
 
       <p>
-        No use of www.trickwords.com's logo or other artwork will be allowed for
-        linking absent a trademark license agreement.
+        No use of www.trickwords.com&quot;s logo or other artwork will be
+        allowed for linking absent a trademark license agreement.
       </p>
 
       <h3>
