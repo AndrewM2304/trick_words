@@ -59,6 +59,22 @@ jest.mock("@supabase/auth-helpers-react", () => ({
   },
 }));
 
+jest.mock("@components/store", () => ({
+  useUserProfileStore: jest.fn(() => ({
+    userProfile: mockUserProfile,
+    setUserProfile: jest.fn(() => mockUserProfile),
+  })),
+  useGamesStore: jest.fn(() => ({
+    games: [mockGame],
+  })),
+  useErrorModal: jest.fn(() => ({
+    displayErrorModal: false,
+    errorMessage: "",
+    setDisplayErrorModal: jest.fn(),
+    setErrorMessage: jest.fn(),
+  })),
+}));
+
 describe("useGetGameData", () => {
   beforeEach(() => {
     window.localStorage.clear();

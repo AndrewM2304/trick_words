@@ -3,10 +3,9 @@ import React, { useEffect, useState, useRef } from "react";
 import styles from "./Button.module.css";
 
 export type ButtonProps = {
-  type: "primary" | "secondary" | "delete" | "tertiary";
+  type: "primary" | "secondary" | "delete" | "tertiary" | "cancel";
   text: string;
   action: () => void;
-  iconUrl?: string;
   disabled?: boolean;
 };
 

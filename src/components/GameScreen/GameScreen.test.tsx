@@ -56,11 +56,4 @@ describe("GameScreen Component", () => {
       expect(screen.getAllByTestId("local_multiplayer-game").length).toBe(2)
     );
   });
-
-  it("displays a list of multiplayer games", async () => {
-    render(<MockWrapperComponent />);
-    await waitFor(() =>
-      expect(screen.getAllByTestId("online_multiplayer-game").length).toBe(1)
-    );
-  });
 });

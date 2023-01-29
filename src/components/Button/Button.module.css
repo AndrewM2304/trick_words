@@ -60,19 +60,28 @@
   background: var(--red);
 }
 
-.Button:is([data-button-type="tertiary"]) {
+.Button:is([data-button-type="tertiary"], [data-button-type="cancel"], ) {
   box-shadow: none;
   border-radius: 5px;
   border: none;
   background: rgba(0, 0, 0, 0);
   padding: 8px;
 }
-.Button:is([data-button-type="tertiary"]):is(:focus-visible, :hover) {
+.Button:is([data-button-type="tertiary"], [data-button-type="cancel"]):is(
+    :focus-visible,
+    :hover
+  ) {
   background: var(--background-blue);
 }
-.Button:is([data-button-type="tertiary"])::before {
+.Button:is([data-button-type="tertiary"], [data-button-type="cancel"])::before {
   display: none;
 }
-.Button:is([data-button-type="tertiary"])::after {
+.Button:is([data-button-type="tertiary"], [data-button-type="cancel"])::after {
   display: none;
+}
+
+@media (max-height: 580px) {
+  .Button [data-testid="OutlineText-wrapper"] > * {
+    font-size: 0.9rem !important;
+  }
 }

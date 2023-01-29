@@ -15,6 +15,24 @@ type useGamesStore = {
   updateGame: (game: Games) => void;
 };
 
+type useErrorModal = {
+  displayErrorModal: boolean;
+  errorMessage: string;
+  setDisplayErrorModal: () => void;
+  setErrorMessage: (m: string) => void;
+};
+
+type useDeleteModal = {
+  displayDeleteModal: boolean;
+  deleteType: "single" | "all";
+  setDeleteType: (t: "single" | "all") => void;
+  setDisplayDeleteModal: () => void;
+  buttonText: string;
+  setButtonText: (m: string) => void;
+  gameToDelete: Games | null;
+  setGameToDelete: (g: Games) => void;
+};
+
 export const useUserProfileStore = create<userProfileStore>((set) => ({
   userProfile: null,
   setUserProfile: (user: Profiles) => set({ userProfile: user }),
@@ -39,4 +57,26 @@ export const useGamesStore = create<useGamesStore>((set, get) => ({
     });
     set(() => ({ games: updatedItems }));
   },
+}));
+
+export const useErrorModal = create<useErrorModal>((set, get) => ({
+  displayErrorModal: false,
+  errorMessage: "",
+  setDisplayErrorModal: () => {
+    set(() => ({ displayErrorModal: !get().displayErrorModal }));
+  },
+  setErrorMessage: (message: string) => set({ errorMessage: message }),
+}));
+
+export const useDeleteModal = create<useDeleteModal>((set, get) => ({
+  displayDeleteModal: false,
+  setDisplayDeleteModal: () => {
+    set(() => ({ displayDeleteModal: !get().displayDeleteModal }));
+  },
+  buttonText: "",
+  setButtonText: (m: string) => set({ buttonText: m }),
+  gameToDelete: null,
+  setGameToDelete: (g: Games) => set({ gameToDelete: g }),
+  deleteType: "single",
+  setDeleteType: (t: "single" | "all") => set({ deleteType: t }),
 }));

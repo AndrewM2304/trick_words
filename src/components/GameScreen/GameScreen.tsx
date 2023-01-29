@@ -20,8 +20,10 @@ const GameScreen = () => {
     if (gamesFromLocalStorage) {
       const game: Games[] = JSON.parse(gamesFromLocalStorage);
       setGamesToDisplay([...game, ...games]);
+    } else {
+      setGamesToDisplay([...games]);
     }
-  }, []);
+  }, [games]);
 
   const linkSetting = (e: any, gameType: string, playerID: string | null) => {
     if (gameType === GameType.ONLINE_MULTIPLAYER && playerID === null) {

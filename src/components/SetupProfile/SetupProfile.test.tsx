@@ -17,6 +17,12 @@ jest.mock("@hooks/useDownloadImages", () => ({
   })),
 }));
 
+jest.mock("@hooks/useHandleError", () => ({
+  useHandleError: jest.fn(() => ({
+    captureError: jest.fn(),
+  })),
+}));
+
 beforeAll(() => {
   HTMLDialogElement.prototype.show = jest.fn();
   HTMLDialogElement.prototype.showModal = jest.fn();

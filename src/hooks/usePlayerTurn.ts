@@ -131,7 +131,7 @@ export const usePlayerTurn = () => {
         setShowDialog(false);
         setDialogMessage("Checking word...");
       },
-      message === "Next player" ? 1500 : 2500
+      message === "Next player" ? 1200 : 2200
     );
   };
 

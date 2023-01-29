@@ -16,10 +16,11 @@
   flex-direction: column;
   gap: 15px;
   margin: auto;
-  margin-bottom: 100px;
+  margin-bottom: 50px;
   padding: 0px 20px;
   width: 100%;
   max-width: 800px;
+  position: relative;
 }
 
 .auth {
@@ -35,9 +36,13 @@
   z-index: 0;
 }
 
-.central > :first-child {
-  margin-bottom: 100px;
-  padding: 30px;
+.central img {
+  position: relative;
+  margin: auto;
+  margin-bottom: 15vh;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
 }
 
 .fieldset {
@@ -201,18 +206,21 @@
   .central {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin: 5vh auto 40px;
+    grid-gap: 100px;
+    gap: 80px 40px;
+    margin: 10vh auto 40px;
     padding: 0px 20px;
     width: 100%;
     max-width: 800px;
-    grid-template-rows: 150px 60px;
+    grid-template-rows: 250px 60px;
   }
 
-  .central > :first-child {
-    margin-bottom: 30px;
+  .central img {
+    width: 250px;
+    height: 250px;
     grid-row: 1/1;
     grid-column: 1/-1;
+    margin-bottom: 0px;
   }
 
   .auth {

@@ -24,7 +24,7 @@ const OutlineText = ({
       >
         <div
           className={styles.whiteText}
-          data-black-background
+          data-text-shadow
           data-uppercase={upperCase}
           style={{
             fontSize: `${sizeInRem}rem`,

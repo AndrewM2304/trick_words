@@ -18,7 +18,7 @@
   background: #e0eaee;
   position: relative;
   cursor: pointer;
-  padding: 8px;
+  padding: 5px;
 }
 
 .keyboardTileTop {
@@ -44,7 +44,15 @@
   box-shadow: none;
 }
 
-.keyboardTileWrapper [data-black-background] {
+.keyboardTileWrapper [data-text-shadow] {
   -webkit-text-stroke: 4px black;
   text-shadow: none;
+}
+
+@media (max-height: 580px) {
+  .keyboardTileTop,
+  .keyboardTileBottom {
+    line-height: 45px;
+    height: 45px;
+  }
 }

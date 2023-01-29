@@ -18,19 +18,19 @@ jest.mock("@hooks/useDeleteGame", () => ({
 
 describe("GameCard Component", () => {
   test("it should exist", async () => {
-    render(<GameCard game={mockGame} />);
+    render(<GameCard game={mockGame} id={1} />);
     await waitFor(() =>
       expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument()
     );
   });
 
   test("it displays a card with the score and opponents name", async () => {
-    render(<GameCard game={mockGame} />);
+    render(<GameCard game={mockGame} id={1} />);
     await waitFor(() =>
       expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument()
     );
     expect(screen.getByTestId("local_multiplayer-game")).toBeInTheDocument();
-    expect(screen.getAllByText(/p1/i).length).toBe(2);
+    expect(screen.getAllByText(/p2/i).length).toBe(2);
     expect(screen.getByTestId("score")).toBeInTheDocument();
     expect(screen.getAllByText(/0 - 0/i).length).toBe(2);
   });
@@ -39,7 +39,7 @@ describe("GameCard Component", () => {
     const multiGame = { ...mockGame };
     multiGame.game_type = GameType.ONLINE_MULTIPLAYER;
     multiGame.player_two_id = null;
-    render(<GameCard game={multiGame} />);
+    render(<GameCard game={multiGame} id={1} />);
     await waitFor(() =>
       expect(screen.getByTestId("GameCard-wrapper")).toBeInTheDocument()
     );

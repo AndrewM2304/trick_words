@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { Database } from "@utilities/supabase";
 import { useGamesStore, useUserProfileStore } from "@components/store";
 import { local_game } from "@utilities/constants";
+import { useHandleError } from "./useHandleError";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type GameDB = Database["public"]["Tables"]["games"]["Row"];
-
 export const useCropPhoto = () => {
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
@@ -18,6 +18,7 @@ export const useCropPhoto = () => {
   const [filePath, setFilepath] = useState<string | null>(null);
   const user = useUser();
   const { games } = useGamesStore();
+  const { captureError } = useHandleError();
 
   const supabaseDB = useSupabaseClient<Database>();
   const supabase = useSupabaseClient();
@@ -203,7 +204,7 @@ export const useCropPhoto = () => {
           .select();
 
         if (p1error) {
-          console.error(p1error);
+          captureError(p1error);
         }
 
         const { data: p2data, error: p2error } = await supabaseGame
@@ -214,7 +215,7 @@ export const useCropPhoto = () => {
         if (p2data?.length !== 0) {
         }
         if (p2error) {
-          console.error(p2error);
+          captureError(p2error);
         }
       }
 
@@ -222,7 +223,7 @@ export const useCropPhoto = () => {
     }
 
     if (uploadError) {
-      console.error(uploadError);
+      captureError(uploadError);
       return "fail";
     }
   };

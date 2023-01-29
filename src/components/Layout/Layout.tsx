@@ -11,6 +11,9 @@ import { Database } from "@utilities/supabase";
 import { useRouter } from "next/router";
 import { SetupProfile } from "@components/SetupProfile";
 import { useWindowVisibilityState } from "@hooks/useWindowVisibilityState";
+import { useHandleError } from "@hooks/useHandleError";
+import { ErrorModal } from "@components/ErrorModal";
+import { DeleteModal } from "@components/DeleteModal";
 
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 type Games = Database["public"]["Tables"]["games"]["Row"];
@@ -27,6 +30,7 @@ const Layout = ({ children }: LayoutProps) => {
   const { session, isLoading } = useSessionContext();
   const [localLoad, setLocalLoad] = useState(false);
   const { visible } = useWindowVisibilityState();
+  const { captureError } = useHandleError();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
@@ -38,7 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
         .single();
 
       if (error && status !== 406) {
-        throw error;
+        captureError(error);
       }
 
       if (data) {
@@ -135,7 +139,7 @@ const Layout = ({ children }: LayoutProps) => {
         gameGata.forEach((game) => addGame(game));
       }
       if (error) {
-        console.error(error);
+        captureError(error);
       }
     };
 
@@ -152,6 +156,8 @@ const Layout = ({ children }: LayoutProps) => {
         <>
           {setUpProfile() && <SetupProfile />}
           {!setUpProfile() && <> {children}</>}
+          <ErrorModal />
+          <DeleteModal />
         </>
       )}
     </div>

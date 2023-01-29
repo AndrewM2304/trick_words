@@ -11,6 +11,7 @@ import { Button } from "@components/Button";
 import { Database } from "@utilities/supabase";
 import { useDeleteGame } from "@hooks/useDeleteGame";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
+import { useDeleteModal } from "@components/store";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 
@@ -25,8 +26,8 @@ const GameCard = ({ game, id }: GameCardProps) => {
 
   const { setImage } = useDownloadImages();
   const user = useUser();
-  const { deleteGame } = useDeleteGame();
-
+  const { setGameToDelete, setDisplayDeleteModal, setButtonText } =
+    useDeleteModal();
   useEffect(() => {
     const playerToDisplayImage =
       user?.id === game.player_one_id
@@ -108,6 +109,12 @@ const GameCard = ({ game, id }: GameCardProps) => {
     } else {
       return false;
     }
+  };
+
+  const deleteGame = (text: string) => {
+    setButtonText(text);
+    setGameToDelete(game);
+    setDisplayDeleteModal();
   };
 
   return (
@@ -216,7 +223,7 @@ const GameCard = ({ game, id }: GameCardProps) => {
 
                   <Button
                     text="cancel game"
-                    action={() => deleteGame(game)}
+                    action={() => deleteGame("Cancel Game")}
                     type={"delete"}
                   />
                 </div>
@@ -234,7 +241,7 @@ const GameCard = ({ game, id }: GameCardProps) => {
               <div className={styles.buttonRow}>
                 <Button
                   text="delete game"
-                  action={() => deleteGame(game)}
+                  action={() => deleteGame("Delete Game")}
                   type={"delete"}
                 />
               </div>

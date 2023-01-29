@@ -9,6 +9,8 @@ import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useCreateGame } from "@hooks/useCreateGame";
 import { HowItWorks } from "@components/HowItWorks";
 import { motion, Transition, Variants } from "framer-motion";
+import Logo from "/logo.png";
+import Image from "next/image";
 
 const HomeScreen = () => {
   const {
@@ -82,12 +84,16 @@ const HomeScreen = () => {
         transition={trans}
         key={"homescreen"}
       >
-        <OutlineText
-          text={"Trick Words"}
-          sizeInRem={2}
-          upperCase={true}
-          alignment={"center"}
+        <Image
+          priority
+          alt="logo"
+          src={"/logo.png"}
+          width="0"
+          height="0"
+          sizes="100vw"
+          className="w-full h-auto"
         />
+
         <Button
           text="New Game"
           action={() => {
@@ -139,36 +145,8 @@ const HomeScreen = () => {
       >
         {modalType === "game" && (
           <>
-            <button
-              aria-label="close"
-              className={styles.close}
-              onClick={() => closeModal()}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M3 15L15 3M3 3L15 15"
-                  stroke="black"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M3 15L15 3M3 3L15 15"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
             <fieldset className={styles.fieldset}>
-              <legend>
+              <legend tabIndex={0}>
                 <OutlineText
                   text={"Select Game Type"}
                   sizeInRem={1.1}
@@ -300,6 +278,34 @@ const HomeScreen = () => {
         {modalType === "info" && (
           <HowItWorks closeDialog={() => setShowDialog(false)} />
         )}
+        <button
+          aria-label="close"
+          className={styles.close}
+          onClick={() => closeModal()}
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 15L15 3M3 3L15 15"
+              stroke="black"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M3 15L15 3M3 3L15 15"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
       </Dialog>
     </div>
   );

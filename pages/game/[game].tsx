@@ -8,6 +8,7 @@ import {
   TouchSensor,
   useSensors,
   useSensor,
+  Announcements,
 } from "@dnd-kit/core";
 import { DroppableArea } from "@components/game/DroppableArea";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
@@ -24,11 +25,10 @@ import { GameType } from "@utilities/game";
 import { motion, Variants } from "framer-motion";
 import { useGetGameData } from "@hooks/useGetGameData";
 import { useDownloadImages } from "@hooks/useDownloadImages";
-import { useUserProfileStore } from "@components/store";
+import { useDeleteModal, useUserProfileStore } from "@components/store";
 import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useDeleteGame } from "@hooks/useDeleteGame";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { HowItWorks } from "@components/HowItWorks";
 
@@ -65,8 +65,14 @@ export default function Game() {
   } = usePlayerTurn();
   const supabasedefault = useSupabaseClient();
 
-  const { deleteGame } = useDeleteGame();
+  const { setGameToDelete, setDisplayDeleteModal, setButtonText } =
+    useDeleteModal();
 
+  const deleteGame = (text: string, gameToDelete: Game) => {
+    setButtonText(text);
+    setGameToDelete(gameToDelete);
+    setDisplayDeleteModal();
+  };
   // sensor setup for droppable area
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -109,6 +115,18 @@ export default function Game() {
       }, 2000);
     }
   };
+
+  useEffect(() => {
+    // remove accidental swipe to previous page safari
+    document?.addEventListener("touchstart", (e) => {
+      if (
+        e.touches[0].pageX > 20 &&
+        e.touches[0].pageX < window?.innerWidth - 20
+      )
+        return;
+      e.preventDefault();
+    });
+  }, []);
 
   useEffect(() => {
     setGame(gameData);
@@ -196,6 +214,32 @@ export default function Game() {
     animate: {
       clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
       transition: { duration: 0.3 },
+    },
+  };
+
+  const defaultAnnouncements: Announcements = {
+    onDragStart({ active }) {
+      return `Picked up tile ${active.id}.`;
+    },
+    onDragOver({ active, over }) {
+      if (over && over.id === "left") {
+        return `Add ${active.id} to the start to make  ${game?.current_word}${active.id}.`;
+      }
+      if (over && over.id === "right") {
+        return `Add ${active.id} to the end to make ${active.id}${game?.current_word}.`;
+      }
+
+      return `Tile ${active.id} is no longer over a droppable area.`;
+    },
+    onDragEnd({ active, over }) {
+      if (over) {
+        return `checking word...`;
+      }
+
+      return `Tile ${active.id} was dropped.`;
+    },
+    onDragCancel({ active }) {
+      return `Dragging was cancelled. Tile ${active.id} was dropped.`;
     },
   };
 
@@ -303,7 +347,7 @@ export default function Game() {
                               text="End Game"
                               type={"delete"}
                               action={() => {
-                                deleteGame(game);
+                                deleteGame("End Game", game);
                               }}
                             />
                           </div>
@@ -313,6 +357,12 @@ export default function Game() {
                             onDragEnd={(e) => handleDragEnd(e)}
                             modifiers={[restrictToWindowEdges]}
                             sensors={sensors}
+                            accessibility={{
+                              announcements: defaultAnnouncements,
+                              screenReaderInstructions: {
+                                draggable: `Current word: ${game.current_word}, select a letter, to start dragging press space and use the arrow keys to move it up and left or right to add the letter to the start of the end of the word. Press space to release the tile or escape to cancel `,
+                              },
+                            }}
                           >
                             <div className={styles.dropArea}>
                               <DroppableArea

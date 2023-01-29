@@ -9,6 +9,46 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      delete_users: {
+        Row: {
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+        }
+      }
+      errors: {
+        Row: {
+          code: string | null
+          created_at: string
+          details: string | null
+          email: string | null
+          hint: string | null
+          message: string | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string
+          details?: string | null
+          email?: string | null
+          hint?: string | null
+          message?: string | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string
+          details?: string | null
+          email?: string | null
+          hint?: string | null
+          message?: string | null
+        }
+      }
       games: {
         Row: {
           created_at: string

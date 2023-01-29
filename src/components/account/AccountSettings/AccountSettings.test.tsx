@@ -20,10 +20,25 @@ jest.mock("@supabase/auth-helpers-react", () => ({
 jest.mock("@supabase/auth-helpers-nextjs", () => ({
   createBrowserSupabaseClient: jest.fn(),
 }));
+jest.mock("@hooks/useHandleError", () => ({
+  useHandleError: jest.fn(() => ({
+    captureError: jest.fn(),
+  })),
+}));
 
 jest.mock("@components/store", () => ({
   useUserProfileStore: jest.fn(() => ({
     userProfile: jest.fn(() => mockUserProfile),
+  })),
+  useDeleteModal: jest.fn(() => ({
+    displayDeleteModal: false,
+    deleteType: "single",
+    setDeleteType: jest.fn(),
+    setDisplayDeleteModal: jest.fn(),
+    buttonText: "hello",
+    setButtonText: jest.fn(),
+    gameToDelete: null,
+    setGameToDelete: jest.fn(),
   })),
 }));
 

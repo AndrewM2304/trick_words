@@ -8,10 +8,12 @@ type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type GameDB = Database["public"]["Tables"]["games"]["Row"];
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
+import { useHandleError } from "./useHandleError";
 
 export const useGetGameData = (userProfile: Profile | null) => {
   const router = useRouter();
   const { game, gametype, gameroom } = router.query;
+  const { captureError } = useHandleError();
 
   const [gameData, setGameData] = useState<GameDB | null>(null);
   const [status, setStatus] = useState<number>();
@@ -92,6 +94,8 @@ export const useGetGameData = (userProfile: Profile | null) => {
         return data;
       }
       if (error) {
+        console.error(error);
+        captureError(error);
         setError(error);
       }
     }
@@ -122,6 +126,7 @@ export const useGetGameData = (userProfile: Profile | null) => {
         return data[0];
       }
       if (error) {
+        captureError(error);
         setError(error);
       }
     }

@@ -10,6 +10,7 @@ import {
   local_game,
 } from "@utilities/constants";
 import { useUserProfileStore } from "@components/store";
+import { useHandleError } from "./useHandleError";
 
 export const useCreateGame = () => {
   const user = useUser();
@@ -23,6 +24,7 @@ export const useCreateGame = () => {
   const [gameDifficulty, setGameDifficulty] = useState<
     "easy" | "medium" | "hard"
   >("easy");
+  const { captureError } = useHandleError();
 
   const createGame = async () => {
     const newGame: Partial<GamesDBType> = {
@@ -70,10 +72,11 @@ export const useCreateGame = () => {
         if (data) {
           router.push(`/game/${data[0].id}?gametype=online`);
         }
-        if (error) throw new Error(error.message);
-      } catch (error) {
+        if (error) {
+          captureError(error);
+        }
+      } catch {
         console.error("Error loading user data!");
-        console.error(error);
       }
     }
   };

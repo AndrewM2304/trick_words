@@ -19,6 +19,11 @@ jest.mock("@supabase/auth-helpers-react", () => ({
   useUser: jest.fn(() => mockUser),
   useSupabaseClient: jest.fn(() => mockSB),
 }));
+jest.mock("@hooks/useHandleError", () => ({
+  useHandleError: jest.fn(() => ({
+    captureError: jest.fn(),
+  })),
+}));
 
 const mockSB = {
   from: jest.fn(() => ({

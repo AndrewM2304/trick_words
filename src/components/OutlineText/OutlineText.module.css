@@ -38,6 +38,7 @@
   grid-column: 1/1;
   letter-spacing: 0.05em;
   font-weight: 800;
+  user-select: none;
 }
 .whiteText {
   -webkit-text-stroke: 3px black;
@@ -46,4 +47,5 @@
   grid-column: 1/1;
   text-shadow: 2px 2px 0px #000000;
   font-weight: 800;
+  user-select: none;
 }
