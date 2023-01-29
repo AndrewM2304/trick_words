@@ -23,6 +23,7 @@ const DeleteModal = () => {
         animate={true}
       >
         <OutlineText
+          focus
           text={"Are you sure?"}
           sizeInRem={1.4}
           upperCase={false}

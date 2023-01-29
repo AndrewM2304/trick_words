@@ -29,8 +29,8 @@
   border: 2px solid black;
   box-shadow: 0 0 0 2px #336d87, 0 0 0 4px black;
   border-radius: 5px;
-  padding: 15px;
-  padding-bottom: 5px;
+  padding: 10px;
+  padding-bottom: 0px;
   margin: 6px;
   position: relative;
   z-index: 0;
@@ -39,10 +39,14 @@
 .central img {
   position: relative;
   margin: auto;
-  margin-bottom: 8vh;
+  margin-bottom: 12vh;
   width: 200px;
   height: 200px;
   object-fit: contain;
+}
+
+.central:has(.auth) img {
+  margin-bottom: 8vh;
 }
 
 .fieldset {
@@ -225,5 +229,12 @@
 
   .auth {
     grid-column: 1/-1;
+  }
+}
+
+@media (max-height: 580px) {
+  .central img {
+    width: 150px;
+    height: 150px;
   }
 }

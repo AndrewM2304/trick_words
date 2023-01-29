@@ -199,7 +199,6 @@ const AccountSettings = () => {
             text={"Sign Out"}
             action={() => {
               supabase.auth.signOut().then(() => {
-                router.reload();
                 router.push("/");
               });
             }}

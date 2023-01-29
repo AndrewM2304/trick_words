@@ -115,12 +115,13 @@ const HomeScreen = () => {
             <div className={styles.auth}>
               <OutlineText
                 text={"Sign in to play online"}
-                sizeInRem={1.2}
+                sizeInRem={1}
                 upperCase={false}
                 alignment={"left"}
               />
 
               <Auth
+                socialLayout={"horizontal"}
                 onlyThirdPartyProviders
                 supabaseClient={supabasedefault}
                 appearance={{
