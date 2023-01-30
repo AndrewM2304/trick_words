@@ -1,4 +1,4 @@
-game available to try at : [https://word-game-2.vercel.app](https://word-game-2.vercel.app)
+game available to try at : [https://www.trick-words.com](https://www.trick-words.com)
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
