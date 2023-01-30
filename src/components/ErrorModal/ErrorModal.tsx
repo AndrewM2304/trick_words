@@ -33,11 +33,11 @@ const ErrorModal = () => {
         )}
         <Button
           type={"primary"}
-          text={"Refresh page"}
+          text={"Return Home"}
           action={() => {
             setDisplayErrorModal();
             setErrorMessage("");
-            router.reload();
+            router.push("/");
           }}
         />
       </Dialog>

@@ -4,11 +4,9 @@ import { useGamesStore, useUserProfileStore } from "@components/store";
 import {
   useUser,
   useSupabaseClient,
-  useSession,
   useSessionContext,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
-import { useRouter } from "next/router";
 import { SetupProfile } from "@components/SetupProfile";
 import { useWindowVisibilityState } from "@hooks/useWindowVisibilityState";
 import { useHandleError } from "@hooks/useHandleError";
@@ -29,16 +27,14 @@ const Layout = ({ children }: LayoutProps) => {
   const supabaseGames = useSupabaseClient<Games>();
   const { session, isLoading } = useSessionContext();
   const [localLoad, setLocalLoad] = useState(false);
-  const { visible } = useWindowVisibilityState();
   const { captureError } = useHandleError();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
-      if (!user) throw new Error("No user");
       let { data, error, status } = await supabaseProfiles
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", user?.id)
         .single();
 
       if (error && status !== 406) {
@@ -72,7 +68,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     if (!user) return;
-    const gamesData = supabaseGames
+    supabaseGames
       .channel("user-games")
       .on(
         "postgres_changes",
@@ -121,11 +117,7 @@ const Layout = ({ children }: LayoutProps) => {
         }
       )
       .subscribe();
-
-    return () => {
-      gamesData.unsubscribe();
-    };
-  }, [user, visible]);
+  }, [user]);
 
   useEffect(() => {
     if (!user || games.length > 0) return;
@@ -144,7 +136,7 @@ const Layout = ({ children }: LayoutProps) => {
     };
 
     retrieveAllGames();
-  }, [user, visible]);
+  }, [user]);
 
   const setUpProfile = (): boolean => {
     return !userProfile?.avatar_url && session ? true : false;
