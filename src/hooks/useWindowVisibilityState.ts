@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 export const useWindowVisibilityState = () => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     if (typeof document !== undefined) {

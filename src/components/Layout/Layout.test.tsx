@@ -24,6 +24,11 @@ jest.mock("@hooks/useHandleError", () => ({
     captureError: jest.fn(),
   })),
 }));
+jest.mock("@hooks/useWindowVisibilityState", () => ({
+  useWindowVisibilityState: jest.fn(() => ({
+    visible: true,
+  })),
+}));
 
 const mockSB = {
   from: jest.fn(() => ({

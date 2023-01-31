@@ -8,11 +8,9 @@ import {
 import {
   useUser,
   useSupabaseClient,
-  useSession,
   useSessionContext,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
-import { useRouter } from "next/router";
 import { SetupProfile } from "@components/SetupProfile";
 import { useWindowVisibilityState } from "@hooks/useWindowVisibilityState";
 import { useHandleError } from "@hooks/useHandleError";
@@ -152,7 +150,11 @@ const Layout = ({ children }: LayoutProps) => {
         });
       }
     });
-  }, [user]);
+    if (!visible) channel.unsubscribe();
+    return () => {
+      channel.unsubscribe;
+    };
+  }, [user, visible]);
 
   useEffect(() => {
     if (!user || games.length > 0) return;

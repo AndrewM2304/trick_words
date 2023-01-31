@@ -125,6 +125,7 @@
   padding: 3px 6px;
   background-color: #56c676;
   height: fit-content;
+  animation: ping 1s ease-out infinite both;
 }
 
 @keyframes slide-in-left {
@@ -162,5 +163,14 @@
   100% {
     -webkit-transform: rotateY(-360deg);
     transform: rotateY(-360deg);
+  }
+}
+
+@keyframes ping {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgba(79, 194, 112, 1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px 10px rgba(79, 194, 112, 0);
   }
 }
