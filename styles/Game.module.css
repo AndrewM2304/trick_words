@@ -156,6 +156,21 @@
   grid-row: 2/3;
 }
 
+.onlineWrapper {
+  position: relative;
+}
+.online {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  height: 12px;
+  width: 12px;
+  border-radius: 15px;
+  background: #56c676;
+  border: 1px solid black;
+}
+
 .emptyTile {
   list-style: none;
   height: 50px;

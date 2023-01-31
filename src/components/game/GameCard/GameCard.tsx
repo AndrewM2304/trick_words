@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styles from "./GameCard.module.css";
 import { useUser } from "@supabase/auth-helpers-react";
 import { GameType } from "@utilities/game";
@@ -8,7 +8,7 @@ import { OutlineText } from "@components/OutlineText";
 import { Button } from "@components/Button";
 import { Database } from "@utilities/supabase";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
-import { useDeleteModal } from "@components/store";
+import { useDeleteModal, useOnlineUsers } from "@components/store";
 
 type Games = Database["public"]["Tables"]["games"]["Row"];
 
@@ -20,6 +20,7 @@ const GameCard = ({ game, id }: GameCardProps) => {
   const [shareButtonText, setShareButtonText] = useState("Invite Player");
   const [playerImage, setPlayerImage] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>("");
+  const { users } = useOnlineUsers();
 
   const { setImage } = useDownloadImages();
   const user = useUser();
@@ -114,6 +115,14 @@ const GameCard = ({ game, id }: GameCardProps) => {
     setDisplayDeleteModal();
   };
 
+  const displayOnline = useCallback((): boolean => {
+    if (!user || game.game_type !== GameType.ONLINE_MULTIPLAYER) return false;
+    const userId =
+      user?.id === game.player_one_id ? game.player_two_id : game.player_one_id;
+
+    return users.includes(userId ?? "");
+  }, [users]);
+
   return (
     <>
       {playerImage && (
@@ -169,15 +178,26 @@ const GameCard = ({ game, id }: GameCardProps) => {
               />
             </svg>
 
-            <OutlineText
-              alignment="left"
-              text={`${renderScore().currentPlayerScore} - ${
-                renderScore().opponentScore
-              }`}
-              sizeInRem={1.4}
-              upperCase
-            />
-
+            <div className={styles.alignScore}>
+              <OutlineText
+                alignment="left"
+                text={`${renderScore().currentPlayerScore} - ${
+                  renderScore().opponentScore
+                }`}
+                sizeInRem={1.4}
+                upperCase
+              />
+              {displayOnline() && (
+                <div className={styles.online}>
+                  <OutlineText
+                    text={"Online"}
+                    sizeInRem={0.675}
+                    upperCase={true}
+                    alignment={"center"}
+                  />
+                </div>
+              )}
+            </div>
             <ul className={styles.tiles}>
               {game.current_word.split("").map((w, idx) => {
                 return (

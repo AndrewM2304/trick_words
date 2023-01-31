@@ -41,6 +41,7 @@ const mockSB = {
         subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
       })),
     })),
+    subscribe: jest.fn(),
   })),
 };
 

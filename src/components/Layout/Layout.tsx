@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Layout.module.css";
-import { useGamesStore, useUserProfileStore } from "@components/store";
+import {
+  useGamesStore,
+  useOnlineUsers,
+  useUserProfileStore,
+} from "@components/store";
 import {
   useUser,
   useSupabaseClient,
+  useSession,
   useSessionContext,
 } from "@supabase/auth-helpers-react";
 import { Database } from "@utilities/supabase";
+import { useRouter } from "next/router";
 import { SetupProfile } from "@components/SetupProfile";
 import { useWindowVisibilityState } from "@hooks/useWindowVisibilityState";
 import { useHandleError } from "@hooks/useHandleError";
@@ -25,16 +31,21 @@ const Layout = ({ children }: LayoutProps) => {
   const user = useUser();
   const supabaseProfiles = useSupabaseClient<Profiles>();
   const supabaseGames = useSupabaseClient<Games>();
+  const supabase = useSupabaseClient();
+
   const { session, isLoading } = useSessionContext();
   const [localLoad, setLocalLoad] = useState(false);
+  const { visible } = useWindowVisibilityState();
   const { captureError } = useHandleError();
+  const { users, setUsers } = useOnlineUsers();
 
   async function getProfile(): Promise<Profiles | undefined> {
     try {
+      if (!user) throw new Error("No user");
       let { data, error, status } = await supabaseProfiles
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("id", user.id)
         .single();
 
       if (error && status !== 406) {
@@ -117,6 +128,30 @@ const Layout = ({ children }: LayoutProps) => {
         }
       )
       .subscribe();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase.channel("online-users", {
+      config: {
+        presence: {
+          key: user.id,
+        },
+      },
+    });
+
+    channel.on("presence", { event: "sync" }, () => {
+      const onlineUsers = Object.keys(channel.presenceState());
+      setUsers(onlineUsers.filter((u) => u !== user.id));
+    });
+
+    channel.subscribe(async (status) => {
+      if (status === "SUBSCRIBED") {
+        const status = await channel.track({
+          online_at: new Date().toISOString(),
+        });
+      }
+    });
   }, [user]);
 
   useEffect(() => {

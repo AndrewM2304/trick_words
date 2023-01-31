@@ -31,19 +31,6 @@ jest.mock("@hooks/useGetGameData", () => ({
   })),
 }));
 
-jest.mock("@components/store", () => ({
-  useDeleteModal: jest.fn(() => ({
-    displayDeleteModal: false,
-    deleteType: "single",
-    setDeleteType: jest.fn(),
-    setDisplayDeleteModal: jest.fn(),
-    buttonText: "hello",
-    setButtonText: jest.fn(),
-    gameToDelete: null,
-    setGameToDelete: jest.fn(),
-  })),
-}));
-
 const mockImage = {
   playerOneImage: userAvatar,
   playerTwoImage: userAvatar,
@@ -95,6 +82,10 @@ jest.mock("@components/store", () => ({
     setButtonText: jest.fn(),
     gameToDelete: null,
     setGameToDelete: jest.fn(),
+  })),
+  useOnlineUsers: jest.fn(() => ({
+    users: [],
+    setUsers: jest.fn(),
   })),
 }));
 

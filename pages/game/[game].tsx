@@ -1,5 +1,5 @@
 import { Keyboard } from "@components/keyboard/Keyboard";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "../../styles/Game.module.css";
 import {
   KeyboardSensor,
@@ -25,7 +25,11 @@ import { GameType } from "@utilities/game";
 import { motion, Variants } from "framer-motion";
 import { useGetGameData } from "@hooks/useGetGameData";
 import { useDownloadImages } from "@hooks/useDownloadImages";
-import { useDeleteModal, useUserProfileStore } from "@components/store";
+import {
+  useDeleteModal,
+  useOnlineUsers,
+  useUserProfileStore,
+} from "@components/store";
 import { usePlayerTurn } from "@hooks/usePlayerTurn";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
@@ -64,7 +68,6 @@ export default function Game() {
     error: turnError,
   } = usePlayerTurn();
   const supabasedefault = useSupabaseClient();
-
   const { setGameToDelete, setDisplayDeleteModal, setButtonText } =
     useDeleteModal();
 
@@ -526,20 +529,34 @@ type Score = {
   game: Game;
 };
 const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
+  const { users } = useOnlineUsers();
+
+  const displayOnline = useCallback(
+    (userId: string): boolean => {
+      if (game.game_type !== GameType.ONLINE_MULTIPLAYER) return false;
+      return users.includes(userId);
+    },
+    [users]
+  );
   return (
     <section
       className={styles.playerScoreWrapper}
       data-testid="player-score-wrapper"
     >
       {playerOneAvatar && (
-        <Image
-          priority
-          className={styles.playerOneImage}
-          src={playerOneAvatar}
-          height={38}
-          width={38}
-          alt={`${game.player_one_name} avatar`}
-        />
+        <div className={styles.onlineWrapper}>
+          {displayOnline(game.player_one_id ?? "") && (
+            <div className={styles.online}></div>
+          )}
+          <Image
+            priority
+            className={styles.playerOneImage}
+            src={playerOneAvatar}
+            height={38}
+            width={38}
+            alt={`${game.player_one_name} avatar`}
+          />
+        </div>
       )}
 
       <div className={styles.playerOneName} data-testid="player-one-name">
@@ -559,14 +576,19 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
         />
       </div>
       {playerTwoAvatar && (
-        <Image
-          priority
-          className={styles.playerTwoImage}
-          src={playerTwoAvatar}
-          height={38}
-          width={38}
-          alt={`${game.player_two_name} avatar`}
-        />
+        <div className={styles.onlineWrapper}>
+          {displayOnline(game.player_two_id ?? "") && (
+            <div className={styles.online}></div>
+          )}
+          <Image
+            priority
+            className={styles.playerTwoImage}
+            src={playerTwoAvatar}
+            height={38}
+            width={38}
+            alt={`${game.player_two_name} avatar`}
+          />
+        </div>
       )}
       <div className={styles.playerTwoName}>
         <OutlineText

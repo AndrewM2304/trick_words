@@ -33,6 +33,11 @@ type useDeleteModal = {
   setGameToDelete: (g: Games) => void;
 };
 
+type OnlineUserStore = {
+  users: string[];
+  setUsers: (u: string[]) => void;
+};
+
 export const useUserProfileStore = create<userProfileStore>((set) => ({
   userProfile: null,
   setUserProfile: (user: Profiles) => set({ userProfile: user }),
@@ -79,4 +84,9 @@ export const useDeleteModal = create<useDeleteModal>((set, get) => ({
   setGameToDelete: (g: Games) => set({ gameToDelete: g }),
   deleteType: "single",
   setDeleteType: (t: "single" | "all") => set({ deleteType: t }),
+}));
+
+export const useOnlineUsers = create<OnlineUserStore>((set) => ({
+  users: [],
+  setUsers: (users: string[]) => set({ users: users }),
 }));
