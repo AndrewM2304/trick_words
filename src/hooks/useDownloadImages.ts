@@ -14,6 +14,9 @@ export const useDownloadImages = () => {
     if (image.includes("default_computer_avatar.svg")) {
       return Promise.resolve(computer);
     }
+    if (image.includes("googleusercontent" || "fbsbx.com")) {
+      return Promise.resolve(image);
+    }
     const im = await downloadImage(image);
     if (!im) {
       return image;

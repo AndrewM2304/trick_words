@@ -1,4 +1,3 @@
-import { Layout } from "@components/Layout";
 import { OutlineText } from "@components/OutlineText";
 import { NotificationBadge } from "@components/ProfileImage/ProfileImage";
 import { useGamesStore } from "@components/store";

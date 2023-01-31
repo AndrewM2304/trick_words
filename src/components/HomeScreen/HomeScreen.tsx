@@ -9,7 +9,6 @@ import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useCreateGame } from "@hooks/useCreateGame";
 import { HowItWorks } from "@components/HowItWorks";
 import { motion, Transition, Variants } from "framer-motion";
-import Logo from "/logo.png";
 import Image from "next/image";
 
 const HomeScreen = () => {

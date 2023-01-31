@@ -2,7 +2,6 @@ import { Button } from "@components/Button";
 import { Dialog } from "@components/Dialog";
 import { OutlineText } from "@components/OutlineText";
 import { useErrorModal } from "@components/store";
-import { PostgrestError } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import React from "react";
 import styles from "./ErrorModal.module.css";

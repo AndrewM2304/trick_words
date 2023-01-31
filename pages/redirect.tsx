@@ -1,9 +1,4 @@
-import { GameScreen } from "@components/GameScreen";
-import { TabWrapper } from "@components/TabWrapper";
-import { Layout } from "@components/Layout";
-
 import React, { useEffect } from "react";
-import { OutlineText } from "@components/OutlineText";
 import { redirect_key } from "@utilities/constants";
 import { useRouter } from "next/router";
 

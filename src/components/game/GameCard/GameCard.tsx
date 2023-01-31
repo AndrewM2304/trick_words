@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./GameCard.module.css";
-import Image from "next/image";
-import { User, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { GameType } from "@utilities/game";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 import { ProfileImage } from "@components/ProfileImage";
-import { default_avatar } from "@utilities/constants";
 import { OutlineText } from "@components/OutlineText";
 import { Button } from "@components/Button";
 import { Database } from "@utilities/supabase";
-import { useDeleteGame } from "@hooks/useDeleteGame";
 import { KeyboardTile } from "@components/keyboard/KeyboardTile";
 import { useDeleteModal } from "@components/store";
 
@@ -132,7 +129,7 @@ const GameCard = ({ game, id }: GameCardProps) => {
           >
             <ProfileImage
               color={setColor() ?? "blue"}
-              text={playerName}
+              text={playerName.split(" ")[0]}
               url={playerImage}
               notification={playerTurnNotification() ? "!" : null}
             />

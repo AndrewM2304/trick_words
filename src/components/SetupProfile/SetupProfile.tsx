@@ -2,26 +2,23 @@ import { Button } from "@components/Button";
 import { OutlineText } from "@components/OutlineText";
 import { useDownloadImages } from "@hooks/useDownloadImages";
 import { useUser } from "@supabase/auth-helpers-react";
-import { default_avatar } from "@utilities/constants";
 import React, { useCallback, useState, useEffect } from "react";
 import styles from "./SetupProfile.module.css";
 import Cropper from "react-easy-crop";
 import { Dialog } from "@components/Dialog";
 import { useCropPhoto } from "@hooks/useCropPhoto";
 import Image from "next/image";
+import { useUserProfileStore } from "@components/store";
 
 export type SetupProfileProps = {
-  photoFromUserProfile?: string;
-  nameFromUserProfile?: string;
+  firstUsage: boolean;
 };
-const SetupProfile = ({
-  photoFromUserProfile,
-  nameFromUserProfile,
-}: SetupProfileProps) => {
+const SetupProfile = ({ firstUsage }: SetupProfileProps) => {
   const user = useUser();
   const { setImage } = useDownloadImages();
   const [buttonTitle, setButtonTitle] = useState("");
   const [saving, setSaving] = useState(false);
+  const { userProfile } = useUserProfileStore();
   const {
     crop,
     rotation,
@@ -39,24 +36,17 @@ const SetupProfile = ({
     name,
     setName,
     upload,
+    setCurrentPhoto,
   } = useCropPhoto();
 
   useEffect(() => {
-    setButtonTitle(nameFromUserProfile ? "Update" : "Save");
-    if (nameFromUserProfile) {
-      setName(nameFromUserProfile);
-    } else {
-      setName(user?.user_metadata.name.split(" ")[0] ?? "");
-    }
-    if (photoFromUserProfile) {
-      setImage(photoFromUserProfile).then((i) => setPhoto(i));
-    } else {
-      setPhoto(user?.user_metadata.avatar_url);
-    }
-  }, [photoFromUserProfile]);
-
-  // default userprofile name to splitting out first name from user profile
-  // if user doesnt select to upload photo save their userprofile avatar as the detail
+    setButtonTitle(userProfile?.full_name ? "Update" : "Save");
+    setName(userProfile?.full_name ?? user?.user_metadata.name);
+    setCurrentPhoto(userProfile?.avatar_url ?? user?.user_metadata.avatar_url);
+    setImage(userProfile?.avatar_url ?? user?.user_metadata.avatar_url).then(
+      (i) => setPhoto(i)
+    );
+  }, []);
 
   const selectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e === undefined) return;
@@ -70,12 +60,9 @@ const SetupProfile = ({
   };
 
   const cancelPhoto = () => {
-    if (photoFromUserProfile) {
-      setImage(photoFromUserProfile).then((i) => setPhoto(i));
-    } else {
-      setPhoto(photo ?? default_avatar);
-    }
-
+    setImage(userProfile?.avatar_url ?? user?.user_metadata.avatar_url).then(
+      (i) => setPhoto(i)
+    );
     setDisplayCropperDialog(false);
   };
 
@@ -95,7 +82,7 @@ const SetupProfile = ({
             className={styles.SetupProfile}
           >
             <div className={styles.central}>
-              {!photoFromUserProfile && (
+              {firstUsage && (
                 <>
                   <OutlineText
                     text={"Welcome"}
@@ -153,7 +140,6 @@ const SetupProfile = ({
                 />
                 <input
                   className={styles.input}
-                  maxLength={12}
                   type="text"
                   name="userName"
                   value={name}
@@ -178,9 +164,7 @@ const SetupProfile = ({
                           setButtonTitle("Error, try again!");
                         }
                         setTimeout(() => {
-                          setButtonTitle(
-                            nameFromUserProfile ? "Update" : "Save"
-                          );
+                          setButtonTitle(!firstUsage ? "Update" : "Save");
                           setSaving(false);
                         }, 1500);
                       });

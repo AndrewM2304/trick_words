@@ -65,6 +65,11 @@ const GameScreen = () => {
               <li key={`${game.id}-local-${idx}`} className={styles.gameLink}>
                 {!disableLink(game) && (
                   <Link
+                    aria-label={`${game.game_type.replaceAll("_", " ")}, ${
+                      game.player_one_score
+                    } - ${game.player_one_score}, current work ${
+                      game.current_word
+                    }`}
                     href={`/game/${game.id}?gametype=${
                       game.game_type === GameType.ONLINE_MULTIPLAYER
                         ? "online"

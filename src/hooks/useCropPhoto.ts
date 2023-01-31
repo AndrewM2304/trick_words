@@ -19,6 +19,7 @@ export const useCropPhoto = () => {
   const user = useUser();
   const { games } = useGamesStore();
   const { captureError } = useHandleError();
+  const [currentPhoto, setCurrentPhoto] = useState("");
 
   const supabaseDB = useSupabaseClient<Database>();
   const supabase = useSupabaseClient();
@@ -156,21 +157,16 @@ export const useCropPhoto = () => {
         return "fail";
       }
     }
-    const nameUpdate = {
-      id: userID,
-      updated_at: new Date().toISOString(),
-      full_name: name,
-    };
 
     const photoUpdates = {
       id: userID,
       updated_at: new Date().toISOString(),
       full_name: name,
-      avatar_url: filePath,
+      avatar_url: photoFile ? filePath : currentPhoto,
     };
     const { data: uploadData, error: uploadError } = await supabase
       .from("profiles")
-      .upsert(filePath ? photoUpdates : nameUpdate)
+      .upsert(photoUpdates)
       .select();
 
     if (uploadData) {
@@ -180,7 +176,7 @@ export const useCropPhoto = () => {
             photoUpdates.full_name,
             photoUpdates.avatar_url
           )
-        : updateLocalStoreWithNewDetails(nameUpdate.full_name, null);
+        : updateLocalStoreWithNewDetails(photoUpdates.full_name, null);
       if (user && games) {
         const p1WithPhoto = {
           player_one_name: photoUpdates.full_name,
@@ -190,16 +186,10 @@ export const useCropPhoto = () => {
           player_two_name: photoUpdates.full_name,
           player_two_avatar: photoUpdates.avatar_url,
         };
-        const p1WithOutPhoto = {
-          player_one_name: nameUpdate.full_name,
-        };
-        const p2WithOutPhoto = {
-          player_two_name: nameUpdate.full_name,
-        };
 
         const { data: p1data, error: p1error } = await supabaseGame
           .from("games")
-          .update(filePath ? p1WithPhoto : p1WithOutPhoto)
+          .update(p1WithPhoto)
           .eq("player_one_id", user.id)
           .select();
 
@@ -209,7 +199,7 @@ export const useCropPhoto = () => {
 
         const { data: p2data, error: p2error } = await supabaseGame
           .from("games")
-          .update(filePath ? p2WithPhoto : p2WithOutPhoto)
+          .update(p2WithPhoto)
           .eq("player_two_id", user.id)
           .select();
         if (p2data?.length !== 0) {
@@ -265,5 +255,6 @@ export const useCropPhoto = () => {
     name,
     setName,
     upload,
+    setCurrentPhoto,
   };
 };

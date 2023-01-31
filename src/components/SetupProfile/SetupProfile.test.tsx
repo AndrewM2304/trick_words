@@ -31,37 +31,23 @@ beforeAll(() => {
 
 describe("SetupProfile Component", () => {
   test("it should exist", () => {
-    render(<SetupProfile />);
+    render(<SetupProfile firstUsage={true} />);
     expect(screen.getAllByText("Welcome").length).toBe(2);
     expect(screen.getAllByText("Save").length).toBe(2);
   });
 
   test("it displays the name and photo from usermetadata", async () => {
-    render(<SetupProfile />);
+    render(<SetupProfile firstUsage={true} />);
     const input = screen.getByRole("textbox");
-    expect(input).toHaveAttribute("value", "Ajm");
+    expect(input).toHaveAttribute("value", "Ajm Mill");
     const image = await screen.findByRole("img");
-    expect(image).toHaveAttribute("alt", "Ajm user profile");
-  });
-
-  test("it displays the name and photo from passed from parent", async () => {
-    render(
-      <SetupProfile
-        photoFromUserProfile={default_avatar}
-        nameFromUserProfile="joe bloggs"
-      />
-    );
-
-    const input = screen.getByRole("textbox");
-    expect(input).toHaveAttribute("value", "joe bloggs");
-    const image = await screen.findByRole("img");
-    expect(image).toHaveAttribute("alt", "joe bloggs user profile");
+    expect(image).toHaveAttribute("alt", "Ajm Mill user profile");
   });
 
   test("displays a modal after user has selected a photo", async () => {
     const file = new File(["test"], "testFile.png", { type: "image/png" });
 
-    render(<SetupProfile />);
+    render(<SetupProfile firstUsage={true} />);
     const fileInput = screen.getByTestId("file-upload");
     userEvent.upload(fileInput, file);
     const buttonText = await screen.findAllByText("Select Photo");

@@ -146,7 +146,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div data-testid="Layout-wrapper" className={styles.layout}>
       {!isLoading && !localLoad && (
         <>
-          {setUpProfile() && <SetupProfile />}
+          {setUpProfile() && <SetupProfile firstUsage={true} />}
           {!setUpProfile() && <> {children}</>}
           <ErrorModal />
           <DeleteModal />

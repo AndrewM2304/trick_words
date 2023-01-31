@@ -1,21 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import {
-  useUser,
-  useSupabaseClient,
-  useSession,
-} from "@supabase/auth-helpers-react";
+import React from "react";
+import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
 import styles from "./AccountSettings.module.css";
 import { Database } from "@utilities/supabase";
 import { useDeleteModal, useUserProfileStore } from "@components/store";
-type GamesDB = Database["public"]["Tables"]["games"]["Row"];
 import { SetupProfile } from "@components/SetupProfile";
 import { Button } from "@components/Button";
-import { local_game } from "@utilities/constants";
 import { useRouter } from "next/router";
 import { HowItWorks } from "@components/HowItWorks";
 import { OutlineText } from "@components/OutlineText";
 import { motion, Transition, Variants } from "framer-motion";
-import { useHandleError } from "@hooks/useHandleError";
 import Link from "next/link";
 
 const AccountSettings = () => {
@@ -102,10 +95,7 @@ const AccountSettings = () => {
             />
           </summary>
           <div className={styles.content}>
-            <SetupProfile
-              photoFromUserProfile={userProfile.avatar_url}
-              nameFromUserProfile={userProfile.full_name}
-            />
+            <SetupProfile firstUsage={false} />
           </div>
         </details>
       )}

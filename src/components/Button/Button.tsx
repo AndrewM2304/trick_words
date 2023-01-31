@@ -1,5 +1,5 @@
 import { OutlineText } from "@components/OutlineText";
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import styles from "./Button.module.css";
 
 export type ButtonProps = {

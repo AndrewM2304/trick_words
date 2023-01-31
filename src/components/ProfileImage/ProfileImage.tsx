@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./ProfileImage.module.css";
-import redGem from "@public/game-assets/red_gem.svg";
 import Image from "next/image";
 import { OutlineText } from "@components/OutlineText";
 

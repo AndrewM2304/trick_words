@@ -312,7 +312,7 @@ export default function Game() {
                     </nav>
                     {!game.winner && (
                       <>
-                        <div className={styles.gameBody}>
+                        <main className={styles.gameBody}>
                           <ScoreSection
                             playerOneAvatar={p1image}
                             playerTwoAvatar={p2image}
@@ -403,7 +403,7 @@ export default function Game() {
                               </div>
                             )}
                           </DndContext>
-                          <div className={styles.gameInfo}>
+                          <section className={styles.gameInfo}>
                             <OutlineText
                               alignment={"center"}
                               sizeInRem={2}
@@ -424,8 +424,8 @@ export default function Game() {
                               })}
                               <li className={styles.emptyTile}></li>
                             </ul>
-                          </div>
-                        </div>
+                          </section>
+                        </main>
                       </>
                     )}
                   </>
@@ -435,13 +435,15 @@ export default function Game() {
                 setDisplay={() => setShowDialog(false)}
                 display={showDialog}
               >
-                <OutlineText
-                  text={dialogMessage}
-                  sizeInRem={1.4}
-                  upperCase={false}
-                  alignment={"center"}
-                  focus={true}
-                />
+                <div className="ds" aria-live={"assertive"}>
+                  <OutlineText
+                    text={dialogMessage}
+                    sizeInRem={1.4}
+                    upperCase={false}
+                    alignment={"center"}
+                    focus={true}
+                  />
+                </div>
                 {displayHomeLink && (
                   <>
                     <br />
@@ -525,7 +527,7 @@ type Score = {
 };
 const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
   return (
-    <div
+    <section
       className={styles.playerScoreWrapper}
       data-testid="player-score-wrapper"
     >
@@ -542,7 +544,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
 
       <div className={styles.playerOneName} data-testid="player-one-name">
         <OutlineText
-          text={game.player_one_name}
+          text={game.player_one_name.split(" ")[0]}
           sizeInRem={1.2}
           alignment="left"
           upperCase={false}
@@ -568,7 +570,7 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
       )}
       <div className={styles.playerTwoName}>
         <OutlineText
-          text={game.player_two_name}
+          text={game.player_two_name.split(" ")[0]}
           sizeInRem={1.2}
           alignment="right"
           upperCase={false}
@@ -582,6 +584,6 @@ const ScoreSection = ({ playerOneAvatar, playerTwoAvatar, game }: Score) => {
           alignment="right"
         />
       </div>
-    </div>
+    </section>
   );
 };
